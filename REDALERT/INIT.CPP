@@ -2936,37 +2936,6 @@ static void Init_Secondary_Mixfiles(void)
 {
 	MainMix = new MFCD("MAIN.MIX", &FastKey);
 	assert(MainMix != NULL);
-
-	//Denzil extract mixfile
-	#ifdef DENZIL_MIXEXTRACT
-	#if(0)
-	Extract("CONQUER.MIX", "o:\\projects\\radvd\\data\\extract\\conquer.mix");
-	Extract("EDHI.MIX", "o:\\projects\\radvd\\data\\extract\\edhi.mix");
-	Extract("EDLO.MIX", "o:\\projects\\radvd\\data\\extract\\edlo.mix");
-	Extract("GENERAL.MIX", "o:\\projects\\radvd\\data\\extract\\general.mix");
-	Extract("INTERIOR.MIX", "o:\\projects\\radvd\\data\\extract\\interior.mix");
-	Extract("MOVIES1.MIX", "o:\\projects\\radvd\\data\\extract\\movies1.mix");
-	Extract("SCORES.MIX", "o:\\projects\\radvd\\data\\extract\\scores.mix");
-	Extract("SNOW.MIX", "o:\\projects\\radvd\\data\\extract\\snow.mix");
-	Extract("SOUNDS.MIX", "o:\\projects\\radvd\\data\\extract\\sounds.mix");
-	Extract("RUSSIAN.MIX", "o:\\projects\\radvd\\data\\extract\\russian.mix");
-	Extract("ALLIES.MIX", "o:\\projects\\radvd\\data\\extract\\allies.mix");
-	Extract("TEMPERAT.MIX", "o:\\projects\\radvd\\data\\extract\\temperat.mix");
-	#else
-	Extract("CONQUER.MIX", "o:\\projects\\radvd\\data\\extract\\conquer.mix");
-	Extract("EDHI.MIX", "o:\\projects\\radvd\\data\\extract\\edhi.mix");
-	Extract("EDLO.MIX", "o:\\projects\\radvd\\data\\extract\\edlo.mix");
-	Extract("GENERAL.MIX", "o:\\projects\\radvd\\data\\extract\\general.mix");
-	Extract("INTERIOR.MIX", "o:\\projects\\radvd\\data\\extract\\interior.mix");
-	Extract("MOVIES2.MIX", "o:\\projects\\radvd\\data\\extract\\movies2.mix");
-	Extract("SCORES.MIX", "o:\\projects\\radvd\\data\\extract\\scores.mix");
-	Extract("SNOW.MIX", "o:\\projects\\radvd\\data\\extract\\snow.mix");
-	Extract("SOUNDS.MIX", "o:\\projects\\radvd\\data\\extract\\sounds.mix");
-	Extract("RUSSIAN.MIX", "o:\\projects\\radvd\\data\\extract\\russian.mix");
-	Extract("ALLIES.MIX", "o:\\projects\\radvd\\data\\extract\\allies.mix");
-	Extract("TEMPERAT.MIX", "o:\\projects\\radvd\\data\\extract\\temperat.mix");
-	#endif
-	#endif
 	
 	/*
 	**	Inform the file system of the various MIX files.

@@ -1131,51 +1131,7 @@ int IPXManagerClass::Service(void)
 
 		}
 	} else {
-#if(0)//PG
-		while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
 
-			CurHeaderBuf = (IPXHEADER*)&temp_receive_buffer[0];
-			CurDataBuf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
-
-			/*.....................................................................
-			Compute the length of the packet (byte-swap the length in the IPX hdr)
-			.....................................................................*/
-			packetlen = ((CurHeaderBuf->Length & 0xff) << 8) |
-				(CurHeaderBuf->Length >> 8);
-			packetlen -= sizeof(IPXHeaderType);
-
-			/*.....................................................................
-			Extract the sender's address from the IPX header
-			.....................................................................*/
-			address.Set_Address (CurHeaderBuf);
-
-			/*.....................................................................
-			Examine the Magic Number of the received packet to determine if this
-			packet goes into the Global Queue, or into one of the Private Queues
-			.....................................................................*/
-			packet = (CommHeaderType *)CurDataBuf;
-			if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-				/*..................................................................
-				Put the packet in the Global Queue
-				..................................................................*/
-				if (!GlobalChannel->Receive_Packet (packet, packetlen, &address))
-					ReceiveOverflows++;
-			} else {
-				if (packet->MagicNumber == ProductID) {
-					/*..................................................................
-					Find the Private Queue that this packet is for
-					..................................................................*/
-					for (i = 0; i < NumConnections; i++) {
-						if (Connection[i]->Address == address) {
-							if (!Connection[i]->Receive_Packet (packet, packetlen))
-								ReceiveOverflows++;
-							break;
-						}
-					}
-				}
-			}
-		}
-#endif
 	}
 
 

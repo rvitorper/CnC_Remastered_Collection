@@ -187,19 +187,9 @@ void Process_DD_Result(HRESULT result, int display_ok_msg)
 		case DDERR_NOALPHAHW:
 			MessageBox(MainWindow, "Operation could not be carried out because there is no alpha accleration hardware present or available.","Note", MB_ICONEXCLAMATION|MB_OK);
 			break;
-#if(0)
-		case DDERR_NOANTITEARHW:
-			MessageBox(MainWindow, "Operation could not be carried out because there is no hardware support for synchronizing blts to avoid tearing.	","Note", MB_ICONEXCLAMATION|MB_OK);
-			break;
-#endif
 		case DDERR_NOBLTHW:
 			MessageBox(MainWindow, "No blter hardware present.","Note", MB_ICONEXCLAMATION|MB_OK);
 			break;
-#if(0)
-		case DDERR_NOBLTQUEUEHW:
-			MessageBox(MainWindow, "Operation could not be carried out because there is no hardware support for asynchronous blting.	","Note", MB_ICONEXCLAMATION|MB_OK);
-			break;
-#endif
 		case DDERR_NOCLIPLIST:
 			MessageBox(MainWindow, "No cliplist available.","Note", MB_ICONEXCLAMATION|MB_OK);
 			break;

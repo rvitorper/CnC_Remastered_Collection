@@ -5239,12 +5239,8 @@ void UnitClass::Shroud_Regen(void)
 				for (index = 30; index >= 0 && ShroudBits; index--) {
 					if (ShroudBits & 1) {
 						trycell = XY_Cell(centerx + _GapShroudXTable[index], centery + _GapShroudYTable[index]);
-	#if(0)
-						Map.Map_Cell(trycell, PlayerPtr);
-	#else
 					Map.UnJam_Cell(trycell, House);
 					Map.Map_Cell(trycell, House);
-	#endif
 					}
 					ShroudBits >>= 1;
 				}

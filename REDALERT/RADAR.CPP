@@ -2157,21 +2157,7 @@ bool RadarClass::Draw_House_Info(void)
 // count & print infantry
 		itoa(ptr->CurInfantry, txt, 10);
 		Fancy_Text_Print(txt, RadX + RadOffX + (6 * RESFACTOR), y, color, BLACK, style);
-#if(0)
-		y += (6 * RESFACTOR) + 1;
 
-		Fancy_Text_Print(TXT_AIRCRAFT, RADAR_X + RADAR_OFF_X + 6, y,
-								&ColorRemaps[PCOLOR_GREY], TBLACK,
-								TPF_6PT_GRAD | TPF_NOSHADOW);
-		y += (6 * RESFACTOR) + 1;
-// count & print aircraft
-		for (i = AIRCRAFT_NONE+1, count = 0; i < AIRCRAFT_COUNT; i++) {
-			count += ptr->AQuantity[i];
-		}
-		itoa(count, txt, 10);
-		Fancy_Text_Print(txt, RadX + RadOffX, y,
-				color, BLACK, style);
-#endif
 		return(true);
 	} else {
 		return(false);
