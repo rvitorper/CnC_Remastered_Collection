@@ -389,15 +389,6 @@ void GScreenClass::Remove_A_Button(GadgetClass & gadget)
  *=============================================================================================*/
 void GScreenClass::Render(void)
 {
-	//This is unnessasary surely?	ST - 10/16/96 2:30PM
-	//if (Buttons && Buttons->Is_List_To_Redraw()) {
-	//	IsToRedraw = true;
-	//}
-
-
-	if (IsToUpdate || IsToRedraw) {
-		BStart(BENCH_GSCREEN_RENDER);
-
 #ifdef WIN32
 		GraphicViewPortClass * oldpage= Set_Logic_Page(HidPage);
 #else

@@ -53,13 +53,6 @@ DWORD	Instance_Class::id_inst;			// instance identifier set by DdeInitialize
 BOOL		Instance_Class::process_pokes;	// controls response to pokes
 char 	Instance_Class::ascii_name[32];	// name of server
 
-#if (0)	//ST - 5/8/2019
-static BOOL CALLBACK	(*Instance_Class::callback) (
-			LPBYTE pointer,		// pointer to received data
-			long	length			// length of received data or advisory flag
-			) = NULL;
-#endif
-
 /***************************************************************************
  * Instance_Class::InstanceClass -- class constructor              			*
  *                                                                         *
@@ -81,50 +74,6 @@ Instance_Class::Instance_Class( LPSTR name1, LPSTR name2 )
 {
 	name1; name2;
 	return;
-
-#if (0)	//ST - 5/8/2019
-	dde_error = FALSE;		// no errors
-	process_pokes = FALSE;	// disable pokes in callback
-
-	id_inst = 0;				// set to 0 for first time through
-	conv_handle = 0;   		// conversation handle reset
-
-	lstrcpy( ascii_name, name1 );	// keep a record of ASCII name
-
-	if	( DdeInitialize(
-		(LPDWORD) &id_inst,			// instance identifier
-		dde_callback,
-		APPCLASS_STANDARD | 			// filter server messages
-		CBF_FAIL_SELFCONNECTIONS,	// prevent from connecting with self
-		0) != DMLERR_NO_ERROR) {   // reserved
-			dde_error = TRUE;			// flag an error
-	}
-
-	local_name = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-    	name1,     				// string to register
-    	CP_WINANSI);    		// Windows ANSI code page
-
-	remote_name = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-    	name2,     				// string to register
-    	CP_WINANSI);    		// Windows ANSI code page
-
-	poke_topic = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		"POKE TOPIC", 			// System topic
-		CP_WINANSI);    		// Windows ANSI code page
-
-	poke_item = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		"POKE ITEM", 			// System topic
-		CP_WINANSI);    		// Windows ANSI code page
-
-	system_topic = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		SZDDESYS_TOPIC, 		// System topic
-		CP_WINANSI);    		// Windows ANSI code page
-#endif
 }
 
 /***************************************************************************
@@ -187,18 +136,6 @@ BOOL	Instance_Class::Enable_Callback( BOOL flag )		// enable or disable callback
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
-#if (0)	//ST - 5/8/2019
-BOOL	Instance_Class::Register_Server( BOOL CALLBACK ( *callback_fnc) (LPBYTE, long) )
-{
-
-	if (DdeNameService( id_inst, local_name,	0L, DNS_REGISTER ) != 0L) {
-		callback = callback_fnc;
-		return ( TRUE );
-	} else {
-		return ( FALSE );
-	}
-}
-#endif
 
 /***************************************************************************
  * Instance_Class::Test_Server_Running -- does a trial connect to remote   *
@@ -373,90 +310,6 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
 	hsz2;
 	hdata;
 	return (HDDEDATA)NULL;
-
-#if (0) // ST 5/8/2019
-	if (!Instance_Class::callback){
-		return (HDDEDATA) NULL;
-	}
-
-	switch ( dde_event ) {
-
-		case XTYP_REGISTER:
-      case XTYP_UNREGISTER:
-
-			return (HDDEDATA) NULL;
-
-		case XTYP_ADVDATA:
-			return (HDDEDATA) DDE_FACK;
-
-		case XTYP_XACT_COMPLETE:
-
-			return (HDDEDATA) NULL;
-
-		case XTYP_DISCONNECT:
-
-			Instance_Class::callback( NULL, DDE_ADVISE_DISCONNECT);
-			return (HDDEDATA) NULL;
-
-		case	XTYP_CONNECT: {
-
-			char	buffer[32];
-
-			DdeQueryString (Instance_Class::id_inst, hsz2, buffer, sizeof (buffer), 0) ;
-
-			if (0 != strcmp (buffer, Instance_Class::ascii_name)) {
-				return (HDDEDATA) NULL;
-			}
-
-			DdeQueryString (Instance_Class::id_inst, hsz1, buffer, sizeof (buffer), 0) ;
-
-			if (0 != strcmp (buffer, "POKE TOPIC")) {
-				return (HDDEDATA) NULL;
-			}
-
-			Instance_Class::callback( NULL, DDE_ADVISE_CONNECT);
-			return (HDDEDATA) TRUE;
-		}
-
-		case	XTYP_POKE:
-
-			if	(Instance_Class::process_pokes == FALSE ) {
-				return (HDDEDATA) DDE_FNOTPROCESSED;	// processing disabled
-			} else {
-
-				char	buffer[32];
-
-				DdeQueryString (Instance_Class::id_inst, hsz1, buffer, sizeof (buffer), 0) ;
-
-				if (0 != strcmp (buffer, "POKE TOPIC")) {
-					return (HDDEDATA) DDE_FNOTPROCESSED;
-				} else if (uFmt == CF_TEXT) {					// make sure it's CF_TEXT
-
-					BOOL processed;
-					BYTE FAR *pdata;
-					DWORD dw_length;
-
-					if ( (pdata = DdeAccessData( hdata, &dw_length)) == NULL ) {
-						return (HDDEDATA) DDE_FNOTPROCESSED;
-					}
-
-					processed = Instance_Class::callback((LPBYTE) pdata, dw_length);
-
-					DdeUnaccessData( hdata );
-
-					if (processed == TRUE) {
-						return (HDDEDATA) DDE_FACK;
-					} else {
-						return (HDDEDATA) NULL;
-					}
-
-				}
-			}
-
-		default:
-      	return (HDDEDATA) NULL;
-    }
-#endif
 }
 
 #endif	//WIN32

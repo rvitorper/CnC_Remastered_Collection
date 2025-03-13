@@ -157,105 +157,21 @@ void WWMouseClass::Unblock_Mouse(GraphicBufferClass *buffer)
 
 void WWMouseClass::Set_Cursor_Clip(void)
 {
-#if (0)		// Not needed. ST - 1/3/2019 2:18PM
-	if (Screen){
-		RECT	region;
 
-		region.left		= 0;
-		region.top 		= 0;
-		region.right	= Screen->Get_Width();
-		region.bottom	= Screen->Get_Height();
-
-		ClipCursor(&region);
-	}
-#endif
 }
 
 
 
 void WWMouseClass::Clear_Cursor_Clip(void)
 {
-#if (0)
-	ClipCursor(NULL);
-#endif
+
 }
 
 
 
 void WWMouseClass::Process_Mouse(void)
 {
-//ST - 1/3/2019 10:50AM	
-	return;
-#if (0)
-	POINT 	pt;					// define a structure to hold current cursor pos
 
-	//
-	// If the mouse is currently hidden or it has not been installed, then we
-	// have no need to redraw the mouse.
-	//
-	if (!Screen || !_Mouse || State > 0 || MouseUpdate || EraseFlags || !GameInFocus)
-		return;
-
-	//
-	// Make sure there are no conflicts with other
-	// threads that may try and lock the screen buffer
-	//
-	//Block_Mouse(Screen->Get_Graphic_Buffer());
-
-	//
-	// If the screen is already locked by another thread then just exit
-	//
-	if (Screen->Get_LockCount()!=0){
-		//Unblock_Mouse(Screen->Get_Graphic_Buffer());
-		return;
-	}
-
-	//
-	// Get the mouse's current real cursor position
-	//
-	GetCursorPos(&pt);			// get the current cursor position
-	//
-	// If the mouse has moved then we are responsible to redraw the mouse
-	//
-	if (pt.x != MouseBuffX || pt.y != MouseBuffY) {
-		//
-		// If we can't lock the surface we need to draw to, we cannot update
-		// the mouse.
-		//
-		if (Screen->Lock()) 	{
-			//
-			// Erase the old mouse by dumping the mouses shadow buff
-			//   to the screen (if its position had ever been recorded).
-			//
-			Low_Hide_Mouse();
-
-			//
-			// Verify that the mouse has not gone into a conditional hiden area
-			// If it has, mark it as being in one.
-			//
-			if (MCFlags & CONDHIDE && pt.x >= MouseCXLeft && pt.x <= MouseCXRight && pt.y >= MouseCYUpper && pt.y <= MouseCYLower) {
-				MCFlags |= CONDHIDDEN;
-			}
-
-			//
-			// Show the mouse if we are allowed to.
-			//
-			if (!(MCFlags & CONDHIDDEN)) 	{
-				Low_Show_Mouse(pt.x, pt.y);
-			}
-			//
-			// Finally unlock the destination surface as we have sucessfully
-			// updated the mouse.
-			//
-			Screen->Unlock();
-		}
-	}
-
-	//
-	// Allow other threads to lock the screen again
-	//
-	//Unblock_Mouse(Screen->Get_Graphic_Buffer());
-#endif
 }
 
 void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor)
@@ -265,61 +181,11 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor)
 	yhotspot;
 	cursor;
 	return cursor;
-
-#if (0)
 	
-	//
-	// If the pointer to the cursor we got is invalid, or its the same as the
-	// currently set cursor then just return.
-	if (!cursor || cursor == PrevCursor)
-		return(cursor);
-
-	//
-	// Wait until we have exclusive access to our data
-	//
-	MouseUpdate++;
-	//
-	// Since we are updating the mouse we need to hide the cursor so we
-	// do not get some sort of weird transformation.
-	//
-	Hide_Mouse();
-	//
-	// Now convert the shape to a mouse cursor with the given hotspots and
-	// set it as our current mouse.
-	//
-	void *retval = ASM_Set_Mouse_Cursor(this, xhotspot, yhotspot, cursor);
-	//
-	// Show the mouse which will force it to appear with the new shape we
-	// have assigned.
-	//
-	Show_Mouse();
-	//
-	// We are done updating the mouse cursor so on to bigger and better things.
-	//
-	MouseUpdate--;
-	//
-	// Return the previous mouse cursor which as conveniantly passed back by
-	// Asm_Set_Mouse_Cursor.
-	//
-	return(retval);
-#endif
 }
 
 void WWMouseClass::Low_Hide_Mouse()
 {
-//ST - 1/3/2019 10:50AM	
-#if (0)
-	if (!State) {
-		if (MouseBuffX != -1 || MouseBuffY != -1) {
-			if (Screen->Lock()){
-				Mouse_Shadow_Buffer(this, Screen, MouseBuffer, MouseBuffX, MouseBuffY, MouseXHot, MouseYHot, 0);
-				Screen->Unlock();
-			}
-		}
-		MouseBuffX = -1;
-		MouseBuffY = -1;
-	}
-#endif
 	State++;
 }
 void WWMouseClass::Hide_Mouse()
@@ -340,39 +206,6 @@ void WWMouseClass::Low_Show_Mouse(int x, int y)
 	// Make the mouse a little bit more visible
 	//
 	State--;
-
-//ST - 1/3/2019 10:50AM	
-#if (0)
-
-	//
-	//	If the mouse is completely visible then draw it at its current
-	// position.
-	//
-	if (!State)	{
-		//
-		// Try to lock the screen til we sucessfully get a lock.
-		//
-		if (Screen->Lock()){
-			//
-			// Save off the area behind the mouse.
-			//
-			Mouse_Shadow_Buffer(this, Screen, MouseBuffer, x, y, MouseXHot, MouseYHot, 1);
-			//
-			// Draw the mouse in its new location
-			//
-			::Draw_Mouse(this, Screen, x, y);
-			//
-			// Save off the positions that we saved the buffer from
-			//
-			MouseBuffX = x;
-			MouseBuffY = y;
-			//
-			// Unlock the screen and lets get moving.
-			//
-			Screen->Unlock();
-		}
-	}
-#endif
 }
 
 void WWMouseClass::Show_Mouse()
@@ -476,59 +309,6 @@ void WWMouseClass::Draw_Mouse(GraphicViewPortClass *scr)
 {
 	scr;
 	return;
-//ST - 1/3/2019 10:50AM	
-#if (0)
-	
-	POINT pt;
-
-	if (State != 0) return;
-	MouseUpdate++;
-	//
-	//	Get the position that the mouse is currently located at
-	//
-	GetCursorPos(&pt);
-	if (MCFlags & CONDHIDE && pt.x >= MouseCXLeft && pt.x <= MouseCXRight && pt.y >= MouseCYUpper && pt.y <= MouseCYLower) {
-		Hide_Mouse();
-		MCFlags |= CONDHIDDEN;
-	} else {
-		//
-		// If the mouse is already visible then just ignore the problem.
-		//
-		EraseFlags = TRUE;
-
-		//
-		// Try to lock the screen  - dont do video stuff if we cant.
-		//
-		if (scr->Lock()){
-			//
-			// Save off the area behind the mouse into two different buffers, one
-			// which will be used to restore the mouse and the other which will
-			// be used to restore the hidden surface when we get a chance.
-			//
-			Mouse_Shadow_Buffer(this, scr, EraseBuffer, pt.x, pt.y, MouseXHot, MouseYHot, 1);
-			memcpy(MouseBuffer, EraseBuffer, MaxWidth * MaxHeight);
-			//
-			// Draw the mouse in its new location
-			//
-			::Draw_Mouse(this, scr, pt.x, pt.y);
-			//
-			// Save off the positions that we saved the buffer from
-			//
-			EraseBuffX 		= pt.x;
-			MouseBuffX 		= pt.x;
-			EraseBuffY 		= pt.y;
-			MouseBuffY 		= pt.y;
-			EraseBuffHotX	= MouseXHot;
-			EraseBuffHotY	= MouseYHot;
-			//
-			// Unlock the screen and lets get moving.
-			//
-			scr->Unlock();
-		}
-	}
-
-	MouseUpdate--;
-#endif
 }
 
 void WWMouseClass::Erase_Mouse(GraphicViewPortClass *scr, int forced)
@@ -537,54 +317,6 @@ void WWMouseClass::Erase_Mouse(GraphicViewPortClass *scr, int forced)
 	scr;
 	forced;
 	return;
-#if (0)
-	//
-	// If we are forcing the redraw of a mouse we already managed to
-	// restore then just get outta here.
-	//
-	if (forced && EraseBuffX == -1 && EraseBuffY == -1) return;
-
-	MouseUpdate++;
-
-	//
-	// If this is not a forced call, only update the mouse is we can legally
-	//	lock the buffer.
-	//
-	if (!forced) {
-#if(0)
-		if (scr->Lock()) {
-			//
-			// If the surface has not already been restore then restore it and erase the
-			// restoration coordinates so we don't accidentally do it twice.
-			//
-			if (EraseBuffX != -1 || EraseBuffY != -1) {
-				Mouse_Shadow_Buffer(this, scr, EraseBuffer, EraseBuffX, EraseBuffY, 0);
-				EraseBuffX = -1;
-				EraseBuffY = -1;
-			}
-			//
-			// We are done writing to the buffer so unlock it.
-			//
-			scr->Unlock();
-		}
-#endif
-	} else	{
-			//
-			// If the surface has not already been restore then restore it and erase the
-			// restoration coordinates so we don't accidentally do it twice.
-			//
-			if (EraseBuffX != -1 || EraseBuffY != -1) {
-				if (scr->Lock()){
-					Mouse_Shadow_Buffer(this, scr, EraseBuffer, EraseBuffX, EraseBuffY, EraseBuffHotX, EraseBuffHotY, 0);
-					scr->Unlock();
-				}
-				EraseBuffX = -1;
-				EraseBuffY = -1;
-			}
-	}
-	MouseUpdate--;
-  	EraseFlags = FALSE;
-#endif
 }
 
 int WWMouseClass::Get_Mouse_State(void)

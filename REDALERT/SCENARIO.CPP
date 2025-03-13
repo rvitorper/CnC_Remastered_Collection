@@ -977,22 +977,6 @@ void Do_Win(void)
 		/*
 		** If this scenario is flagged as ending the game then print the credits and exit.
 		*/
-#if (0)//PG
-		if (Scen.IsEndOfGame) {
-			if (PlayerPtr->ActLike == HOUSE_USSR) {
-				Play_Movie(VQ_SOVFINAL);
-			} else {
-				Play_Movie(VQ_ALLYEND);
-			}
-			Show_Who_Was_Responsible();
-			GameActive = false;
-			Show_Mouse();
-#ifdef FIXIT_ANTS
-			AntsEnabled = false;
-#endif
-			return;
-		}
-#endif
 		/*
 		** Hack section.  If it's allied scenario 10, variation A, then skip the
 		** score and map selection, don't increment scenario, and set it to
@@ -2952,19 +2936,6 @@ static void Remove_AI_Players(void)
 	int aicount = 0;
 	HousesType house;
 	HouseClass * housep;
-
-#if (0)
-	for (i = 0; i < MAX_PLAYERS; i++) {
-		house = (HousesType)(i + (int)HOUSE_MULTI1);
-		housep = HouseClass::As_Pointer (house);
-		if (housep->IsHuman == false) {
-			aicount++;
-			if(aicount > Session.Options.AIPlayers) {
-				housep->Clobber_All();
-			}
-		}
-	}
-#else
 	/*
 	** AI players are set up like human players now. ST - 8/13/2019 1:32PM
 	*/
@@ -2977,8 +2948,6 @@ static void Remove_AI_Players(void)
 			}
 		}
 	}
-
-#endif
 }
 
 

@@ -193,20 +193,6 @@ int main(int argc, char * argv[])
 	**  and if so, switch to the existing instance and terminate ourselves.
 	*/
 	SpawnedFromWChat = false;
-#if (0)//PG
-	if (RA95AlreadyRunning) {	//Set in the DDEServer constructor
-		//MessageBox (NULL, "Error - attempt to restart Red Alert 95 when already running.", "Red Alert", MB_ICONEXCLAMATION|MB_OK);
-
-		HWND ccwindow;
-    	ccwindow = FindWindow (WINDOW_NAME, WINDOW_NAME);
-    	if (ccwindow) {
-    		SetForegroundWindow ( ccwindow );
-    		ShowWindow ( ccwindow, SW_RESTORE );
-    	}
-
-		return (EXIT_SUCCESS);
-	}
-#endif
 
 #endif
 //printf("in program.\n");getch();
@@ -229,24 +215,6 @@ int main(int argc, char * argv[])
 		printf (TEXT_USE_START_MENU);
 		getch();
 #endif
-
-#if (0)
-
-		/*
-		** Take a stab at finding out how much memory there is available.
-		*/
-
-		for ( int mem = 13*1024*1024 ; mem >0 ; mem -=1024 ) {
-			temp_mem = malloc (mem);
-			if (temp_mem){
-				free (temp_mem);
-				printf ("Memory available: %d", mem);
-				break;
-			}
-		}
-
-		getch();
-#endif	//(0)
 		return(EXIT_FAILURE);
 	}
 
@@ -318,32 +286,6 @@ int main(int argc, char * argv[])
 	/*
 	**	Remember the current working directory and drive.
 	*/
-#if (0)//PG
-	unsigned olddrive;
-	char oldpath[MAX_PATH];
-	getcwd(oldpath, sizeof(oldpath));
-	_dos_getdrive(&olddrive);
-
-	/*
-	**	Change directory to the where the executable is located. Handle the
-	**	case where there is no path attached to argv[0].
-	*/
-	char drive[_MAX_DRIVE];
-	char path[_MAX_PATH];
-	unsigned drivecount;
-	_splitpath(argv[0], drive, path, NULL, NULL);
-	if (!drive[0]) {
-		drive[0] = ('A' + olddrive)-1;
-	}
-	if (!path[0]) {
-		strcpy(path, ".");
-	}
-	_dos_setdrive(toupper((drive[0])-'A')+1, &drivecount);
-	if (path[strlen(path)-1] == '\\') {
-		path[strlen(path)-1] = '\0';
-	}
-	chdir(path);
-#endif
 
 #ifdef WOLAPI_INTEGRATION
 	//	Look for special wolapi install program, used after the patch to version 3, to install "Shared Internet Components".
@@ -383,26 +325,6 @@ int main(int argc, char * argv[])
 
 	if (Parse_Command_Line(argc, argv)) {
 
-#if(TEN)
-	//
-	// Only allow the TEN version of the game to run if the TEN
-	// or AllowSoloPlayOptions arguments are specified.
-	//
-	if (Session.AllowSolo==0 && Session.Type != GAME_TEN) {
-#ifdef WIN32
-		MessageBox(NULL, "Red Alert for TEN\n (c) 1996 Westwood Studios",
-			"Red Alert", MB_OK);
-		exit(0);
-#else
-		printf("\n");
-		printf("                         Red Alert for TEN\n");
-		printf("                     (c) 1996 Westwood Studios\n");
-		printf("\n");
-		exit(0);
-#endif	// WIN32
-	}
-#endif	// TEN
-
 #if(MPATH)
 	//
 	// Only allow the MPATH version of the game to run if the MPATH
@@ -426,14 +348,6 @@ int main(int argc, char * argv[])
 #ifdef WIN32
 
 		WindowsTimer = new WinTimerClass(60, FALSE);
-#if (0)//PG
-		int time_test = WindowsTimer->Get_System_Tick_Count();
-		Sleep (1000);
-		if (WindowsTimer->Get_System_Tick_Count() == time_test){
-			MessageBox(0, TEXT_ERROR_TIMER, TEXT_SHORT_TITLE, MB_OK|MB_ICONSTOP);
-			return(EXIT_FAILURE);
-		}
-#endif
 #else	//WIN32
 		Init_Timer_System(60, true);
 #endif	//WIN32
@@ -481,16 +395,6 @@ int main(int argc, char * argv[])
 		if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
 
 #ifdef WIN32
-#if (0)//PG
-			char	disk_space_message [512];
-			sprintf(disk_space_message, TEXT_CRITICALLY_LOW);	//PG , (INIT_FREE_DISK_SPACE) / (1024 * 1024));
-			int reply = MessageBox(NULL, disk_space_message, TEXT_SHORT_TITLE, MB_ICONQUESTION|MB_YESNO);
-			if (reply == IDNO) {
-				if ( WindowsTimer )
-					delete WindowsTimer;
-				return (EXIT_FAILURE);
-			}
-#endif
 #else
 			printf(TEXT_INSUFFICIENT);
 			printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
@@ -824,126 +728,6 @@ bool InitDDraw(void)
 	VisiblePage.Attach_DD_Surface(&HiddenPage);
 	SeenBuff.Attach(&VisiblePage, 0, 0, 3072, 3072);
 	HidPage.Attach(&HiddenPage, 0, 0, 3072, 3072);
-
-#if (0)//PG
-	DDSCAPS	surface_capabilities;
-	BOOL video_success = FALSE;
-
-	/* Set 640x400 video mode. If its not available then try for 640x480 */
-	if (ScreenHeight == 400)
-		{
-		if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8))
-			{
-			video_success = TRUE;
-			}
-		else
-			{
-			if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8))
-				{
-				video_success = TRUE;
-				ScreenHeight = 480;
-				}
-			}
-		}
-	else
-		{
-		if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8))
-			{
-			video_success = TRUE;
-			}
-		}
-
-	if (!video_success)
-		{
-		MessageBox(MainWindow, TEXT_VIDEO_ERROR, TEXT_SHORT_TITLE, MB_ICONEXCLAMATION|MB_OK);
-
-		if (WindowsTimer)
-			delete WindowsTimer;
-
-		return false;
-		}
-
-	if (ScreenWidth == 320)
-		{
-		VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-		ModeXBuff.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)(GBC_VISIBLE|GBC_VIDEOMEM));
-		}
-	else
-		{
-		VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)(GBC_VISIBLE|GBC_VIDEOMEM));
-
-		/* Check that we really got a video memory page. Failure is fatal. */
-		memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-		VisiblePage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-
-		if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY)
-			{
-			/* Aaaarrgghh! */
-			WWDebugString(TEXT_DDRAW_ERROR);WWDebugString("\n");
-			MessageBox(MainWindow, TEXT_DDRAW_ERROR, TEXT_SHORT_TITLE, MB_ICONEXCLAMATION|MB_OK);
-
-			if (WindowsTimer)
-				delete WindowsTimer;
-				
-			return false;
-			}
-
-		/* If we have enough left then put the hidpage in video memory unless...
-		 *
-		 * If there is no blitter then we will get better performance with a system
-		 * memory hidpage
-		 *
-		 * Use a system memory page if the user has specified it via the ccsetup program.
-		 */
-		unsigned video_memory = Get_Free_Video_Memory();
-		unsigned video_capabilities = Get_Video_Hardware_Capabilities();
-
-		if (video_memory < ScreenWidth * ScreenHeight
-				|| (!(video_capabilities & VIDEO_BLITTER))
-				|| (video_capabilities & VIDEO_NO_HARDWARE_ASSIST)
-				|| !VideoBackBufferAllowed)
-			{
-			HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-			}
-		else
-			{
-			HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)GBC_VIDEOMEM);
-
-			/* Make sure we really got a video memory hid page. If we didnt then things
-			 * will run very slowly.
-			 */
-			memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-			HiddenPage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-			
-			if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY)
-				{
-				/* Oh dear, big trub. This must be an IBM Aptiva or something similarly cruddy.
-				 * We must redo the Hidden Page as system memory.
-				 */
-				AllSurfaces.Remove_DD_Surface(HiddenPage.Get_DD_Surface());  // Remove the old surface from the AllSurfaces list
-				HiddenPage.Get_DD_Surface()->Release();
-				HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-				}
-			else
-				{
-				VisiblePage.Attach_DD_Surface(&HiddenPage);
-				}
-			}
-		}
-
-	ScreenHeight = 400;
-
-	if (VisiblePage.Get_Height() == 480)
-		{
-		SeenBuff.Attach(&VisiblePage, 0, 40, 3072, 3072);
-		HidPage.Attach(&HiddenPage, 0, 40, 3072, 3072);
-		}
-	else
-		{
-		SeenBuff.Attach(&VisiblePage, 0, 0, 3072, 3072);
-		HidPage.Attach(&HiddenPage, 0, 0, 3072, 3072);
-		}
-#endif
 	return true;
 	}
 
@@ -1196,20 +980,6 @@ void Get_OS_Version (void)
 {
 	//PG
 	//WindowsNT = ((GetVersion() & 0x80000000) == 0) ? true : false;
-
-#if (0)
-	OSVERSIONINFO	osversion;
-	if ( GetVersionEx (&osversion) ){
-		WindowsNT = (osversion.dwPlatformId == VER_PLATFORM_WIN32_NT) ? true : false;
-		OutputDebugString ("RA95 - Got OS version\n");
-	}else{
-		OutputDebugString ("RA95 - Failed to get OS version\n");
-		char debugstr [128];
-		sprintf (debugstr, "RA95 - Error code is %d\n", GetLastError());
-		OutputDebugString (debugstr);
-
-	}
-#endif	//(0)
 
 }
 

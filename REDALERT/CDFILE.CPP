@@ -119,17 +119,6 @@ int cdecl Is_Disk_Inserted(int disk)
 #ifndef OBSOLETE
 	disk;
 	return true;
-#if (0)
-	struct find_t fb;
-	char	scan[] = "?:\\*.*";
-
-	#ifndef WIN32
-		_harderr(harderr_handler);		// BG: Install hard error handler
-	#endif
-
-	scan[0] = (char)('A' + disk);
-	return(_dos_findfirst(scan, _A_SUBDIR, &fb) == 0);
-#endif
 #else
 	struct {
 		struct {

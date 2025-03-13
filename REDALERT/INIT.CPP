@@ -229,9 +229,6 @@ bool Init_Game(int , char * [])
 	**	Initialize access to the CD-ROM and ensure that the CD is inserted. This can, and
 	**	most likely will, result in a visible prompt.
 	*/
-#if (0) //PG
-	Init_CDROM_Access();
-#endif
 
 	if (Special.IsFromInstall) {
 		Load_Prolog_Page();
@@ -1003,62 +1000,10 @@ bool Select_Game(bool fade)
 							break;
 
 						case GAME_SKIRMISH:
-#if (0)//PG
-							if ( !Com_Scenario_Dialog(true) ) {
-								Session.Type = Select_MPlayer_Game();
-								if (Session.Type == GAME_NORMAL) {		// user hit Cancel
-									display = true;
-									selection = SEL_NONE;
-								}
-							}
-							else
-							{
-								//	Ever hits? Session.Type set to GAME_SKIRMISH without user selecting in Select_MPlayer_Game()?
-#ifdef FIXIT_VERSION_3
-								//	If mission is Counterstrike, CS CD will be required. But aftermath units require AM CD.
-								bAftermathMultiplayer = Is_Aftermath_Installed() && !Is_Mission_Counterstrike( Scen.ScenarioName );
-								//	ajw I'll bet this was needed before also...
-								Session.ScenarioIsOfficial = Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
-#endif
-							}
-#endif//PG
 							break;
 
 						case GAME_NULL_MODEM:
 						case GAME_MODEM:
-#if (0)
-							if ( Session.Type != GAME_SKIRMISH && NullModem.Num_Connections() ) {
-								NullModem.Init_Send_Queue();
-
-								if ((Session.Type == GAME_NULL_MODEM &&
-									Session.ModemType == MODEM_NULL_HOST) ||
-									(Session.Type == GAME_MODEM &&
-									Session.ModemType == MODEM_DIALER) ) {
-
-									if ( !Com_Scenario_Dialog() ) {
-										Session.Type = Select_Serial_Dialog();
-										if (Session.Type == GAME_NORMAL) {		// user hit Cancel
-											display = true;
-											selection = SEL_NONE;
-										}
-									}
-								} else {
-									if ( !Com_Show_Scenario_Dialog() ) {
-										Session.Type = Select_Serial_Dialog();
-										if (Session.Type == GAME_NORMAL) {		// user hit Cancel
-											display = true;
-											selection = SEL_NONE;
-										}
-									}
-								}
-							} else {
-								Session.Type = Select_MPlayer_Game();
-								if (Session.Type == GAME_NORMAL) {		// 'Cancel'
-									display = true;
-									selection = SEL_NONE;
-								}
-							}
-#endif
 							break;
 
 #ifndef WOLAPI_INTEGRATION
@@ -1346,27 +1291,6 @@ bool Select_Game(bool fade)
 							}
 							break;
 
-#if(TEN)
-						/*
-						**	TEN: jump straight into the game
-						*/
-						case GAME_TEN:
-							if (Init_TEN()) {
-#ifdef FIXIT_VERSION_3
-								Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-								Options.ScoreVolume = 0;
-#endif
-								process = false;
-								Theme.Fade_Out();
-							} else {
-								WWMessageBox().Process("Unable to initialize TEN!");
-								//Prog_End();
-								Emergency_Exit(1);
-							}
-							break;
-#endif	// TEN
-
 #if(MPATH)
 						/*
 						**	MPATH: jump straight into the game
@@ -1494,19 +1418,6 @@ bool Select_Game(bool fade)
 //			debugprint( "Non Internet game: NewUnitsEnabled = %i\n", NewUnitsEnabled );
 			break;
 		case GAME_INTERNET:
-#if (0)
-			if( !pWolapi )
-			{
-//				debugprint( "pWolapi is null on internet game!" );
-				Fatal( "pWolapi is null on internet game!" );
-			}
-			//if( pWolapi->bEnableNewAftermathUnits )
-			if( bAftermathMultiplayer )
-				NewUnitsEnabled = true;
-			else
-				NewUnitsEnabled = SecretUnitsEnabled = false;
-//			debugprint( "Internet game: NewUnitsEnabled = %i\n", NewUnitsEnabled );
-#endif
 			break;
 		default:
 			break;
@@ -1572,9 +1483,6 @@ bool Select_Game(bool fade)
 	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
 		!Session.Play) {
 		if (Session.Type == GAME_TEN) {
-#if(TEN)
-			Session.Create_TEN_Connections();
-#endif	// TEN
 		} else if (Session.Type == GAME_MPATH) {
 #if(MPATH)
 			Session.Create_MPATH_Connections();
@@ -1712,73 +1620,6 @@ static void Play_Intro(bool sequenced)
 #endif
 void Anim_Init(void)
 {
-#if (0)
-#ifdef WIN32
-
-	/* Configure player with INI file */
-	VQA_DefaultConfig(&AnimControl);
-	AnimControl.DrawFlags = VQACFGF_TOPLEFT;
-	AnimControl.DrawFlags |= VQACFGF_BUFFER;
-//AnimControl.DrawFlags |= VQACFGF_NODRAW;
-//BG - M. Grayford says turn this off	AnimControl.DrawFlags |= VQACFGF_NOSKIP;
-
-	AnimControl.DrawFlags |= VQACFGF_NOSKIP;
-	AnimControl.FrameRate = -1;
-	AnimControl.DrawRate = -1;
-	AnimControl.DrawerCallback = VQ_Call_Back;
-	AnimControl.ImageWidth = 320;
-	AnimControl.ImageHeight = 200;
-	AnimControl.ImageBuf = (unsigned char *)SysMemPage.Get_Offset();
-#ifdef MOVIE640
-	if(IsVQ640) {
-		AnimControl.ImageWidth = 711;
-		AnimControl.ImageHeight = 400;
-		AnimControl.ImageBuf = (unsigned char *)VQ640.Get_Offset();
-	}
-#endif
-	AnimControl.Vmode = 0;
-	AnimControl.OptionFlags |= VQAOPTF_CAPTIONS|VQAOPTF_EVA;
-	if (SlowPalette) {
-		AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
-	}
-	AnimControl.SoundObject = SoundObject;
-	AnimControl.PrimaryBufferPtr = PrimaryBufferPtr;
-	if (MonoClass::Is_Enabled()) {
-		AnimControl.OptionFlags |= VQAOPTF_MONO;
-	}
-
-#else	//WIN32
-	/* Configure player with INI file */
-	VQA_DefaultConfig(&AnimControl);
-//	void const * font = Load_Font(FONT8);
-//	AnimControl.EVAFont = (char *)font;
-//	AnimControl.CapFont = (char *)font;
-	AnimControl.DrawerCallback = VQ_Call_Back;
-	AnimControl.ImageWidth = 320;
-	AnimControl.ImageHeight = 200;
-	AnimControl.Vmode = MCGA_MODE;
-	AnimControl.VBIBit = VertBlank;
-	AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-	AnimControl.OptionFlags |= VQAOPTF_HMIINIT|VQAOPTF_CAPTIONS|VQAOPTF_EVA;
-//	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
-//	AnimControl.AudioBufSize = 32768U;
-	AnimControl.DigiCard = NewConfig.DigitCard;
-	AnimControl.HMIBufSize = 8192;
-	AnimControl.DigiHandle = Get_Digi_Handle();
-	AnimControl.Volume = 0x00FF;
-	AnimControl.AudioRate = 22050;
-//	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-
-	if (!Debug_Quiet && Get_Digi_Handle() != -1) {
-		AnimControl.OptionFlags |= VQAOPTF_AUDIO;
-	}
-
-	if (MonoClass::Is_Enabled()) {
-		AnimControl.OptionFlags |= VQAOPTF_MONO;
-	}
-
-#endif	//WIN32
-#endif
 }
 
 
@@ -1905,12 +1746,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 //				BreakoutAllowed = false;
 				break;
 
-#if(TEN)
-			case PARM_ALLOW_SOLO:
-				Session.AllowSolo = 1;
-				break;
-#endif
-
 #if(MPATH)
 			case PARM_ALLOW_SOLO:
 				Session.AllowSolo = 1;
@@ -1942,17 +1777,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 			CCFileClass::Set_Search_Drives(&string[3]);
 			continue;
 		}
-
-#if (0)
-		/*
-		** Build speed modifier
-		*/
-		if (strstr (string, "-UNITRATE:")){
-			int unit_rate;
-			sscanf (string, "-UNITRATE:%d", &unit_rate);
-			UnitBuildPenalty = unit_rate;
-		}
-#endif	//(0)
 
 		/*
 		**	Specify destination connection for network play
@@ -2071,41 +1895,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 
 #endif
 
-
-#if(TEN)
-		/*
-		**	Enable TEN
-		*/
-		if (strstr(string, "TEN")) {
-
-#ifdef CHEAT_KEYS
-			Debug_Flag = true;
-			MonoClass::Enable();
-#endif
-
-			Session.Type = GAME_TEN;
-			Special.IsFromInstall = false;
-			//
-			// Create the Ten network manager.  This allows us to keep
-			// the packet queues clean even while we're initializing the game,
-			// so the queues don't fill up in case we're slow, or the user
-			// didn't insert a CD.
-			//
-			Ten = new TenConnManClass();
-			Ten->Init();
-			strcpy(Session.OptionsFile, "OPTIONS.INI");
-			Ten->Flush_All();
-			continue;
-		}
-
-		/*
-		**	Set the game options filename
-		*/
-		if (strstr(string, "OPTIONS:")) {
-			strcpy(Session.OptionsFile, string + 8);
-			continue;
-		}
-#endif	// TEN
 
 #if(MPATH)
 		/*
@@ -2861,28 +2650,7 @@ static void Init_Expansion_Files(void)
 			break;
 		}
 	}
-
-#if (0)
-	/*
-	**	Before all else, cache any additional mixfiles.
-	*/
-	struct find_t ff;		// for _dos_findfirst
-	if (!_dos_findfirst("SC*.MIX", _A_NORMAL, &ff)) {
-		char * ptr;
-		do {
-			ptr = strdup(ff.name);
-			new MFCD(ptr, &FastKey);
-			MFCD::Cache(ptr);
-		} while (!_dos_findnext(&ff));
-	}
-	if (!_dos_findfirst("SS*.MIX", _A_NORMAL, &ff)) {
-		char * ptr;
-		do {
-			ptr = strdup(ff.name);
-			new MFCD(ptr, &FastKey);
-		} while (!_dos_findnext(&ff));
-	}
-#endif
+		
 }
 
 
@@ -3265,20 +3033,6 @@ static void Bootstrap(void)
 	** Process the message loop until we are in focus. We need to be in focus to read pixels from
 	** the screen.
 	*/
-#if (0) //PG
-	#ifdef WIN32
-	do {
-		Keyboard->Check();
-	} while (!GameInFocus);
-	AllSurfaces.SurfacesRestored = false;
-	#endif
-
-	/*
-	**	Perform any special debug-only processing. This includes preparing the
-	**	monochrome screen.
-	*/
-	Mono_Clear_Screen();
-#endif
 	/*
 	**	Register and make resident all local mixfiles with particular emphasis
 	**	on the mixfiles that are necessary to display and error messages and
@@ -3788,50 +3542,6 @@ void Free_Heaps(void)
 	TerrainTypes.Clear();
 	OverlayTypes.Clear();
 	SmudgeTypes.Clear();
-#if (0)
-	HouseTypeClass::Init_Heap();
-	BuildingTypeClass::Init_Heap();
-	AircraftTypeClass::Init_Heap();
-	InfantryTypeClass::Init_Heap();
-	BulletTypeClass::Init_Heap();
-	AnimTypeClass::Init_Heap();
-	UnitTypeClass::Init_Heap();
-	VesselTypeClass::Init_Heap();
-	TemplateTypeClass::Init_Heap();
-	TerrainTypeClass::Init_Heap();
-	OverlayTypeClass::Init_Heap();
-	SmudgeTypeClass::Init_Heap();
-
-		// Heap init moved here from globals.cpp. ST - 5/20/2019
-	CCPtr<AircraftClass>::Set_Heap(&Aircraft);
-	CCPtr<AnimClass>::Set_Heap(&Anims);
-	CCPtr<BuildingClass>::Set_Heap(&Buildings);
-	CCPtr<BulletClass>::Set_Heap(&Bullets);
-	CCPtr<FactoryClass>::Set_Heap(&Factories);
-	CCPtr<HouseClass>::Set_Heap(&Houses);
-	CCPtr<InfantryClass>::Set_Heap(&Infantry);
-	CCPtr<OverlayClass>::Set_Heap(&Overlays);
-	CCPtr<SmudgeClass>::Set_Heap(&Smudges);
-	CCPtr<TeamClass>::Set_Heap(&Teams);
-	CCPtr<TeamTypeClass>::Set_Heap(&TeamTypes);
-	CCPtr<TemplateClass>::Set_Heap(&Templates);
-	CCPtr<TerrainClass>::Set_Heap(&Terrains);
-	CCPtr<TriggerClass>::Set_Heap(&Triggers);
-	CCPtr<TriggerTypeClass>::Set_Heap(&TriggerTypes);
-
-	CCPtr<HouseTypeClass>::Set_Heap(&HouseTypes);
-	CCPtr<BuildingTypeClass>::Set_Heap(&BuildingTypes);
-	CCPtr<AircraftTypeClass>::Set_Heap(&AircraftTypes);
-	CCPtr<InfantryTypeClass>::Set_Heap(&InfantryTypes);
-	CCPtr<BulletTypeClass>::Set_Heap(&BulletTypes);
-	CCPtr<AnimTypeClass>::Set_Heap(&AnimTypes);
-	CCPtr<UnitTypeClass>::Set_Heap(&UnitTypes);
-	CCPtr<VesselTypeClass>::Set_Heap(&VesselTypes);
-	CCPtr<TemplateTypeClass>::Set_Heap(&TemplateTypes);
-	CCPtr<TerrainTypeClass>::Set_Heap(&TerrainTypes);
-	CCPtr<OverlayTypeClass>::Set_Heap(&OverlayTypes);
-	CCPtr<SmudgeTypeClass>::Set_Heap(&SmudgeTypes);
-#endif
 
 	Vessels.Clear();
 	Units.Clear();

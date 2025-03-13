@@ -94,49 +94,6 @@ void TabClass::Draw_It(bool complete)
 	}
 
 // Disable tab drawing for menu, credits buttons etc. ST - 5/27/2019
-#if (0)
-	/*
-	**	Redraw the top bar imagery if flagged to do so or if the entire display needs
-	**	to be redrawn.
-	*/
-	if ((complete || IsToRedraw) && LogicPage->Lock()) {
-
-		int width  = SeenBuff.Get_Width();
-		int rightx = width - 1;
-		int tab_height = TAB_HEIGHT * RESFACTOR;
-
-		LogicPage->Fill_Rect(0, 0, rightx, tab_height-1, BLACK);
-//		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * RESFACTOR), BLACK);
-
-#ifdef WIN32
-		/*
-		** Use the new sidebar art for 640x400
-		*/
-		CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#else
-		CC_Draw_Shape(TabShape, 2, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#endif
-		Draw_Credits_Tab();
-		LogicPage->Draw_Line(0, tab_height-(1* RESFACTOR), rightx, tab_height-(1 * RESFACTOR), BLACK);
-#ifdef WIN32
-		Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2) * RESFACTOR, 0, &MetalScheme, TBLACK, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
-#else
-//			Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2) * RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
-		Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2) * RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_METAL12|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
-#endif	//WIN32
-		if (IsSidebarActive) {
-#ifndef WIN32
-			TabClass::Hilite_Tab(1);
-#endif	//WIN32
-		} else {
-			CC_Draw_Shape(TabShape, 0, width-(EVA_WIDTH * RESFACTOR), 0, WINDOW_MAIN, SHAPE_NORMAL);
-			Fancy_Text_Print(TXT_TAB_SIDEBAR, width-((EVA_WIDTH/2) * RESFACTOR), 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_METAL12|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
-		}
-
-		LogicPage->Unlock();
-	}
-	Credits.Graphic_Logic(complete || IsToRedraw);
-#endif
 	IsToRedraw = false;
 }
 

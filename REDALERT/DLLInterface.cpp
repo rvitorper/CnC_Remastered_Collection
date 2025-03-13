@@ -8238,18 +8238,6 @@ void DLLExportClass::Debug_Spawn_Unit(const char *object_name, int x, int y, boo
 				delete building;
 			}
 		}
-		
-#if (0)		 
-		Map.PendingObject = &BuildingTypeClass::As_Reference(structure_type);
-		Map.PendingHouse = PlayerPtr->ActLike;
-		Map.PendingObjectPtr = Map.PendingObject->Create_One_Of(PlayerPtr);
-		if (Map.PendingObjectPtr) {
-			Map.Set_Cursor_Pos();
-			Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List());
-
-			//OutList.Add(EventClass(EventClass::PLACE, RTTI_BUILDING, (CELL)(cell + Map.ZoneOffset)));
-		}
-#endif		
 		return;
 	}
 

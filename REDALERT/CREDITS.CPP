@@ -125,33 +125,7 @@ void CreditClass::Graphic_Logic(bool forced)
 			long hours = mins / 60;
 			secs %= 60;
 			mins %= 60;
-#if (0) //Moved to LOGIC.CPP
-			/*
-			**	Speak mission timer reminders.
-			*/
-			VoxType vox = VOX_NONE;
-			if (Scen.MissionTimer == (1 * TICKS_PER_MINUTE)) vox = VOX_TIME_1;
-			if (Scen.MissionTimer == (2 * TICKS_PER_MINUTE)) vox = VOX_TIME_2;
-			if (Scen.MissionTimer == (3 * TICKS_PER_MINUTE)) vox = VOX_TIME_3;
-			if (Scen.MissionTimer == (4 * TICKS_PER_MINUTE)) vox = VOX_TIME_4;
-			if (Scen.MissionTimer == (5 * TICKS_PER_MINUTE)) vox = VOX_TIME_5;
-			if (Scen.MissionTimer == (10 * TICKS_PER_MINUTE)) vox = VOX_TIME_10;
-			if (Scen.MissionTimer == (20 * TICKS_PER_MINUTE)) vox = VOX_TIME_20;
-			if (Scen.MissionTimer == (30 * TICKS_PER_MINUTE)) vox = VOX_TIME_30;
-			if (Scen.MissionTimer == (40 * TICKS_PER_MINUTE)) vox = VOX_TIME_40;
-			if (vox != VOX_NONE) {
-				Speak(vox);
-				Map.FlasherTimer = 7;
-			}
-#endif
 #ifdef WIN32
-#if (0) //PG
-			if (hours) {
-				Fancy_Text_Print(TXT_TIME_FORMAT_HOURS, 200 * RESFACTOR, 0, &MetalScheme, TBLACK, TPF_METAL12|TPF_CENTER|TPF_USE_GRAD_PAL, hours, mins, secs);
-			} else {
-				Fancy_Text_Print(TXT_TIME_FORMAT_NO_HOURS, 200 * RESFACTOR, 0, &MetalScheme, TBLACK, TPF_METAL12|TPF_CENTER|TPF_USE_GRAD_PAL, mins, secs);
-			}
-#endif
 #else
 			if (hours) {
 				Fancy_Text_Print("%02d:%02d:%02d", 120 * RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_NOSHADOW|TPF_6PT_GRAD|TPF_CENTER|TPF_BRIGHT_COLOR, hours, mins, secs);

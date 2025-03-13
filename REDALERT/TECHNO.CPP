@@ -159,7 +159,7 @@ const char* NewName[] = {
 	"Scout Ant",	  			"Kundschafter-Ameise",
 	"Warrior Ant",    		"Krieger-Ameise",
 	"Fire Ant",	  				"Feuer-Ameise",
-	"Queen Ant",	  			"Ameisenk”nigin",
+	"Queen Ant",	  			"Ameisenkï¿½nigin",
 	"ATS",						"Angriffs-U-Boot",
 	"Tesla Tank",	  			"Telsapanzer",
 	"Volkov",  					"Modell Volkov",
@@ -175,7 +175,7 @@ const char* NewName[] = {
 #ifdef FRENCH
 const char* NewName[] = {
 	"Scout Ant",	  			"Fourmi de Reconnaissance",
-	"Warrior Ant",    		"Fourmi GuerriŠre",
+	"Warrior Ant",    		"Fourmi Guerriï¿½re",
 	"Fire Ant",	  				"Fourmi Lance-Flammes",
 	"Queen Ant",	  			"Reine des Fourmis",
 	"ATS", 						"SMTA",
@@ -183,9 +183,9 @@ const char* NewName[] = {
 	"Volkov",  					"Volkov",
 	"Chitzkoi", 				"Cyber-Chien",
 	"Stavros",					"Stavros",
-	"F-A Longbow",				"HAA (H‚licoptŠre d'Assaut Avanc‚)",
-	"Civilian Specialist",	"Sp‚cialiste Civil",
-	"Alloy Facility",			"Usine M‚tallurgique",
+	"F-A Longbow",				"HAA (Hï¿½licoptï¿½re d'Assaut Avancï¿½)",
+	"Civilian Specialist",	"Spï¿½cialiste Civil",
+	"Alloy Facility",			"Usine Mï¿½tallurgique",
 	NULL,
 	};
 
@@ -3345,23 +3345,6 @@ BulletClass * TechnoClass::Fire_At(TARGET target, int which)
 		** For multiplayer games, only reveal the unit if the target is the
 		** local player.
 		*/
-#if (0)
-		if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) || (!Map[Center_Coord()].IsMapped && (What_Am_I()!=RTTI_AIRCRAFT || !IsOwnedByPlayer)) ) {
-			if (Session.Type == GAME_NORMAL) {
-				Map.Sight_From(Coord_Cell(Center_Coord()), 2, PlayerPtr, false);
-			} else {
-				ObjectClass * obj = As_Object(target);
-				if (obj != NULL) {
-					HousesType tgt_owner = obj->Owner();
-
-					if (PlayerPtr->Class->House == tgt_owner) {
-						Map.Sight_From(Coord_Cell(Center_Coord()), 2, PlayerPtr, false);
-					}
-				}
-			}
-		}
-
-#else
 
 		/*
 		** For client/server multiplayer, we need to reveal for any human player that is the target. ST - 3/13/2019 5:43PM
@@ -3384,8 +3367,6 @@ BulletClass * TechnoClass::Fire_At(TARGET target, int which)
 		if (weapon->IsElectric) {
 			bullet->AI();
 		}
-
-#endif
 	}
 
 	return(bullet);
@@ -6282,28 +6263,6 @@ void TechnoClass::Look(bool incremental)
 	if (sight_range) {
 		
 			Map.Sight_From(Coord_Cell(Coord), sight_range, House, incremental);
-
-
-#if (0)		                            // Leaving this here for posterity, in case we need it for revealing allies. ST - 10/17/2019 10:51AM
-		/*
-		** Changed this function to reveal for the appropriate players in GlyphX multiplayer. ST - 8/7/2019 11:34AM
-		*/
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-
-			Map.Sight_From(Coord_Cell(Coord), sight_range, House, incremental);
-		
-		} else {
-		
-			for (int i = 0; i < Session.Players.Count(); i++) {
-				HousesType house_type = Session.Players[i]->Player.ID;
-				HouseClass *house = HouseClass::As_Pointer(house_type);
-
-				if (Is_Owned_By_Player(house) || Is_Discovered_By_Player(house)) {
-					Map.Sight_From(Coord_Cell(Center_Coord()), sight_range, house, incremental);
-				}
-			}
-		}	
-#endif
 	}
 }
 
@@ -6495,17 +6454,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		time *= hptr->BuildSpeedBias;
 	}
 	else {
-#if (0)	// No longer desired. ST - 1/18/2021		
-		/*
-		** New feature - Turkey has a 10% build speed bonus even though it isn't specified in the rules
-		*/
-		if (hptr->ActLike == HOUSE_TURKEY) {
-			if (hptr->BuildSpeedBias == fixed(1)) {
-				time *= 9;
-				time /= 10;
-			}
-		}
-#endif		
 		if (What_Am_I() == RTTI_BUILDINGTYPE || What_Am_I() == RTTI_INFANTRYTYPE) {
 			time *= hptr->BuildSpeedBias;
 		}

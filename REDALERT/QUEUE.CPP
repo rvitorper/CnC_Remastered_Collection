@@ -553,331 +553,6 @@ static void Queue_AI_Multiplayer(void)
 	if(Session.Type == GAME_SKIRMISH) return;
 
 	return;
-#if (0)//PG
-	//........................................................................
-	// Enums:
-	//........................................................................
-	enum {
-		MIXFILE_RESEND_DELTA = 120,	// ticks b/w resends
-		MIXFILE_TIMEOUT = 3600*2,		// timeout waiting for mixfiles.
-		FRAMESYNC_DLG_TIME = (3*60),	// time until displaying reconnect dialog
-		FRAMESYNC_TIMEOUT = (15*60),	// timeout waiting for frame sync packet
-	};
-
-	int timeout_factor = (Session.Type == GAME_INTERNET) ? 6 : 1;
-
-	//........................................................................
-	// Variables for sending, receiving & parsing packets:
-	//........................................................................
-	ConnManClass *net;					// ptr to access all multiplayer functions
-	EventClass packet;					// for sending single frame-sync's
-	char *multi_packet_buf;				// buffer for sending/receiving
-	int multi_packet_max;				// max length of multi_packet_buf
-
-	//........................................................................
-	// Frame-sync'ing variables
-	//........................................................................
-	static long
-		their_frame[MAX_PLAYERS - 1];	// other players' frame #'s
-	static unsigned short
-		their_sent[MAX_PLAYERS - 1];	// # cmds other player claims to have sent
-	static unsigned short
-		their_recv[MAX_PLAYERS - 1];	// # cmds actually received from others
-	static unsigned short
-		my_sent;								// # cmds I've sent out
-
-	//........................................................................
-	// Timing variables
-	//........................................................................
-	static CDTimerClass<FrameTimerClass> skip_crc;	// to delay the CRC check
-//	static TCountDownTimerClass skip_crc;	// to delay the CRC check
-
-	//........................................................................
-	// Other misc variables
-	//........................................................................
-	int i;
-	RetcodeType rc;
-	int reconnect_dlg = 0;				// 1 = the reconnect dialog is displayed
-
-	//------------------------------------------------------------------------
-	//	Initialize the packet buffer pointer & its max size
-	//------------------------------------------------------------------------
-#if (0)//PG
-	if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-		multi_packet_buf = NullModem.BuildBuf;
-		multi_packet_max = NullModem.MaxLen - sizeof (CommHeaderType);
-		net = &NullModem;
-	} else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-		multi_packet_buf = Session.MetaPacket;
-		multi_packet_max = Session.MetaSize;
-		net = &Ipx;
-	}
-#endif
-#if(TEN)
-	else if (Session.Type == GAME_TEN) {
-		multi_packet_buf = Session.TenPacket;
-		multi_packet_max = Session.TenSize;
-		net = Ten;
-	}
-#endif
-#if(MPATH)
-	else if (Session.Type == GAME_MPATH) {
-		multi_packet_buf = Session.MPathPacket;
-		multi_packet_max = Session.MPathSize;
-		net = MPath;
-	}
-#endif
-
-	//------------------------------------------------------------------------
-	//	Debug stuff
-	//------------------------------------------------------------------------
-	Init_Queue_Mono(net);
-	Update_Queue_Mono (net, 0);
-
-	//------------------------------------------------------------------------
-	//	Compute the Game's CRC
-	//------------------------------------------------------------------------
-	Compute_Game_CRC();
-	CRC[Frame & 0x001f] = GameCRC;
-
-	//------------------------------------------------------------------------
-	//	If we've just started a game, or loaded a multiplayer game, we must
-	// wait for all other systems to signal ready.
-	//------------------------------------------------------------------------
-	if (Frame==0 || Session.LoadGame) {
-		//.....................................................................
-		//	Initialize static locals
-		//.....................................................................
-		for (i = 0; i < MAX_PLAYERS - 1; i++) {
-			their_frame[i] = -1;
-			their_sent[i] = 0;
-			their_recv[i] = 0;
-		}
-		my_sent = 0;
-#ifdef FIXIT_MULTI_SAVE
-		skip_crc = 32;
-#else
-		skip_crc = Frame + 32;
-#endif	// FIXIT_MULTI_SAVE
-		for (i = 0; i < 32; i++)
-			CRC[i] = 0;
-
-		//.....................................................................
-		// If we've loaded a saved game:
-		// - If this game was saved as the result of a lost connection, clear
-		//   the CRC value so it will always match the other system's
-		// - Otherwise, use the GameCRC value, so we'll compare save-game files
-		//   rather than scenario INI files
-		//.....................................................................
-		if (Session.LoadGame) {
-			if (Session.EmergencySave)
-				ScenarioCRC = 0;
-			else
-				ScenarioCRC = GameCRC;
-		}
-
-		//.....................................................................
-		// Send our initial FRAMESYNC packet
-		//.....................................................................
-		Send_FrameSync(net, my_sent);
-
-		//.....................................................................
-		// Wait for the other guys
-		//.....................................................................
-		rc = Wait_For_Players (1, net, MIXFILE_RESEND_DELTA, FRAMESYNC_DLG_TIME*timeout_factor,
-			MIXFILE_TIMEOUT, multi_packet_buf, my_sent, their_frame,
-			their_sent, their_recv);
-
-		if (rc != RC_NORMAL) {
-#ifdef WIN32
-			if (Session.Type == GAME_INTERNET){
-				Register_Game_End_Time();
-			}
-#endif	//WIN32
-
-			if (rc == RC_NOT_RESPONDING) {
-				WWMessageBox().Process (TXT_SYSTEM_NOT_RESPONDING);
-			}
-			else if (rc == RC_SCENARIO_MISMATCH) {
-				WWMessageBox().Process (TXT_SCENARIOS_DO_NOT_MATCH);
-			}
-			else if (rc == RC_DOLIST_FULL) {
-				WWMessageBox().Process(TXT_QUEUE_FULL);
-			}
-			Stop_Game();
-			return;
-		}
-
-		//.....................................................................
-		//	Re-initialize frame numbers (in case somebody signed off while I was
-		//	waiting for MIX files to load; we would have fallen through, but
-		//	their frame # would still be -1).
-		//.....................................................................
-		for (i = 0; i < MAX_PLAYERS - 1; i++)
-			their_frame[i] = 0;
-
-		//.....................................................................
-		//	Reset the network response time computation, now that we're both
-		// sending data again  (loading MIX files will have introduced
-		// deceptively large values).
-		//.....................................................................
-		net->Reset_Response_Time();
-
-		//.....................................................................
-		// Initialize the frame timers
-		//.....................................................................
-		if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-			Process_Send_Period(net);//, 1);
-		}
-
-		//.....................................................................
-		// Turn off our special load-game flags
-		//.....................................................................
-		if (Session.LoadGame) {
-			Session.EmergencySave = false;
-			Session.LoadGame = false;
-		}
-
-	} 	// end of Frame 0 wait
-
-	//------------------------------------------------------------------------
-	// Adjust connection timing parameters every 128 frames.
-	//------------------------------------------------------------------------
-
-	else if ( (Frame & 0x007f) == 0) {
-		//
-		// If we're using the new spiffy protocol, do proper timing handling.
-		// If we're the net "master", compute our desired frame rate & new
-		// 'MaxAhead' value.
-		//
-		if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-
-			//
-			// All systems will transmit their required process time.
-			//
-			Generate_Process_Time_Event(net);
-
-			//
-			// The game "host" will transmit timing adjustment events.
-			//
-			if (Session.Am_I_Master()) {
-				Generate_Real_Timing_Event(net, my_sent);
-			}
-		} else {
-			//
-			// For the older protocols, do the old broken timing handling.
-			//
-			Generate_Timing_Event(net, my_sent);
-		}
-	}
-
-	//------------------------------------------------------------------------
-	// Only process every 'FrameSendRate' frames
-	//------------------------------------------------------------------------
-	if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-		if (!Process_Send_Period(net)) {	//, 0)) {
-			if (IsMono) {
-				MonoClass::Disable();
-			}
-			return;
-		}
-	}
-
-	//------------------------------------------------------------------------
-	// Send our data packet(s); update my command-sent counter
-	//------------------------------------------------------------------------
-	my_sent += Send_Packets(net, multi_packet_buf, multi_packet_max,
-		Session.MaxAhead, my_sent);
-
-	//------------------------------------------------------------------------
-	//	If this is our first time through, we're done.
-	//------------------------------------------------------------------------
-	if (Frame==0) {
-		if (IsMono) {
-			MonoClass::Disable();
-		}
-		return;
-	}
-
-	//------------------------------------------------------------------------
-	//	Frame-sync'ing: wait until it's OK to advance to the next frame.
-	//------------------------------------------------------------------------
-#ifdef FIXIT_VERSION_3
-	int iFramesyncTimeout;
-	if( Session.Type == GAME_INTERNET && pWolapi && pWolapi->GameInfoCurrent.iPlayerCount > 2 )
-		//	Shortened resync timeout for non-2 player games.
-		iFramesyncTimeout = 5 * 60;		//	One minute.
-	else
-		iFramesyncTimeout = FRAMESYNC_TIMEOUT;
-
-	rc = Wait_For_Players (0, net,
-		(Session.MaxAhead << 3),
-		MAX ( net->Response_Time() * 3, FRAMESYNC_DLG_TIME*timeout_factor ),
-		iFramesyncTimeout * (2*timeout_factor),
-		multi_packet_buf, my_sent, their_frame,
-		their_sent, their_recv);
-#else
-		rc = Wait_For_Players (0, net,
-		(Session.MaxAhead << 3),
-		MAX ( net->Response_Time() * 3, FRAMESYNC_DLG_TIME*timeout_factor ),
-		FRAMESYNC_TIMEOUT* (2*timeout_factor),
-		multi_packet_buf, my_sent, their_frame,
-		their_sent, their_recv);
-#endif
-
-	if (rc != RC_NORMAL) {
-#ifdef WIN32
-			if (Session.Type == GAME_INTERNET){
-				Register_Game_End_Time();
-#ifdef WOLAPI_INTEGRATION
-				//	New rule - if you cancel a waiting to reconnect dialog, you lose.
-				bReconnectDialogCancelled = ( rc == RC_CANCEL );
-#endif
-			}
-#endif	//WIN32
-		if (rc == RC_NOT_RESPONDING) {
-			WWMessageBox().Process (TXT_SYSTEM_NOT_RESPONDING);
-		}
-		else if (rc == RC_SCENARIO_MISMATCH) {
-			WWMessageBox().Process (TXT_SCENARIOS_DO_NOT_MATCH);
-		}
-		else if (rc == RC_DOLIST_FULL) {
-			WWMessageBox().Process(TXT_QUEUE_FULL);
-		}
-		Stop_Game();
-		return;
-	}
-
-	//------------------------------------------------------------------------
-	//	Save the DoList to disk, if we're in "Record" mode
-	//------------------------------------------------------------------------
-	if (Session.Record) {
-		Queue_Record();
-	}
-
-	//------------------------------------------------------------------------
-	// Execute the DoList; if an error occurs, bail out.
-	//------------------------------------------------------------------------
-	if (!Execute_DoList(Session.MaxPlayers, HOUSE_MULTI1, net, &skip_crc,
-		their_frame, their_sent, their_recv)) {
-#ifdef WIN32
-		if (Session.Type == GAME_INTERNET){
-			Register_Game_End_Time();
-		}
-#endif	//WIN32
-		Stop_Game();
-		return;
-	}
-
-	//------------------------------------------------------------------------
-	//	Clean out the DoList
-	//------------------------------------------------------------------------
-	Clean_DoList(net);
-
-	if (IsMono) {
-		MonoClass::Disable();
-	}
-#endif
 }	// end of Queue_AI_Multiplayer
 
 
@@ -1958,102 +1633,6 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
 	multi_packet_buf;
 	first_time;
 	return (RC_NORMAL);
-#if (0) // ST - 5/13/2019
-	SerialPacketType *serial_packet;		// for parsing serial packets
-	int player_gone;
-	EventClass *event;
-
-	//------------------------------------------------------------------------
-	//	Determine if this packet means that the other player has left the game
-	//------------------------------------------------------------------------
-	serial_packet = (SerialPacketType *)multi_packet_buf;
-	player_gone = 0;
-	//........................................................................
-	// On Frame 0, only a SIGN_OFF means the other player left; the other
-	// packet types may be left over from a previous session.
-	//........................................................................
-	if (first_time) {
-		if (serial_packet->Command == SERIAL_SIGN_OFF) {
-			player_gone = 1;
-		}
-	}
-	//........................................................................
-	// On subsequent frames, any of SIGN_OFF, TIMING, or SCORE_SCREEN means
-	// the other player is gone.
-	//........................................................................
-	else {
-		if (serial_packet->Command == SERIAL_SIGN_OFF ||
-			serial_packet->Command == SERIAL_TIMING ||
-			serial_packet->Command == SERIAL_SCORE_SCREEN ) {
-			player_gone = 1;
-		}
-	}
-	if (player_gone) {
-		Destroy_Null_Connection(serial_packet->ScenarioInfo.Color, 0);
-		return (RC_PLAYER_LEFT);
-	}
-
-	//------------------------------------------------------------------------
-	// Process an incoming message
-	//------------------------------------------------------------------------
-	if (serial_packet->Command == SERIAL_MESSAGE) {
-		if (!Session.Messages.Concat_Message(serial_packet->Name,
-			serial_packet->ID, serial_packet->Message.Message, Rule.MessageDelay * TICKS_PER_MINUTE)) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 - Appears to do nothing
-	char *ptr = &serial_packet->Message.Message[0];
-	if (!strncmp(ptr,"SECRET UNITS ON ",15) && NewUnitsEnabled) {
-		Enable_Secret_Units();
-	}
-#endif
-			Session.Messages.Add_Message (serial_packet->Name,
-				serial_packet->ID, serial_packet->Message.Message,
-				(PlayerColorType)serial_packet->ID,
-				TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
-
-			Sound_Effect(VOC_INCOMING_MESSAGE);
-		}
-
-		//.....................................................................
-		//	Save this message in our last-message buffer
-		//.....................................................................
-		if (strlen (serial_packet->Message.Message)) {
-			strcpy (Session.LastMessage, serial_packet->Message.Message);
-		}
-
-		//.....................................................................
-		//	Tell the map to do a partial update (just to force the
-		// messages to redraw).
-		//.....................................................................
-		//Map.Flag_To_Redraw(false);
-		Map.Flag_To_Redraw(true);
-		return (RC_SERIAL_PROCESSED);
-	}
-
-	//------------------------------------------------------------------------
-	// Any other SERIAL-type packet means the other player is still there;
-	// throw them away, but let the caller know the connection is OK.
-	//------------------------------------------------------------------------
-	if ( (serial_packet->Command >= SERIAL_CONNECT &&
-		serial_packet->Command < SERIAL_LAST_COMMAND) ||
-		(serial_packet->Command >= SERIAL_REQ_SCENARIO &&
-		 serial_packet->Command <= SERIAL_NO_SCENARIO) ||
-		Session.NumPlayers == 1) {
-		return (RC_SERIAL_PROCESSED);
-	}
-
-	//........................................................................
-	//	are we getting our own packets back??
-	//........................................................................
-	event = (EventClass *)multi_packet_buf;
-
-	if (event->Type <= EventClass::EMPTY || event->Type >= EventClass::LAST_EVENT) return (RC_SERIAL_PROCESSED);
-
-	if (event->ID == PlayerPtr->ID) {
-		return (RC_HUNG_UP);
-	}
-
-	return (RC_NORMAL);
-#endif
 }	// end of Process_Serial_Packet
 
 
@@ -2308,11 +1887,6 @@ static int Handle_Timeout(ConnManClass *net, long *their_frame,
 			if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
 				Destroy_Connection(id,1);
 			}
-#if(TEN)
-			else if (Session.Type == GAME_TEN) {
-				Destroy_TEN_Connection(id,1);
-			}
-#endif
 #if(MPATH)
 			else if (Session.Type == GAME_MPATH) {
 				Destroy_MPATH_Connection(id,1);
@@ -2664,18 +2238,6 @@ static int Add_Compressed_Events(void *buf, int bufsize, int frame_delay,
 						prevevent.Data.MegaMission.Target &&
 					OutList.First().Data.MegaMission.Destination ==
 						prevevent.Data.MegaMission.Destination) {
-#if (0)//PG
-					if (Debug_Print_Events) {
-						printf("      adding Whom:%x (%x) Mission:%s Target:%x (%x) Dest:%x (%x)\n",
-						OutList.First().Data.MegaMission.Whom.As_TARGET(),
-						OutList.First().Data.MegaMission.Whom,
-						MissionClass::Mission_Name(OutList.First().Data.MegaMission.Mission),
-						OutList.First().Data.MegaMission.Target.As_TARGET(),
-						OutList.First().Data.MegaMission.Target,
-						OutList.First().Data.MegaMission.Destination.As_TARGET(),
-						OutList.First().Data.MegaMission.Destination);
-					}
-#endif
 					datasize = sizeof(prevevent.Data.MegaMission.Whom);
 					storedsize = datasize;
 					numunits++;
@@ -3329,9 +2891,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 					EventClass::FRAMEINFO && Session.Type != GAME_NORMAL &&
 					Session.Type != GAME_SKIRMISH) {
 
-#if(TEN)
-					Send_TEN_Packet_Too_Late();
-#endif	// TEN
 
 #if(MPATH)
 					//Send_MPATH_Packet_Too_Late();
@@ -3417,11 +2976,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 									Session.Type == GAME_INTERNET) {
 									Destroy_Connection(house,0);
 								}
-#if(TEN)
-								else if (Session.Type == GAME_TEN) {
-									Destroy_TEN_Connection(house,0);
-								}
-#endif	// TEN
+
 #if(MPATH)
 								else if (Session.Type == GAME_MPATH) {
 									Destroy_MPATH_Connection(house,0);
@@ -3467,49 +3022,10 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 						if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
 							Print_CRCs(&DoList[j]);
 
-#if(TEN)
-							Send_TEN_Out_Of_Sync();
-#endif	// TEN
 
 #if(MPATH)
 							//Send_MPATH_Out_Of_Sync();
 #endif	// MPATH
-#if (0)//PG
-							if (WWMessageBox().Process (TXT_OUT_OF_SYNC,
-								TXT_CONTINUE, TXT_STOP) == 0) {
-								if (Session.Type == GAME_MODEM ||
-									Session.Type == GAME_NULL_MODEM) {
-									//PG Destroy_Null_Connection( house, -1 );
-									Shutdown_Modem();
-									Session.Type = GAME_NORMAL;
-								}
-								else if ((Session.Type == GAME_IPX ||
-									Session.Type == GAME_INTERNET) && net) {
-									while (net->Num_Connections()) {
-										Keyboard->Check();
-										Destroy_Connection (net->Connection_ID(0), -1);
-									}
-								}
-#if(TEN)
-								else if (Session.Type == GAME_TEN && net) {
-									while (net->Num_Connections()) {
-										Destroy_TEN_Connection (net->Connection_ID(0), -1);
-									}
-								}
-#endif
-#if(MPATH)
-								else if (Session.Type == GAME_MPATH && net) {
-									while (net->Num_Connections()) {
-										Destroy_MPATH_Connection (net->Connection_ID(0), -1);
-									}
-								}
-#endif
-								Map.Flag_To_Redraw(true);
-							}
-							else {
-								return (0);
-							}
-#endif
 							return (1);
 						}
 					}

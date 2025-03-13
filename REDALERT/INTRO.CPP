@@ -35,28 +35,6 @@
 #include	"function.h"
 
 
-#if (0) //PG
-VQAHandle * Open_Movie(char * name);
-VQAHandle * Open_Movie(char * name)
-{
-	if (!Debug_Quiet && Get_Digi_Handle() != -1) {
-		AnimControl.OptionFlags |= VQAOPTF_AUDIO;
-	} else {
-		AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
-	}
-
-	VQAHandle * vqa = VQA_Alloc();
-	if (vqa) {
-		VQA_Init(vqa, MixFileHandler);
-
-		if (VQA_Open(vqa, name, &AnimControl) != 0) {
-			VQA_Free(vqa);
-			vqa = 0;
-		}
-	}
-	return(vqa);
-}
-#endif
 
 /***********************************************************************************************
  * Choose_Side -- play the introduction movies, select house                                   *
@@ -74,40 +52,6 @@ void Choose_Side(void)		//	ajw - In RA, all this did was play a movie. Denzil is
 {
 
 	Whom = HOUSE_GOOD;
-
-#if (0)	//PG
-	if (Special.IsFromInstall) {
-		#ifdef DVD // Denzil
-		if( Using_DVD() )
-		{
-			Hide_Mouse();
-			Load_Title_Page();
-			GamePalette = CCPalette;
-			HidPage.Blit(SeenPage);
-			CCPalette.Set();
-			Set_Logic_Page(SeenBuff);
-			Show_Mouse();
-			
-			switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET))
-				{
-				case 0:
-					CurrentCD = 0;
-				break;
-
-				case 1:
-					CurrentCD = 1;
-				break;
-				}
-
-			Hide_Mouse();
-			BlackPalette.Set(FADE_PALETTE_SLOW);
-			SeenPage.Clear();
-		}
-		#endif
-		
-		Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
-	}
-#endif
 //	Scen.ScenPlayer = SCEN_PLAYER_GREECE;
 
 #ifdef OBSOLETE

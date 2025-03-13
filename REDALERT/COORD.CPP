@@ -437,34 +437,6 @@ int __cdecl calcy(signed short param1, short distance)
 }
 
 
-#if (0)
-extern int calcx(signed short, short distance);
-#pragma aux calcx parm [ax] [bx] \
-	modify [eax dx] \
-	value [eax]		= 				\
-	"imul bx"						\
-	"shl	ax,1"						\
-	"rcl	dx,1"						\
-	"mov	al,ah"					\
-	"mov	ah,dl"					\
-	"cwd"								\
-//	"and	eax,0FFFFh";
-
-extern int calcy(signed short, short distance);
-#pragma aux calcy parm [ax] [bx] \
-	modify [eax dx] \
-	value [eax]		= 				\
-	"imul bx"						\
-	"shl	ax,1"						\
-	"rcl	dx,1"						\
-	"mov	al,ah"					\
-	"mov	ah,dl"					\
-	"cwd"								\
-	"neg	eax";
-//	"and	eax,0FFFFh"				\
-
-#endif
-
 void Move_Point(short &x, short &y, register DirType dir, unsigned short distance)
 {
 	static unsigned char const CosTable[256] = {

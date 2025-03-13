@@ -98,36 +98,6 @@ TFixedIHeapClass<SmudgeTypeClass>	SmudgeTypes;
 **	for that type are not allowed. For every case of a TFixedIHeap manager of
 **	game objects, then a CCPtr can be instantiated for it.
 */
-#if (0)	//Moved to runtime initialization. ST - 5/20/2019
-template<> FixedIHeapClass * CCPtr<AircraftClass>::Heap = &Aircraft;
-template<> FixedIHeapClass * CCPtr<AnimClass>::Heap = &Anims;
-template<> FixedIHeapClass * CCPtr<BuildingClass>::Heap = &Buildings;
-template<> FixedIHeapClass * CCPtr<BulletClass>::Heap = &Bullets;
-template<> FixedIHeapClass * CCPtr<FactoryClass>::Heap = &Factories;
-template<> FixedIHeapClass * CCPtr<HouseClass>::Heap = &Houses;
-template<> FixedIHeapClass * CCPtr<InfantryClass>::Heap = &Infantry;
-template<> FixedIHeapClass * CCPtr<OverlayClass>::Heap = &Overlays;
-template<> FixedIHeapClass * CCPtr<SmudgeClass>::Heap = &Smudges;
-template<> FixedIHeapClass * CCPtr<TeamClass>::Heap = &Teams;
-template<> FixedIHeapClass * CCPtr<TeamTypeClass>::Heap = &TeamTypes;
-template<> FixedIHeapClass * CCPtr<TemplateClass>::Heap = &Templates;
-template<> FixedIHeapClass * CCPtr<TerrainClass>::Heap = &Terrains;
-template<> FixedIHeapClass * CCPtr<TriggerClass>::Heap = &Triggers;
-template<> FixedIHeapClass * CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
-
-template<> FixedIHeapClass * CCPtr<HouseTypeClass>::Heap = &HouseTypes;
-template<> FixedIHeapClass * CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
-template<> FixedIHeapClass * CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
-template<> FixedIHeapClass * CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
-template<> FixedIHeapClass * CCPtr<BulletTypeClass>::Heap = &BulletTypes;
-template<> FixedIHeapClass * CCPtr<AnimTypeClass>::Heap = &AnimTypes;
-template<> FixedIHeapClass * CCPtr<UnitTypeClass>::Heap = &UnitTypes;
-template<> FixedIHeapClass * CCPtr<VesselTypeClass>::Heap = &VesselTypes;
-template<> FixedIHeapClass * CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
-template<> FixedIHeapClass * CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
-template<> FixedIHeapClass * CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
-template<> FixedIHeapClass * CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
-#endif
 
 /* These variables are used to keep track of the slowest speed of a team */
 TeamFormDataStruct TeamFormData[HOUSE_COUNT];
@@ -624,14 +594,6 @@ bool				Version107InMix;				// Is there a v1.07 in the game
 **	This is the null modem manager class.  Declaring this class doesn't
 ** perform any allocations;
 */
-#if (0)
-NullModemClass NullModem (
-   16,											// number of send entries
-	16,											// number of receive entries
-	(MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) ) * sizeof(EventClass) + sizeof( CommHeaderType ),
-	0x1234);										// Magic number must have each digit unique
-													// and different from the queue magic number
-#endif
 
 
 /***************************************************************************
@@ -655,17 +617,6 @@ IPXManagerClass Ipx (
 	VIRGIN_SOCKET, 									// Socket ID #
 	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID #
 
-
-#if(TEN)
-/***************************************************************************
-** This is the connection manager for Ten.  Special Ten notes:
-** - TEN connection ID's are equal to the HousesType for that player.
-** - The TEN internal player ID is used to determine the player's color.
-** - Ten's broadcast destination address -1
-*/
-TenConnManClass *Ten = NULL;
-
-#endif
 
 
 #if(MPATH)

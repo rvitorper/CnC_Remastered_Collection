@@ -177,14 +177,6 @@ char FormationEvent = 0;	// 0 = no event, 1 = formation was toggled
 
 	 --------------------------------------------------*/
 
-#if(TEN)
-void TEN_Call_Back(void);
-#endif	// TEN
-
-#if(MPATH)
-void MPATH_Call_Back(void);
-#endif	// MPATH
-
 /***********************************************************************************************
  * Main_Game -- Main game startup routine.                                                     *
  *                                                                                             *
@@ -264,18 +256,14 @@ void Main_Game(int argc, char * argv[])
 			Show_Mouse();
 		}
 
-#ifdef WIN32
 		if (Session.Type == GAME_INTERNET) {
 			Register_Game_Start_Time();
 			GameStatisticsPacketSent = false;
 			PacketLater = NULL;
 			ConnectionLost = false;
 		} else {
-#ifndef WOLAPI_INTEGRATION
 			DDEServer.Disable();
-#endif	//	!WOLAPI_INTEGRATION
 		}
-#endif	//WIN32
 
 #ifdef SCENARIO_EDITOR
 		/*
@@ -343,12 +331,8 @@ void Main_Game(int argc, char * argv[])
 		**	Non-editor version of main-loop processing
 		*/
 		for (;;) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			TimeQuake = PendingTimeQuake;
 			PendingTimeQuake = false;
-#else
-			TimeQuake = false;
-#endif
 			/*
 			**	Call the game's main loop
 			*/
@@ -459,15 +443,6 @@ void Main_Game(int argc, char * argv[])
 				}
 			}
 		}
-
-#if(TEN)
-
-		if (Session.Type == GAME_TEN) {
-			Shutdown_TEN();
-			//Prog_End();
-			Emergency_Exit(0);
-		}
-#endif	// TEN
 
 #if(MPATH)
 		if (Session.Type == GAME_MPATH) {
@@ -1250,36 +1225,6 @@ static void Message_Input(KeyNumType &input)
 			}
 #endif
 		}
-#if(TEN)
-		/*
-		**	For a TEN game:
-		**	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-		**	F8 = "To All:"
-		*/
-		else if (Session.Type == GAME_TEN && !Session.Messages.Is_Edit()) {
-			if (input==(KN_F1 + Session.MaxPlayers - 1)) {
-
-				Session.TenMessageAddress = -1;		// set to broadcast
-				strcpy(txt,Text_String(TXT_TO_ALL));	// "To All:"
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-
-			}  else if ((input - KN_F1) < Ten->Num_Connections() && !Session.ObiWan) {
-
-				id = Ten->Connection_ID(input - KN_F1);
-				Session.TenMessageAddress = Ten->Connection_Address(id);
-				sprintf(txt,Text_String(TXT_TO),Ten->Connection_Name(id));
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-			}
-		}
-#endif	// TEN
 #if(MPATH)
 		/*
 		**	For a MPATH game:
@@ -1349,164 +1294,6 @@ static void Message_Input(KeyNumType &input)
 	**	Send a message
 	*/
 	if ((rc==3 || rc==4) && Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
-#if (0)
-		/*
-		**	Serial game: fill in a SerialPacketType & send it.
-		**	(Note: The size of the SerialPacketType.Command must be the same as
-		**	the EventClass.Type!)
-		*/
-		if (Session.Type==GAME_NULL_MODEM || Session.Type==GAME_MODEM) {
-			serial_packet = (SerialPacketType *)NullModem.BuildBuf;
-
-			serial_packet->Command = SERIAL_MESSAGE;
-			strcpy (serial_packet->Name, Session.Players[0]->Name);
-			serial_packet->ID = Session.ColorIdx;
-
-			if (rc==3) {
-				strcpy (serial_packet->Message.Message, Session.Messages.Get_Edit_Buf());
-			} else {
-				strcpy (serial_packet->Message.Message, Session.Messages.Get_Overflow_Buf());
-				Session.Messages.Clear_Overflow_Buf();
-			}
-
-			/*
-			** Send the message, and store this message in our LastMessage
-			** buffer; the computer may send us a version of it later.
-			*/
-			NullModem.Send_Message(NullModem.BuildBuf,
-				sizeof(SerialPacketType), 1);
-
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-	char *ptr = &serial_packet->Message.Message[0];
-	if (!strncmp(ptr,"SECRET UNITS ON ",15) && NewUnitsEnabled) {
-		Enable_Secret_Units();
-	}
-#endif
-			strcpy(Session.LastMessage, serial_packet->Message.Message);
-		} else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-#ifdef WOLAPI_INTEGRATION
-			NetNumType blip;
-			NetNodeType blop;
-			Session.MessageAddress.Get_Address( blip, blop );
-			if(	blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] + blop[2] + blop[3] + blop[4] + blop[5] == 0 )
-			{
-				//	This message is a response to the last person that paged me.
-				if( pWolapi && !pWolapi->bConnectionDown )		//	(As connection may have gone down.)
-				{
-					pWolapi->Page( pWolapi->szExternalPager, Session.Messages.Get_Edit_Buf(), false );
-					pWolapi->bFreezeExternalPager = false;
-				}
-			}
-			else
-#endif
-			{
-
-			/*
-			**	Network game: fill in a GlobalPacketType & send it.
-			*/
-				Session.GPacket.Command = NET_MESSAGE;
-				strcpy (Session.GPacket.Name, Session.Players[0]->Name);
-				Session.GPacket.Message.Color = Session.ColorIdx;
-				Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-				if (rc==3) {
-					strcpy (Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-				} else {
-					strcpy (Session.GPacket.Message.Buf,
-						Session.Messages.Get_Overflow_Buf());
-					Session.Messages.Clear_Overflow_Buf();
-				}
-
-				/*
-				**	If 'F4' was hit, MessageAddress will be a broadcast address; send
-				**	the message to every player we have a connection with.
-				*/
-				if (Session.MessageAddress.Is_Broadcast()) {
-	#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-		char *ptr = &Session.GPacket.Message.Buf[0];
-		if (!strncmp(ptr,"SECRET UNITS ON ",15) && NewUnitsEnabled) {
-			*ptr = 'X';		// force it to an odd hack so we know it was broadcast.
-			Enable_Secret_Units();
-		}
-	#endif
-					for (i = 0; i < Ipx.Num_Connections(); i++) {
-						Ipx.Send_Global_Message(&Session.GPacket,
-							sizeof(GlobalPacketType), 1,
-							Ipx.Connection_Address(Ipx.Connection_ID(i)));
-						Ipx.Service();
-					}
-				} else {
-
-					/*
-					**	Otherwise, MessageAddress contains the exact address to send to.
-					**	Send to that address only.
-					*/
-					Ipx.Send_Global_Message(&Session.GPacket,
-						sizeof(GlobalPacketType), 1,
-						&Session.MessageAddress);
-					Ipx.Service();
-
-				}
-
-				/*
-				**	Store this message in our LastMessage buffer; the computer may send
-				**	us a version of it later.
-				*/
-				strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
-			}
-		}
-
-#if(TEN)
-		/*
-		**	TEN game: fill in a GlobalPacketType & send it.
-		*/
-		else if (Session.Type == GAME_TEN) {
-			Session.GPacket.Command = NET_MESSAGE;
-			strcpy (Session.GPacket.Name, Session.Players[0]->Name);
-			Session.GPacket.Message.Color = Session.ColorIdx;
-			Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-			if (rc==3) {
-				strcpy (Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-			} else {
-				strcpy (Session.GPacket.Message.Buf,
-					Session.Messages.Get_Overflow_Buf());
-				Session.Messages.Clear_Overflow_Buf();
-			}
-
-			Ten->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-				1, Session.TenMessageAddress);
-		}
-#endif	// TEN
-
-#if(MPATH)
-		/*
-		**	MPATH game: fill in a GlobalPacketType & send it.
-		*/
-		else if (Session.Type == GAME_MPATH) {
-			Session.GPacket.Command = NET_MESSAGE;
-			strcpy (Session.GPacket.Name, Session.Players[0]->Name);
-			Session.GPacket.Message.Color = Session.ColorIdx;
-			Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
-
-			if (rc==3) {
-				strcpy (Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
-			} else {
-				strcpy (Session.GPacket.Message.Buf,
-					Session.Messages.Get_Overflow_Buf());
-				Session.Messages.Clear_Overflow_Buf();
-			}
-
-			MPath->Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-				1, Session.MPathMessageAddress);
-		}
-#endif	// MPATH
-
-		/*
-		**	Tell the map to completely update itself, since a message is now missing.
-		*/
-		Map.Flag_To_Redraw(true);
-#endif
 	}
 }
 //#pragma on (unreferenced)
@@ -1597,10 +1384,8 @@ void Color_Cycle(void)
 		**	passed to the system.
 		*/
 		if (changed) {
-			BStart(BENCH_PALETTE);
 			InGamePalette.Set();
 //			Set_Palette(InGamePalette);
-			BEnd(BENCH_PALETTE);
 		}
 	}
 }
@@ -1632,284 +1417,7 @@ void Call_Back(void)
 		Theme.AI();
 		Speak_AI();
 	}
-
-	/*
-	**	Network maintenance.
-	*/
-	if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-		IPX_Call_Back();
-	}
-
-	/*
-	**	Serial game maintenance.
-	*/
-	if (Session.Type == GAME_NULL_MODEM || ((Session.Type == GAME_MODEM) && Session.ModemService)) {
-		//NullModem.Service();		ST - 5/7/2019
-	}
-
-#ifdef WOLAPI_INTEGRATION
-	//	Wolapi maintenance.
-	if( pWolapi )
-	{
-		if( pWolapi->bInGame )
-		{
-			if( !pWolapi->bConnectionDown && ::timeGetTime() > pWolapi->dwTimeNextWolapiPump )
-			{
-				pWolapi->pChat->PumpMessages();
-				pWolapi->pNetUtil->PumpMessages();
-				pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT + 700;		//	Slower pump during games.
-				if( pWolapi->bConnectionDown )
-				{
-					//	Connection to server lost.
-					Session.Messages.Add_Message( NULL, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD, TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE );
-					Sound_Effect( WOLSOUND_LOGOUT );
-//	ajw (Wolapi object is now left around, so we can try to send game results.)
-//					//	Kill wolapi.
-//					pWolapi->UnsetupCOMStuff();
-//					delete pWolapi;
-//					pWolapi = NULL;
-				}
-			}
-		}
-		else
-		{
-			//	When showing a modal dialog during chat, this pumping is turned on. It's turned off immediately following.
-			if( pWolapi->bPump_In_Call_Back && ( ::timeGetTime() > pWolapi->dwTimeNextWolapiPump ) )
-			{
-				pWolapi->pChat->PumpMessages();
-				pWolapi->pNetUtil->PumpMessages();
-				pWolapi->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
-			}
-		}
-	}
-#endif
-
-#if(TEN)
-	if (Session.Type == GAME_TEN) {
-		TEN_Call_Back();
-	}
-#endif	// TEN
-
-#if(MPATH)
-	if (Session.Type == GAME_MPATH) {
-		MPATH_Call_Back();
-	}
-#endif	// MPATH
 }
-
-
-void IPX_Call_Back(void)
-{
-#if (0)//PG
-	Ipx.Service();
-
-	/*
-	** Read packets only if the game is "closed", so we don't steal global
-	** messages from the connection dialogs.
-	*/
-	if (!Session.NetOpen) {
-		if (Ipx.Get_Global_Message (&Session.GPacket, &Session.GPacketlen, &Session.GAddress, &Session.GProductID)) {
-
-			if (Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
-
-				/*
-				**	If this is another player signing off, remove the connection &
-				**	mark that player's house as non-human, so the computer will take
-				**	it over.
-				*/
-				if (Session.GPacket.Command == NET_SIGN_OFF) {
-					for (int i = 0; i < Ipx.Num_Connections(); i++) {
-
-						int id = Ipx.Connection_ID(i);
-
-						if (Session.GAddress == (*Ipx.Connection_Address(id))) {
-							Destroy_Connection(id, 0);
-						}
-					}
-				} else {
-
-					/*
-					**	Process a message from another user.
-					*/
-
-					if (Session.GPacket.Command == NET_MESSAGE) {
-						bool msg_ok = false;
-
-						/*
-						** If NetProtect is set, make sure this message came from within
-						** this game.
-						*/
-						if (!Session.NetProtect) {
-							msg_ok = true;
-						} else {
-							if (Session.GPacket.Message.NameCRC ==
-								Compute_Name_CRC(Session.GameName)) {
-								msg_ok = true;
-							} else {
-								msg_ok = false;
-							}
-						}
-
-						if (msg_ok) {
-							if (!Session.Messages.Concat_Message(Session.GPacket.Name,
-								Session.GPacket.Message.Color,
-								Session.GPacket.Message.Buf, Rule.MessageDelay * TICKS_PER_MINUTE)) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-	if (NewUnitsEnabled && !strncmp(Session.GPacket.Message.Buf,"XECRET UNITS ON ",15)) {
-		Session.GPacket.Message.Buf[0]='S';
-		Enable_Secret_Units();
-	}
-#endif
-								Session.Messages.Add_Message (Session.GPacket.Name,
-									Session.GPacket.Message.Color,
-									Session.GPacket.Message.Buf,
-									Session.GPacket.Message.Color,
-									TPF_6PT_GRAD | TPF_USE_GRAD_PAL |
-									TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
-
-								Sound_Effect(VOC_INCOMING_MESSAGE);
-							}
-
-							/*
-							**	Tell the map to do a partial update (just to force the messages
-							**	to redraw).
-							*/
-							Map.Flag_To_Redraw(true);
-
-							/*
-							**	Save this message in our last-message buffer
-							*/
-							strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
-						}
-					} else {
-						Process_Global_Packet(&Session.GPacket, &Session.GAddress);
-					}
-				}
-			}
-		}
-	}
-#endif
-}
-
-
-#if(TEN)
-void TEN_Call_Back(void)
-{
-	int id;
-
-	Ten->Service();
-
-	if (Ten->Get_Global_Message (&Session.GPacket, &Session.GPacketlen,
-		&Session.TenAddress)) {
-
-		//
-		//	If this is another player signing off, remove the connection &
-		//	mark that player's house as non-human, so the computer will take
-		//	it over.
-		//
-		if (Session.GPacket.Command == NET_SIGN_OFF) {
-			for (int i = 0; i < Ten->Num_Connections(); i++) {
-
-				id = Ten->Connection_ID(i);
-
-				if (Session.TenAddress == Ten->Connection_Address(id)) {
-					Destroy_TEN_Connection(id, 0);
-				}
-			}
-		}
-
-		//
-		//	Process a message from another user.
-		//
-		else if (Session.GPacket.Command == NET_MESSAGE) {
-			if (!Session.Messages.Concat_Message(Session.GPacket.Name,
-				Session.GPacket.Message.Color,
-				Session.GPacket.Message.Buf, Rule.MessageDelay * TICKS_PER_MINUTE)) {
-
-				Session.Messages.Add_Message (Session.GPacket.Name,
-					Session.GPacket.Message.Color,
-					Session.GPacket.Message.Buf,
-					Session.GPacket.Message.Color,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL |
-					TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
-
-				Sound_Effect(VOC_INCOMING_MESSAGE);
-
-				/*
-				**	Tell the map to do a partial update (just to force the messages
-				**	to redraw).
-				*/
-				Map.Flag_To_Redraw(true);
-
-				/*
-				**	Save this message in our last-message buffer
-				*/
-				strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
-			}
-		}
-	}
-}
-#endif	// TEN
-
-
-#if(MPATH)
-void MPATH_Call_Back(void)
-{
-	int id;
-
-	MPath->Service();
-
-	if (MPath->Get_Global_Message (&Session.GPacket, &Session.GPacketlen,
-		&Session.MPathAddress)) {
-
-		//
-		//	If this is another player signing off, remove the connection &
-		//	mark that player's house as non-human, so the computer will take
-		//	it over.
-		//
-		if (Session.GPacket.Command == NET_SIGN_OFF) {
-			for (int i = 0; i < MPath->Num_Connections(); i++) {
-
-				id = MPath->Connection_ID(i);
-
-				if (Session.MPathAddress == MPath->Connection_Address(id)) {
-					Destroy_MPATH_Connection(id, 0);
-				}
-			}
-		}
-
-		//
-		//	Process a message from another user.
-		//
-		else if (Session.GPacket.Command == NET_MESSAGE) {
-			if (!Session.Messages.Concat_Message(Session.GPacket.Name,
-				Session.GPacket.Message.Color,
-				Session.GPacket.Message.Buf, Rule.MessageDelay * TICKS_PER_MINUTE)) {
-
-				Session.Messages.Add_Message (Session.GPacket.Name,
-					Session.GPacket.Message.Color,
-					Session.GPacket.Message.Buf,
-					Session.GPacket.Message.Color,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL |
-					TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
-
-				Sound_Effect(VOC_INCOMING_MESSAGE);
-
-				/*
-				**	Tell the map to do a partial update (just to force the messages
-				**	to redraw).
-				*/
-				Map.Flag_To_Redraw(true);
-
-				/*
-				**	Save this message in our last-message buffer
-				*/
-				strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
-			}
-		}
-	}
-}
-#endif	// MPATH
 
 
 /***********************************************************************************************
@@ -2110,9 +1618,6 @@ static void Sync_Delay(void)
 		Call_Back();
 
 		if (SpecialDialog == SDLG_NONE) {
-#ifdef WIN32
-			WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
 			KeyNumType input = KN_NONE;
 			int x, y;
 			Map.Input(input, x, y);
@@ -2141,10 +1646,6 @@ static void Sync_Delay(void)
  * HISTORY:                                                                                    *
  *   10/01/1994 JLB : Created.                                                                 *
  *=============================================================================================*/
-#ifdef WIN32
-extern void Check_For_Focus_Loss(void);
-void Reallocate_Big_Shape_Buffer(void);
-#endif	//WIN32
 
 
 bool Main_Loop()
@@ -2154,21 +1655,9 @@ bool Main_Loop()
 	int y;
 	int framedelay;
 
-Mono_Set_Cursor(0,0);
+	Mono_Set_Cursor(0,0);
 
 	if (!GameActive) return(!GameActive);
-
-#ifdef WIN32
-	/*
-	** Call the focus loss handler
-	*/
-	Check_For_Focus_Loss();
-
-	/*
-	** Allocate extra memory for uncompressed shapes as needed
-	*/
-	Reallocate_Big_Shape_Buffer();
-#endif
 
 	/*
 	** Sync-bug trapping code
@@ -2181,23 +1670,6 @@ Mono_Set_Cursor(0,0);
 	// Initialize our AI processing timer
 	//
 	Session.ProcessTimer = TickCount;
-
-#if 1
-	if (Session.TrapCheckHeap) {
-		Debug_Trap_Check_Heap = true;
-	}
-#endif
-
-#ifdef CHEAT_KEYS
-
-	/*
-	**	Update the running status debug display.
-	*/
-	Self_Regulate();
-#endif
-
-	BStart(BENCH_GAME_FRAME);
-
 	/*
 	**	If there is no theme playing, but it looks like one is required, then start one
 	**	playing. This is usually the symptom of there being no transition score.
@@ -2218,10 +1690,8 @@ Mono_Set_Cursor(0,0);
 		if (Session.Play) {
 			FrameTimer = 0;
 		} else {
-#ifdef FIXIT_VERSION_3
 			if( !Session.DesiredFrameRate )
 				Session.DesiredFrameRate = 60;		//	A division by zero was happening (very rare).
-#endif
 			framedelay = TIMER_SECOND / Session.DesiredFrameRate;
 			FrameTimer = framedelay;
 		}
@@ -2239,12 +1709,7 @@ Mono_Set_Cursor(0,0);
 	**	Update the display, unless we're inside a dialog.
 	*/
 	if (!Session.Play) {
-#ifdef WIN32
 		if (SpecialDialog == SDLG_NONE && GameInFocus) {
-			WWMouse->Erase_Mouse(&HidPage, TRUE);
-#else
-		if (SpecialDialog == SDLG_NONE) {
-#endif
 			Map.Input(input, x, y);
 			if (input) {
 				Keyboard_Process(input);
@@ -2260,38 +1725,20 @@ Mono_Set_Cursor(0,0);
 		Do_Record_Playback();
 	}
 
-#ifndef SORTDRAW
-	/*
-	** Sort the map's ground layer by y-coordinate value.  This is done
-	** outside the IsToRedraw check, for the purposes of game sync'ing
-	** between machines; this way, all machines will sort the Map's
-	** layer in the same way, and any processing done that's based on
-	** the order of this layer will remain in sync.
-	*/
-	DisplayClass::Layer[LAYER_GROUND].Sort();
-#endif
-
 	/*
 	**	AI logic operations are performed here.
 	*/
 	Logic.AI();
 	TimeQuake = false;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (!PendingTimeQuake) {
 		TimeQuakeCenter = 0;
 	}
-#endif
 
 	/*
 	**	Manage the inter-player message list.  If Manage() returns true, it means
 	**	a message has expired & been removed, and the entire map must be updated.
 	*/
 	if (Session.Messages.Manage()) {
-#ifdef WIN32
-		HiddenPage.Clear();
-#else	//WIN32
-		HidPage.Clear();
-#endif	//WIN32
 		Map.Flag_To_Redraw(true);
 	}
 
@@ -2317,19 +1764,6 @@ Mono_Set_Cursor(0,0);
 	**	Check for player wins or loses according to global event flag.
 	*/
 	if (PlayerWins) {
-
-#ifdef WIN32
-
-		/*
-		** Send the game statistics to WChat.
-		*/
-		if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
-			Register_Game_End_Time();
-			Send_Statistics_Packet();		//	Player just won.
-		}
-
-		WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
 		PlayerLoses = false;
 		PlayerWins = false;
 		PlayerRestarts = false;
@@ -2338,17 +1772,6 @@ Mono_Set_Cursor(0,0);
 		return(!GameActive);
 	}
 	if (PlayerLoses) {
-#ifdef WIN32
-		/*
-		** Send the game statistics to WChat.
-		*/
-		if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
-			Register_Game_End_Time();
-			Send_Statistics_Packet();		//	Player just lost.
-		}
-
-		WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
 		PlayerWins = false;
 		PlayerLoses = false;
 		PlayerRestarts = false;
@@ -2357,9 +1780,6 @@ Mono_Set_Cursor(0,0);
 		return(!GameActive);
 	}
 	if (PlayerRestarts) {
-#ifdef WIN32
-		WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
 		PlayerWins = false;
 		PlayerLoses = false;
 		PlayerRestarts = false;
@@ -2368,96 +1788,19 @@ Mono_Set_Cursor(0,0);
 		return(!GameActive);
 	}
 
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 	if( Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && Session.Players.Count() == 2 &&
 		Scen.bLocalProposesDraw && Scen.bOtherProposesDraw )
 	{
-		//	End game in a draw.
-		if (Session.Type == GAME_INTERNET && !GameStatisticsPacketSent) {
-			Register_Game_End_Time();
-			Send_Statistics_Packet();
-		}
-		WWMouse->Erase_Mouse(&HidPage, TRUE);
 		Map.Help_Text(TXT_NONE);
 		Do_Draw();
 		return(!GameActive);
 	}
-#endif
 
 	/*
 	**	The frame logic has been completed. Increment the frame
 	**	counter.
 	*/
 	Frame++;
-
-	/*
-	** Is there a memory trasher altering the map??
-	*/
-	if (Debug_Check_Map) {
-		if (!Map.Validate()) {
-			if (WWMessageBox().Process (TEXT_MAP_ERROR, TEXT_STOP, TEXT_CONTINUE)==0) {
-				GameActive = 0;
-			}
-			Map.Validate();		// give debugger a chance to catch it
-		}
-	}
-
-
-#if (0)	//ST - 5/8/2019
-#ifdef WIN32
-	if (Debug_MotionCapture) {
-		static void ** _array = 0;
-		static int _sequence = 0;
-		static int _seqsize = Rule.MovieTime * TICKS_PER_MINUTE;
-
-		if (_array == NULL) {
-			_array = new void * [_seqsize];
-			memset(_array, '\0', _seqsize * sizeof(void*));
-		}
-
-		if (_array == NULL) {
-			Debug_MotionCapture = false;
-		}
-
-		static GraphicBufferClass temp_page(	SeenBuff.Get_Width(),
-													SeenBuff.Get_Height(),
-													NULL,
-													SeenBuff.Get_Width() * SeenBuff.Get_Height());
-
-		int size = SeenBuff.Get_Width() * SeenBuff.Get_Height();
-
-		if (_sequence < _seqsize) {
-			if (_array[_sequence] == NULL) {
-				_array[_sequence] = new char[size];
-			}
-
-			if (_array[_sequence] != NULL) {
-				SeenBuff.Blit(temp_page);
-				memmove(_array[_sequence], temp_page.Get_Buffer(), size);
-			}
-			_sequence++;
-
-		} else {
-			Debug_MotionCapture = false;
-
-			CDFileClass file;
-			file.Cache(200000);
-			char filename[30];
-
-			for (int index = 0; index < _sequence; index++) {
-				memmove(temp_page.Get_Buffer(), _array[index], size);
-				sprintf(filename, "cap%04d.pcx", index);
-				file.Set_Name(filename);
-
-				Write_PCX_File(file, temp_page, & GamePalette);
-			}
-
-			_sequence = 0;
-		}
-	}
-#endif
-#endif
-	BEnd(BENCH_GAME_FRAME);
 
 	Sync_Delay();
 	return(!GameActive);
@@ -2588,130 +1931,6 @@ void Go_Editor(bool flag)
 	}
 }
 
-#endif
-
-#if (0)
-/***********************************************************************************************
- * MixFileHandler -- Handles VQ file access.                                                   *
- *                                                                                             *
- *    This routine is called from the VQ player when it needs to access the source file. By    *
- *    using this routine it is possible to virtualize the file system.                         *
- *                                                                                             *
- * INPUT:   vqa   -- Pointer to the VQA handle for this animation.                             *
- *                                                                                             *
- *          action-- The requested action to perform.                                          *
- *                                                                                             *
- *          buffer-- Optional buffer pointer as needed by the type of action.                  *
- *                                                                                             *
- *          nbytes-- The number of bytes (if needed) for this operation.                       *
- *                                                                                             *
- * OUTPUT:  Returns a value consistent with the action requested.                              *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/04/1995 JLB : Created.                                                                 *
- *=============================================================================================*/
-long MixFileHandler(VQAHandle * vqa, long action, void * buffer, long nbytes)
-{
-	CCFileClass * file;
-	long        error;
-
-	file = (CCFileClass *)vqa->VQAio;
-
-	/*
-	**	Perform the action specified by the stream command.
-	*/
-	switch (action) {
-
-		/*
-		** VQACMD_READ means read NBytes from the stream and place it in the
-		** memory pointed to by Buffer.
-		**
-		** Any error code returned will be remapped by VQA library into
-		** VQAERR_READ.
-		*/
-		case VQACMD_READ:
-			error = (file->Read(buffer, (unsigned short)nbytes) != (unsigned short)nbytes);
-			break;
-
-		/*
-		**	VQACMD_WRITE is analogous to VQACMD_READ.
-		**
-		** Writing is not allowed to the VQA file, VQA library will remap the
-		** error into VQAERR_WRITE.
-		*/
-		case VQACMD_WRITE:
-			error = 1;
-			break;
-
-		/*
-		**	VQACMD_SEEK asks that you perform a seek relative to the current
-		** position. NBytes is a signed number, indicating seek direction
-		** (positive for forward, negative for backward). Buffer has no meaning
-		** here.
-		**
-		** Any error code returned will be remapped by VQA library into
-		** VQAERR_SEEK.
-		*/
-		case VQACMD_SEEK:
-			error = (file->Seek(nbytes, SEEK_CUR) == -1);
-			break;
-
-		/*
-		**	VQACMD_OPEN asks that you open your stream for access.
-		*/
-		case VQACMD_OPEN:
-			file = new CCFileClass((char *)buffer);
-
-			if (file != NULL && file->Is_Available()) {
-				error = file->Open((char *)buffer, READ);
-
-				if (error != -1) {
-					vqa->VQAio = (unsigned long)file;
-					error = 0;
-				} else {
-					delete file;
-					file = 0;
-					error = 1;
-				}
-			} else {
-				error = 1;
-			}
-			break;
-
-		case VQACMD_CLOSE:
-			file->Close();
-			delete file;
-			file = 0;
-			vqa->VQAio = 0;
-			error = 0;
-			break;
-
-		/*
-		**	VQACMD_INIT means to prepare your stream for reading. This is used for
-		** certain streams that can't be read immediately upon opening, and need
-		** further preparation. This operation is allowed to fail; the error code
-		** will be returned directly to the client.
-		*/
-		case VQACMD_INIT:
-
-		/*
-		**	IFFCMD_CLEANUP means to terminate the transaction with the associated
-		** stream. This is used for streams that can't simply be closed. This
-		** operation is not allowed to fail; any error returned will be ignored.
-		*/
-		case VQACMD_CLEANUP:
-			error = 0;
-			break;
-
-		default:
-			error = 0;
-			break;
-	}
-
-	return(error);
-}
 #endif
 
 void Rebuild_Interpolated_Palette(unsigned char * interpal)
@@ -3322,12 +2541,6 @@ void const * Get_Radar_Icon(void const * shapefile, int shapenum, int frames, in
 	*/
 	if (!shapefile) return(NULL);
 
-#if (0)
-	CCPalette.Set();
-	Set_Logic_Page(SeenBuff);
-	CC_Draw_Shape(shapefile, shapenum, 64, 64, WINDOW_MAIN, SHAPE_WIN_REL);
-#endif
-
 	/*
 	** Get the pixel width and height of the frame we built.  This will
 	** be used to extract icons and build pixels.
@@ -3588,15 +2801,6 @@ void CC_Draw_Shape(void const * shapefile, int shapenum, int x, int y, WindowNum
 #endif
 
 				if (Debug_Rotate) {
-#if (0)//PG
-					GraphicBufferClass src(width, height, buffer);
-					width *= 2;
-					height *= 2;
-					memset(_xbuffer, '\0', SHAPE_BUFFER_SIZE);
-					GraphicBufferClass dst(width, height, _xbuffer);
-					Rotate_Bitmap(&src, &dst, rotation);
-					buffer = _xbuffer;
-#endif
 				} else {
 
 					BitmapClass bm(width, height, buffer);
@@ -3836,38 +3040,6 @@ extern bool IsVQ640;
 long VQ_Call_Back(unsigned char *, long )
 {
 	return 0;
-#if (0)//PG
-	int key = 0;
-	if (Keyboard->Check()) {
-		key = Keyboard->Get();
-		Keyboard->Clear();
-	}
-	Check_VQ_Palette_Set();
-#ifdef MOVIE640
-	if(IsVQ640) {
-		VQ640.Blit(SeenBuff);
-	} else {
-		Interpolate_2X_Scale(&SysMemPage, &SeenBuff, NULL);
-	}
-#else
-	Interpolate_2X_Scale(&SysMemPage, &SeenBuff, NULL);
-#endif
-	//Call_Back();
-
-	if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
-		Keyboard->Clear();
-		Brokeout = true;
-		return(true);
-	}
-
-	if (!GameInFocus) {
-		VQA_PauseAudio();
-		while (!GameInFocus) {
-			Check_For_Focus_Loss();
-		}
-	}
-	return(false);
-#endif
 }
 
 #else	//WIN32
@@ -4473,744 +3645,6 @@ bool Force_CD_Available(int cd)
 
 #endif
 
-#if (0) //ST - 5/13/2019
-
-typedef enum {
-	CD_LOCAL = -2,
-	CD_ANY = -1,
-	CD_SOVIET = 0,
-	CD_ALLIED,
-	CD_COUNTERSTRIKE,
-	CD_AFTERMATH,
-	CD_CS_OR_AM,
-	CD_DVD
-} CD_VOLUME;
-
-#ifdef FIXIT_VERSION_3
-
-#ifndef DVD
-#error DVD must be defined!
-#endif
-
-bool Force_CD_Available( int cd_desired )				//	ajw
-{
-	static int _last = -1;
-	static void *font;
-#ifdef FRENCH
-	static char * _cd_name[] = {
-		"ALERTE ROUGE CD1",
-		"ALERTE ROUGE CD2",
-		"CD Missions Taiga",
-		"CD Missions M.A.D.",
-		"ALERTE ROUGE DVD",
-};
-#endif
-#ifdef GERMAN
-	static char * _cd_name[] = {
-		"ALARMSTUFE ROT CD1",
-		"ALARMSTUFE ROT CD2",
-		"CD Gegenangriff einlegen",
-		"CD TRANS einlegen",
-		"ALARMSTUFE ROT DVD",
-	};
-#endif
-#ifdef ENGLISH
-	static char * _cd_name[] = {
-		"RED ALERT DISK 1",
-		"RED ALERT DISK 2",
-		"CounterStrike CD",
-		"Aftermath CD",
-		"RED ALERT DVD",
-	};
-#endif
-
-
-
-	int new_cd_drive = 0;
-	int cd_current;
-	int current_drive;
-
-	ThemeType theme_playing = THEME_NONE;
-
-	/*
-	** If the required CD is set to -2 then it means that the file is present
-	** on the local hard drive and we shouldn't have to worry about it.
-	*/
-	if (cd_desired == CD_LOCAL) return(true);
-
-	/*
-	** Find out if the CD in the current drive is the one we are looking for
- 	*/
-	current_drive = CCFileClass::Get_CD_Drive();
-	cd_current = Get_CD_Index(current_drive, 1*60);
-
-//	debugprint("Get_CD_Index just returned %d\n", cd_current);
-//	debugprint("We are checking for %d\n", cd_desired);
-//	debugprint("current_drive = %d\n", current_drive);
-
-	if( Using_DVD() )
-	{
-		//	All requested cd indexes get rerouted to the DVD.
-		cd_desired = CD_DVD;
-//		if( RequiredCD != -1 )
-//			RequiredCD = CD_DVD;		//	Just seems like a good idea. Not sure if necessary.	ajw
-	}
-
-	if (cd_current >= 0 )
-	{
-		if( cd_desired == CD_CS_OR_AM )
-		{
-			// If the current cd is CS or AM then change request to whatever
-			// is present.
-			if( cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH )
-				cd_desired = cd_current;
-		}
-		// If the current CD is requested or any CD will work
-		if( cd_desired == cd_current || cd_desired == CD_ANY )
-		{
-			/*
-			** The required CD is still in the CD drive we used last time
-			*/
-			new_cd_drive = current_drive;
-		}
-	}
-
-	/*
-	** Flag that we will have to restart the theme
-	*/
-	theme_playing = Theme.What_Is_Playing();
-	Theme.Stop();
-
-	// Check the last drive
-	if (!new_cd_drive)
-	{
-		/*
-		** Check the last CD drive we used if it's different from the current one
-		*/
-		int last_drive = CCFileClass::Get_Last_CD_Drive();
-
-		/*
-		** Make sure the last drive is valid and it isn't the current drive
-		*/
-		if (last_drive && last_drive != CCFileClass::Get_CD_Drive())		//	Else we have already checked this cd.
-		{
-			/*
-			** Find out if there is a C&C cd in the last drive and if so is it the one we are looking for
-			** Give it a nice big timeout so the CD changer has time to swap the discs
-			*/
-			cd_current = Get_CD_Index(last_drive, 10*60);
-
-			if (cd_current >= 0 )
-			{
-				if( cd_desired == CD_CS_OR_AM )
-				{
-					// If the cd is CS or AM then change request to whatever
-					// is present.
-					if( cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH )
-						cd_desired = cd_current;
-				}
-				// If the cd is present or any cd will work
-				if( cd_desired == cd_current || cd_desired == CD_ANY )
-				{
-					/*
-					** The required CD is in the CD drive we used last time
-					*/
-					new_cd_drive = last_drive;
-				}
-			}
-		}
-	}
-
-	/*
-	** Lordy.  No sign of that blimming CD anywhere. Search all the CD drives
-	** then if we still can't find it prompt the user to insert it.
-	*/
-	if (!new_cd_drive)
-	{
-		/*
-		** Small timeout for the first pass through the drives
-		*/
-		int drive_search_timeout = 2*60;
-
-		for (;;)
-		{
-			char buffer[128];
-			/*
-			** Search all present CD drives for the required disc.
-			*/
-			for (int i = 0 ; i < CDList.Get_Number_Of_Drives(); i++)
-			{
-				int cd_drive = CDList.Get_Next_CD_Drive();
-				cd_current = Get_CD_Index(cd_drive, drive_search_timeout);
-
-				if (cd_current >= 0)
-				{
-					/*
-					** We found a C&C cd - lets see if it was the one we were looking for
-					*/
-					// Require CS or AM
-					if( cd_desired == CD_CS_OR_AM )
-					{
-						// If the cd is CS or AM then change request to whatever
-						// is present.
-						if( cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH )
-							cd_desired = cd_current;
-					}
-					
-					if( cd_desired == cd_current || cd_desired == CD_ANY )
-					{
-						/*
-						** Woohoo! The disk was in a different cd drive. Refresh the search path list
-				 		* and return.
-						*/
-						new_cd_drive = cd_drive;
-						break;
-					}
-				}
-			}
-
-			/*
-			** A new disc has become available so break
-			*/
-			if (new_cd_drive) break;
-
-			/*
-			** Increase the timeout for subsequent drive searches.
-			*/
-			drive_search_timeout = 5*60;
-
-			/*
-			**	Prompt to insert the CD into the drive.
-			*/
-			//V.Grippi
-			if( cd_desired == CD_CS_OR_AM )
-				cd_desired = CD_AFTERMATH;
-			
-			if( cd_desired == CD_DVD )
-			{
-				#ifdef FRENCH
-			   	sprintf(buffer, "InsŠrez le %s",  _cd_name[4]);
-				#else
-				#ifdef GERMAN
-				sprintf(buffer, "Bitte %s",  _cd_name[4]);
-				#else
-				sprintf(buffer, "Please insert the %s",  _cd_name[4]);
-				#endif
-				#endif
-			}
-			else if( cd_desired == CD_COUNTERSTRIKE || cd_desired == CD_AFTERMATH )
-			{
-				#ifdef FRENCH
-			   	sprintf(buffer, "InsŠrez le %s",  _cd_name[cd_desired]);
-				#else
-				#ifdef GERMAN
-				sprintf(buffer, "Bitte %s",  _cd_name[cd_desired]);
-				#else
-				sprintf(buffer, "Please insert the %s",  _cd_name[cd_desired]);
-				#endif
-				#endif
-			}
-			else if( cd_desired == CD_ANY )
-			{
-				sprintf(buffer, Text_String(TXT_CD_DIALOG_1), cd_desired+1, _cd_name[cd_desired]);
-			}
-			else		//	0 or 1
-			{
-				sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd_desired+1, _cd_name[cd_desired]);
-			}
-
-			GraphicViewPortClass * oldpage = Set_Logic_Page(SeenBuff);
-			theme_playing = Theme.What_Is_Playing();
-			Theme.Stop();
-			int hidden = Get_Mouse_State();
-			font = (void *)FontPtr;
-
-			/*
-			**	Only set the palette if necessary.
-			*/
-			if (PaletteClass::CurrentPalette[1].Red_Component() +
-					PaletteClass::CurrentPalette[1].Blue_Component() +
-					PaletteClass::CurrentPalette[1].Green_Component() == 0)
-			{
-				GamePalette.Set();
-			}
-
-			Keyboard->Clear();
-
-			while (Get_Mouse_State()) Show_Mouse();
-
-			if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, TRUE) == 1)
-			{
-				Set_Logic_Page(oldpage);
-#ifdef FIXIT_VERSION_3
-				while (hidden--) Hide_Mouse();
-#else
-				Hide_Mouse();
-#endif
-				return(false);
-			}
-
-			while (hidden--) Hide_Mouse();
-			Set_Font(font);
-			Set_Logic_Page(oldpage);
-		}
-	}
-
-	CurrentCD = cd_current;
-
-	CCFileClass::Set_CD_Drive(new_cd_drive);
-	CCFileClass::Refresh_Search_Drives();
-
-	/*
-	**	If it broke out of the query for CD-ROM loop, then this means that the
-	**	CD-ROM has been inserted.
-	*/
-	if (cd_desired == 4) cd_desired--;
-
-	//	ajw - Added condition of cd_desired != 5 to the following if.
-	//	Reason: This was triggering before Init_Secondary_Mixfiles(), which was screwing up the mixfile system somehow.
-	//
-	//	Since the DVD is the only disk that can possibly be required when Using_DVD(), I never have to reload the mix
-	//	files here, because no other disk could ever have been asked for. And if not Using_DVD(), cd_desired will never
-	//	be equal to 5. So this is safe.
-	if (cd_desired > -1 && _last != cd_desired && cd_desired != 5)
-	{
-		_last = cd_desired;
-
-		Theme.Stop();
-
-//		if (ConquerMix) delete ConquerMix;
-		if (MoviesMix) delete MoviesMix;
-		if (GeneralMix) delete GeneralMix;
-		if (ScoreMix) delete ScoreMix;
-		if (MainMix) delete MainMix;
-
-		MainMix = new MFCD("MAIN.MIX", &FastKey);
-		assert(MainMix != NULL);
-//		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
-		if (CCFileClass("MOVIES1.MIX").Is_Available())
-			MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);
-		else
-			MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
-		assert(MoviesMix != NULL);
-		GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
-		ScoreMix = new MFCD("SCORES.MIX", &FastKey);
-		ThemeClass::Scan();
-	}
-
-	return(true);
-}
-
-#else		//	FIXIT_VERSION_3 not defined
-
-bool Force_CD_Available(int cd)
-{
-	static int _last = -1;
-//	static char _palette[768];
-//	static char _hold[256];
-	static void *font;
-#ifdef FRENCH
-	static char * _cd_name[] = {
-		"ALERTE ROUGE CD1",
-		"ALERTE ROUGE CD2",
-		"CD Missions Taiga",
-		"CD Missions M.A.D.",
-
-		// Denzil 4/15/98
-		#ifdef DVD
-		"ALERTE ROUGE DVD",
-		#endif
-};
-
-#endif
-#ifdef GERMAN
-	static char * _cd_name[] = {
-		"ALARMSTUFE ROT CD1 einlegen",
-		"ALARMSTUFE ROT CD2 einlegen",
-		"CD Gegenangriff einlegen",
-		"CD TRANS einlegen",
-
-		// Denzil 4/15/98
-		#ifdef DVD
-		"ALARMSTUFE ROT DVD einlegen",
-		#endif
-	};
-#endif
-#ifdef ENGLISH
-	static char * _cd_name[] = {
-		"RED ALERT DISK 1",
-		"RED ALERT DISK 2",
-		"CounterStrike CD",
-		"Aftermath CD",
-
-		// Denzil 4/15/98
-		#ifdef DVD
-		"RED ALERT DVD",
-		#endif
-	};
-#endif
-
-	int new_cd_drive = 0;
-	int cd_index;
-	char buffer[128];
-	int cd_drive;
-	int current_drive;
-	int drive_search_timeout;
-
-	ThemeType theme_playing = THEME_NONE;
-
-//#ifdef FIXIT_ANTS
-//	if(Scen.ScenarioName[2] == 'A')
-//	   cd = 2;
-//#endif
-	/*
-	** If the required CD is set to -2 then it means that the file is present
-	** on the local hard drive and we shouldn't have to worry about it.
-	*/
-	if (cd == CD_LOCAL) return(true);
-
-	/*
-	** Find out if the CD in the current drive is the one we are looking for
- 	*/
-	current_drive = CCFileClass::Get_CD_Drive();
-	cd_index = Get_CD_Index(current_drive, 1*60);
-
-	#ifdef CHEAT_KEYS
-	//	Mono_Printf("Get_CD_Index just returned %d\n", cd_index);
-	//	Mono_Printf("We are checking for %d\n", cd);
-	//	Mono_Printf("current_drive = %d\n", current_drive);
-	#endif	//CHEAT_KEYS
-
-	#ifdef DVD // Denzil
-	// CD1 and CD2 are ignored, force the DVD
-	if (cd_index == 0 || cd_index == 1)
-		cd_index = -1;
-	#endif
-	
-	if (cd_index >= 0 )
-		{
-		#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-		// Require CS or AM
-		if (cd == CD_CS_OR_AM)
-			{
-			// If the current cd is CS or AM then change request to whatever
-			// is present.
-			if (cd_index == 2 || cd_index == 3)
-				{
-				cd = cd_index;
-				}
-			}
-		#endif
-
-		#ifdef DVD // Denzil
-		// If the current drive is the DVD then requests for CD1 and CD2 are okay
-		if (cd_index == 4)
-			{
-			// CD1, CD2 & DVD requests
-			if (cd == 0 || cd == 1 || cd == 5)
-				{
-				cd_index = cd;
-				}
-			}
-		#endif
-		
-		// If the current CD is requested or any CD will work
-		if (cd == cd_index || cd == -1 )
-			{
-			/*
-			** The required CD is still in the CD drive we used last time
-			*/
-			new_cd_drive = current_drive;
-			}
-		}
-
-	/*
-	** Flag that we will have to restart the theme
-	*/
-	theme_playing = Theme.What_Is_Playing();
-	Theme.Stop();
-
-	// Check the last drive
-	if (!new_cd_drive)
-		{
-		/*
-		** Check the last CD drive we used if it's different from the current one
-		*/
-		int last_drive = CCFileClass::Get_Last_CD_Drive();
-
-		/*
-		** Make sure the last drive is valid and it isn't the current drive
-		*/
-		if (last_drive && last_drive != CCFileClass::Get_CD_Drive())
-			{
-			/*
-			** Find out if there is a C&C cd in the last drive and if so is it the one we are looking for
-			** Give it a nice big timeout so the CD changer has time to swap the discs
-			*/
-			cd_index = Get_CD_Index(last_drive, 10*60);
-
-			#ifdef DVD // Denzil
-			// Ignore CD1 and CD2 disks, force DVD
-			if (cd_index == 0 || cd_index == 1)
-				cd_index = -1;
-			#endif
-			
-			if (cd_index >= 0 )
-				{
-				#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-				// Require CS or AM
-				if (cd == 4)
-					{
-					// If CS or AM was the last drive then use it
-					if (cd_index == 2 || cd_index == 3)
-						{
-						cd = cd_index;
-						}
-					}
-				#endif
-
-				#ifdef DVD // Denzil
-				// If DVD is in drive
-				if (cd_index == 4)
-					{
-					// CD1, CD2 and DVD requests are all on the DVD 
-					if ((cd == 0) || (cd == 1) || (cd == 5))
-						{
-						cd_index = cd;
-						}
-					}
-				#endif
-
-				// If the cd is present or any cd will work
-				if (cd == cd_index || cd == -1 )
-					{
-					/*
-					** The required CD is in the CD drive we used last time
-					*/
-					new_cd_drive = last_drive;
-					}
-				}
-			}
-		}
-
-	/*
-	** Lordy.  No sign of that blimming CD anywhere. Search all the CD drives
-	** then if we still can't find it prompt the user to insert it.
-	*/
-	if (!new_cd_drive)
-		{
-		/*
-		** Small timeout for the first pass through the drives
-		*/
-		drive_search_timeout = 2*60;
-
-		for (;;)
-			{
-			/*
-			** Search all present CD drives for the required disc.
-			*/
-			for (int i = 0 ; i < CDList.Get_Number_Of_Drives(); i++)
-				{
-				cd_drive = CDList.Get_Next_CD_Drive();
-				cd_index = Get_CD_Index(cd_drive, drive_search_timeout);
-
-				#ifdef DVD // Denzil
-				// Ignore CD1 and CD2, force the DVD
-				if (cd_index == 0 || cd_index == 1)
-					cd_index = -1;
-				#endif
-				
-				if (cd_index >= 0)
-					{
-					/*
-					** We found a C&C cd - lets see if it was the one we were looking for
-					*/
-					#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-					// Require CS or AM
-					if (cd == 4)
-						{
-						// If the disk is CS or AM then request it
-						if (cd_index == 2 || cd_index == 3)
-							{
-							cd = cd_index;
-							}
-						}
-					#endif
-
-					#ifdef DVD // Denzil
-					if (cd_index == 4)
-						{
-						if ((cd == 0) || (cd == 1) || (cd == 5))
-							{
-							cd_index = cd;
-							}
-						}
-					#endif
-					
-					if (cd == cd_index || cd == -1 || cd == -2 )
-						{
-						/*
-						** Woohoo! The disk was in a different cd drive. Refresh the search path list
-				 		* and return.
-						*/
-						new_cd_drive = cd_drive;
-						break;
-						}
-					}
-				}
-
-			/*
-			** A new disc has become available so break
-			*/
-			if (new_cd_drive) break;
-
-			/*
-			** Increase the timeout for subsequent drive searches.
-			*/
-			drive_search_timeout = 5*60;
-
-			/*
-			**	Prompt to insert the CD into the drive.
-			*/
-			//V.Grippi
-			#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-			if(cd == 4) cd--;
-			
-			// CS or AM
-			if(cd == 2 || cd == 3)
-				{
-			#else
-			if(cd == 2)
-		   		{
-			#endif
-
-				#ifdef FRENCH
-			   	sprintf(buffer, "InsŠrez le %s",  _cd_name[cd]);
-				#else
-				#ifdef GERMAN
-				sprintf(buffer, "Bitte %s",  _cd_name[cd]);
-				#else
-				sprintf(buffer, "Please insert the %s",  _cd_name[cd]);
-				#endif
-				#endif
-				}
-			else
-				{
-				#ifdef DVD
-				#ifdef FRENCH
-			   	sprintf(buffer, "InsŠrez le %s", _cd_name[4]);
-				#else
-				#ifdef GERMAN 
-				sprintf(buffer, "Bitte %s", _cd_name[4]);
-				#else
-				sprintf(buffer, "Please insert the %s", _cd_name[4]);
-				#endif
-				#endif
-				#else
-				if (cd == -1 )
-					{
-					sprintf(buffer, Text_String(TXT_CD_DIALOG_1), cd+1, _cd_name[cd]);
-					}
-				else
-					{
-					sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd+1, _cd_name[cd]);
-					}
-				#endif
-				}
-
-			#ifdef WIN32
-			GraphicViewPortClass * oldpage = Set_Logic_Page(SeenBuff);
-			#else
-			GraphicBufferClass * oldpage = Set_Logic_Page(SeenBuff);
-			#endif
-			theme_playing = Theme.What_Is_Playing();
-			Theme.Stop();
-			int hidden = Get_Mouse_State();
-			font = (void *)FontPtr;
-
-			/*
-			**	Only set the palette if necessary.
-			*/
-			if (PaletteClass::CurrentPalette[1].Red_Component() +
-					PaletteClass::CurrentPalette[1].Blue_Component() +
-					PaletteClass::CurrentPalette[1].Green_Component() == 0)
-				{
-				GamePalette.Set();
-				}
-
-			Keyboard->Clear();
-
-			while (Get_Mouse_State()) Show_Mouse();
-
-			if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, TRUE) == 1)
-				{
-				Set_Logic_Page(oldpage);
-				Hide_Mouse();
-				return(false);
-				}
-
-			while (hidden--) Hide_Mouse();
-			Set_Font(font);
-			Set_Logic_Page(oldpage);
-			}
-		}
-
-	CurrentCD = cd_index;
-
-	CCFileClass::Set_CD_Drive(new_cd_drive);
-	CCFileClass::Refresh_Search_Drives();
-
-	/*
-	**	If it broke out of the query for CD-ROM loop, then this means that the
-	**	CD-ROM has been inserted.
-	*/
-	#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-	if (cd == 4) cd--;
-	#endif
-//	if (cd > -3 && _last != cd) {
-	if (cd > -1 && _last != cd)
-		{
-		_last = cd;
-
-		Theme.Stop();
-
-//		if (ConquerMix) delete ConquerMix;
-		if (MoviesMix) delete MoviesMix;
-		if (GeneralMix) delete GeneralMix;
-		if (ScoreMix) delete ScoreMix;
-		if (MainMix) delete MainMix;
-
-		MainMix = new MFCD("MAIN.MIX", &FastKey);
-		
-		assert(MainMix != NULL);
-//		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
-
-		if (CCFileClass("MOVIES1.MIX").Is_Available())
-			{
-			MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);
-			}
-		else
-			{
-			MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
-			}
-		assert(MoviesMix != NULL);
-		GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
-		ScoreMix = new MFCD("SCORES.MIX", &FastKey);
-		ThemeClass::Scan();
-		}
-
-	if (theme_playing != THEME_NONE)
-		{
-		Theme.Queue_Song(theme_playing);
-		}
-
-	return(true);
-	}
-
-
-#endif	//	FIXIT_VERSION_3
-#endif	// ST - 5/13/2019
-
 
 /***************************************************************************
  * DISK_SPACE_AVAILABLE -- returns bytes of free disk space                *
@@ -5225,15 +3659,6 @@ bool Force_CD_Available(int cd)
 unsigned long Disk_Space_Available(void)
 {
 	return 0x7fffffff;	//ST - 5/8/2019
-#if (0)
-	struct diskfree_t diskdata;
-	unsigned drive;
-
-	_dos_getdrive(&drive);
-	_dos_getdiskfree(drive, &diskdata);
-
-	return(diskdata.avail_clusters * diskdata.sectors_per_cluster * diskdata.bytes_per_sector);
-#endif
 }
 
 
@@ -5518,39 +3943,6 @@ void Shake_The_Screen(int shakes, HousesType house)
 			hptr->ScreenShakeTime.Start();
 		}
 	}
-#if (0)
-#ifdef WIN32
-	shakes += shakes;
-
-	Hide_Mouse();
-	SeenPage.Blit(HidPage);
-	int oldyoff = 0;
-	int newyoff = 0;
-	while(shakes--) {
-		int x = TickCount;
-//		CountDownTimer = 1;
-		do {
-			newyoff = Sim_Random_Pick(0,2) - 1;
-		} while (newyoff == oldyoff);
-		switch (newyoff) {
-			case -1:
-				HidPage.Blit(SeenPage, 0,2, 0,0, 640,398);
-				break;
-			case 0:
-				HidPage.Blit(SeenPage);
-				break;
-			case 1:
-				HidPage.Blit(SeenPage, 0,0, 0,2, 640,398);
-				break;
-		} while (x == TickCount);
-//		} while (CountDownTimer != 0) ;
-	}
-	HidPage.Blit(SeenPage);
-	Show_Mouse();
-#else
-	Shake_Screen(shakes);
-#endif
-#endif
 }
 
 
@@ -5643,32 +4035,6 @@ const char* Game_Registry_Key()
 bool Is_Counterstrike_Installed (void)
 {
 	return true;		// Remasters always have Counterstrike. ST - 10/18/2019 11:06AM
-
-#if (0)
-	//	ajw 9/29/98
-	static bool	bAlreadyChecked = false;
-	static bool bInstalled = false;
-
-	if( !bAlreadyChecked )
-	{
-		HKEY hKey;
-		if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey ) != ERROR_SUCCESS )
-			return false;
-		DWORD dwValue;
-		DWORD dwBufSize = sizeof( DWORD );
-		if( RegQueryValueEx( hKey, "CStrikeInstalled", 0, NULL, (LPBYTE)&dwValue, &dwBufSize ) != ERROR_SUCCESS )
-			bInstalled = false;
-		else
-			bInstalled = (bool)dwValue;			//	(Presumably true, if it's there...)
-
-		RegCloseKey( hKey );
-		bAlreadyChecked = true;
-	}
-	return bInstalled;
-
-//	RawFileClass file("EXPAND.MIX");
-//	return(file.Is_Available());
-#endif
 }
 
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
@@ -5677,32 +4043,6 @@ bool Is_Counterstrike_Installed (void)
 bool Is_Aftermath_Installed (void)
 {
 	return true;		// Remasters always have Aftermath. ST - 10/18/2019 11:06AM
-
-#if (0)	 
-	//	ajw 9/29/98
-	static bool	bAlreadyChecked = false;
-	static bool bInstalled = false;
-
-	if( !bAlreadyChecked )
-	{
-		HKEY hKey;
-		if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey ) != ERROR_SUCCESS )
-			return false;
-		DWORD dwValue;
-		DWORD dwBufSize = sizeof( DWORD );
-		if( RegQueryValueEx( hKey, "AftermathInstalled", 0, NULL, (LPBYTE)&dwValue, &dwBufSize ) != ERROR_SUCCESS )
-			bInstalled = false;
-		else
-			bInstalled = (bool)dwValue;			//	(Presumably true, if it's there...)
-
-		RegCloseKey( hKey );
-		bAlreadyChecked = true;
-	}
-	return bInstalled;
-
-//	RawFileClass file("EXPAND2.MIX");
-//	return(file.Is_Available());
-#endif
 }
 #endif
 

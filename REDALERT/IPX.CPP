@@ -94,13 +94,6 @@ int IPX_SPX_Installed(void)
 #ifdef TIBERIAN_SUN
 	return(false);
 #else
-#if (0)//PG
-	if ( Load_IPX_Dll () ){
-		return ( IPX_Initialise() );
-	}else{
-		return(false);
-	}
-#endif
 #endif
 
 #else	//WIN32

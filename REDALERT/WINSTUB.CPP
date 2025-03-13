@@ -113,232 +113,12 @@ void Focus_Restore(void)
 
 void Check_For_Focus_Loss(void)
 {
-#if (0)//PG
-	static BOOL	focus_last_time = 1;
-			 MSG	msg;
 
-
-	if ( !GameInFocus ) {
-		Focus_Loss();
-		while ( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE | PM_NOYIELD ) ) {
-	  		if (!GetMessage( &msg, NULL, 0, 0 ) ) {
-				return;
-			}
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	if (!focus_last_time && GameInFocus) {
-
-		VQA_PauseAudio();
-		CountDownTimerClass cd;
-		cd.Set(60*1);
-
-		do {
-			while (PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE )) {
-	  			if (!GetMessage( &msg, NULL, 0, 0 ) ) {
-					return;
-				}
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-
-		} while (cd.Time());
-		VQA_ResumeAudio();
-		PostMessage (MainWindow, CCFocusMessage, 0, 0);
-//		AllSurfaces.Restore_Surfaces();
-//		VisiblePage.Clear();
-//		HiddenPage.Clear();
-//		Map.Flag_To_Redraw(true);
-	}
-
-	focus_last_time = GameInFocus;
-#endif
 }
 
 
 
 extern bool InMovie;
-#if (0)//PG
-long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam, LONG lParam)
-{
-
-	int	low_param = LOWORD(wParam);
-
-	if (message == CCFocusMessage) {
-		Start_Primary_Sound_Buffer(TRUE);
-		if (!InMovie) {
-			Theme.Stop();
-			Theme.Queue_Song(THEME_PICK_ANOTHER);
-		}
-		return(0);
-	}
-
-#ifdef WINSOCK_IPX
-	/*
-	** Pass on any messages intended for the winsock message handler.
-	*/
-	if ( PacketTransport ) {
-		if ( message == (UINT) PacketTransport->Protocol_Event_Message() ) {
-			if ( PacketTransport->Message_Handler (hwnd, message, wParam, lParam) ){
-				return ( DefWindowProc (hwnd, message, wParam, lParam) );
-			}else{
-				return (0);
-			}
-		}
-	}
-#endif	//WINSOCK_IPX
-
-	
-	/*
-	**	Pass this message through to the keyboard handler. If the message
-	**	was processed and requires no further action, then return with
-	**	this information.
-	*/
-	if (Keyboard->Message_Handler(hwnd, message, wParam, lParam)) {
-		return(1);
-	}
-
-	switch ( message ) {
-//		case WM_SYSKEYDOWN:
-//			Mono_Printf("wparam=%08X lparam=%08X\n", (long)wParam, (long)lParam);
-			// fall through
-
-//		case WM_MOUSEMOVE:
-//		case WM_KEYDOWN:
-//		case WM_SYSKEYUP:
-//		case WM_KEYUP:
-//		case WM_LBUTTONDOWN:
-//		case WM_LBUTTONUP:
-//		case WM_LBUTTONDBLCLK:
-//		case WM_MBUTTONDOWN:
-//		case WM_MBUTTONUP:
-//		case WM_MBUTTONDBLCLK:
-//		case WM_RBUTTONDOWN:
-//		case WM_RBUTTONUP:
-//		case WM_RBUTTONDBLCLK:
-//	 		Keyboard->Message_Handler(hwnd, message, wParam, lParam);
-//			return(0);
-
-			/*
-			** Windoze message says we have to shut down. Try and do it cleanly.
-			*/
-		case WM_DESTROY:
-			Prog_End("WM_DESTROY", false);
-			Invalidate_Cached_Icons();
-			VisiblePage.Un_Init();
-			HiddenPage.Un_Init();
-			AllSurfaces.Release();
-			if (!InDebugger) Reset_Video_Mode();
-			Stop_Profiler();
-			PostQuitMessage( 0 );
-
-			/*
-			** If we are shutting down gracefully than flag that the message loop has finished.
-			** If this is a forced shutdown (ReadyToQuit == 0) then try and close down everything
-			** before we exit.
-			*/
-			switch (ReadyToQuit) {
-				case 1:
-					ReadyToQuit = 2;
-					break;
-
-				case 0:
-					Shutdown_Network();
-#ifndef WINSOCK_IPX
-					if (Winsock.Get_Connected()) Winsock.Close();
-					/*
-					** Free the THIPX32 dll
-					*/
-					Unload_IPX_Dll();
-#endif	//WINSOCK_IPX
-					ExitProcess(0);
-					break;
-				case 3:
-					Shutdown_Network();
-#ifndef WINSOCK_IPX
-					/*
-					** Call the function to disable the IPX callback as horrible things can
-					** happen if we get a callback after the process has exited!
-					*/
-					if (Session.Type == GAME_IPX){
-						IPX_Shut_Down95();
-					}
-					/*
-					** Free the THIPX32 dll
-					*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-#else
-					Unload_IPX_Dll();
-#endif
-
-					if (Winsock.Get_Connected()) Winsock.Close();
-#endif	//WINSOCK_IPX
-					ReadyToQuit = 2;
-					break;
-
-			}
-			return(0);
-
-		case WM_ACTIVATEAPP:
-			GameInFocus=(BOOL)wParam;
-			if (!GameInFocus) Focus_Loss();
-			AllSurfaces.Set_Surface_Focus (GameInFocus);
-			AllSurfaces.Restore_Surfaces();
-//			if (GameInFocus) {
-//				Restore_Cached_Icons();
-//				Map.Flag_To_Redraw(true);
-//				Start_Primary_Sound_Buffer(TRUE);
-//				if (WWMouse) WWMouse->Set_Cursor_Clip();
-//			}
-			return(0);
-#ifdef NEVER
-		case WM_ACTIVATE:
-			if (low_param == WA_INACTIVE) {
-				GameInFocus = FALSE;
-				Focus_Loss();
-			}
-			return(0);
-#endif	//NEVER
-
-
-		case WM_SYSCOMMAND:
-			switch ( wParam ) {
-
-				case SC_CLOSE:
-					/*
-					** Windows sent us a close message. Probably in response to Alt-F4. Ignore it by
-					** pretending to handle the message and returning true;
-					*/
-					return (0);
-
-				case SC_SCREENSAVE:
-					/*
-					** Windoze is about to start the screen saver. If we just return without passing
-					** this message to DefWindowProc then the screen saver will not be allowed to start.
-					*/
-					return (0);
-			}
-			break;
-
-
-#ifndef WINSOCK_IPX
-		case WM_ACCEPT:
-		case WM_HOSTBYADDRESS:
-		case WM_HOSTBYNAME:
-		case WM_ASYNCEVENT:
-		case WM_UDPASYNCEVENT:
-	 		Winsock.Message_Handler(hwnd, message, wParam, lParam);
-			return (0);
-#endif	//WINSOCK_IPX
-	}
-
-
-
-	return DefWindowProc (hwnd, message, wParam, lParam);
-}
-#endif
 
 
 
@@ -362,34 +142,6 @@ HANDLE DebugFile = INVALID_HANDLE_VALUE;
  *=============================================================================================*/
 void WWDebugString (char *string)
 {
-#if (0)
-	char outstr[256];
-
-	sprintf (outstr, "%s", string);
-
-	DWORD	actual;
-	if (DebugFile == INVALID_HANDLE_VALUE){
-		DebugFile = CreateFile("debug.txt", GENERIC_WRITE, 0,
-												NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	}else{
-		DebugFile = CreateFile("debug.txt", GENERIC_WRITE, 0,
-												NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	}
-
-	if (DebugFile != INVALID_HANDLE_VALUE){
-		SetFilePointer (DebugFile, 0, NULL, FILE_END);
-		WriteFile(DebugFile, outstr, strlen(outstr)+1, &actual, NULL);
-		CloseHandle (DebugFile);
-	}
-
-	OutputDebugString (string);
-#else	//(0)
-
-	string = string;
-//	debugprint( string );
-
-#endif	//(0)
-
 }
 
 
@@ -435,98 +187,11 @@ void Create_Main_Window ( HANDLE instance , int command_show , int width , int h
 {
 	MainWindow = NULL;
 	return;
-#if (0)//PG
-	HWND        	hwnd ;
-	WNDCLASS    	wndclass ;
-	//
-	// Register the window class
-	//
-
-	wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
-	wndclass.lpfnWndProc   = Windows_Procedure ;
-	wndclass.cbClsExtra    = 0 ;
-	wndclass.cbWndExtra    = 0 ;
-	wndclass.hInstance     = instance ;
-	wndclass.hIcon         = LoadIcon (instance, MAKEINTRESOURCE(CC_ICON)) ;
-	wndclass.hCursor       = NULL;
-	wndclass.hbrBackground = NULL;
-	wndclass.lpszMenuName  = WINDOW_NAME;	//NULL
-	wndclass.lpszClassName = WINDOW_NAME;
-
-	RegisterClass (&wndclass) ;
-
-
-	//
-	// Create our main window
-	//
-	hwnd = CreateWindowEx (
-							WS_EX_TOPMOST,
-							WINDOW_NAME,
-							WINDOW_NAME,
-							WS_POPUP, // Denzil | WS_MAXIMIZE,
-							0,
-							0,
-							// Denzil 5/18/98 - Making window fullscreen prevents other apps
-							// from getting WM_PAINT messages
-							GetSystemMetrics(SM_CXSCREEN), //width,
-							GetSystemMetrics(SM_CYSCREEN), //height,
-							// End Denzil
-							NULL,
-							NULL,
-							instance,
-							NULL );
-// Denzil
-width = width; height = height;
-// End
-
-	ShowWindow (hwnd, command_show );
-	ShowCommand = command_show;
-	UpdateWindow (hwnd);
-	SetFocus (hwnd);
-	MainWindow=hwnd;			//Save the handle to our main window
-	hInstance = instance;
-
-	CCFocusMessage = RegisterWindowMessage ("CC_GOT_FOCUS");
-
-	Audio_Focus_Loss_Function = &Focus_Loss;
-	Misc_Focus_Loss_Function = &Focus_Loss;
-	Misc_Focus_Restore_Function = &Focus_Restore;
-	Gbuffer_Focus_Loss_Function = &Focus_Loss;
-#endif
 }
 
 
 void Window_Dialog_Box(HANDLE  hinst, LPCTSTR  lpszTemplate, HWND  hwndOwner, DLGPROC  dlgprc)
 {
-#if (0)//PG
-	MSG					msg;
-	/*
-	** Get rid of the Westwood mouse cursor because we are showing a
-	** dialog box and we want to have the right windows cursor showing
-	** for it.
-	*/
-	Hide_Mouse();
-	ShowCursor(TRUE);
-
-	/*
-	** Pop up the dialog box and then run a standard message handler
-	** until the dialog box is closed.
-	*/
-
-	DialogBox(hinst, lpszTemplate, hwndOwner, dlgprc);
-	while (GetMessage(&msg, NULL, 0, 0) && !AllDone) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	/*
-	** Restore the westwood mouse cursor and get rid of the windows one
-	** because it is now time to restore back to the westwood way of
-	** doing things.
-	*/
-	ShowCursor(FALSE);
-	Show_Mouse();
-#endif
 }
 
 
@@ -560,20 +225,6 @@ extern "C" void Set_Palette_Register(int number, int red, int green, int blue);
 //#pragma off (unreferenced)
 void Colour_Debug (int call_number)
 {
-#if (0)//PG
-	//#if 0
-	//if (DebugColour==call_number || !call_number) {
-
-		//if (call_number) {
-		//	Wait_Vert_Blank();
-		//}
-
-		Set_Palette_Register (0,ColourLookup[call_number].Red ,
-										ColourLookup[call_number].Green,
-										ColourLookup[call_number].Blue);
-	//}
-	//#endif
-#endif
 }
 
 //#pragma on (unreferenced)

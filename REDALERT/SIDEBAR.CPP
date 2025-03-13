@@ -412,15 +412,6 @@ void SidebarClass::Reload_Sidebar(void)
 	}
 
 	/*  Don't have write access to the static char array. ST - 5/20/2019 */
-#if (0)
-	char * sidename = sidebarnames[houseloaded];
-	*(sidename+4) = '1';
-	SidebarShape = (void*)MFCD::Retrieve(sidename);
-	*(sidename+4) = '2';
-	SidebarMiddleShape = (void*)MFCD::Retrieve(sidename);
-	*(sidename+4) = '3';
-	SidebarBottomShape = (void*)MFCD::Retrieve(sidename);
-#else
 	char sb_name[16];
 	strcpy(sb_name, sidebarnames[houseloaded]);
 	sb_name[4] = '1';
@@ -429,8 +420,6 @@ void SidebarClass::Reload_Sidebar(void)
 	SidebarMiddleShape = (void*)MFCD::Retrieve(sb_name);
 	sb_name[4] = '3';
 	SidebarBottomShape = (void*)MFCD::Retrieve(sb_name);
-
-#endif
 
 
 

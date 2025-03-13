@@ -762,12 +762,6 @@ int Main_Menu(unsigned long )
 //			Draw_Caption (TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 			commands->Draw_All();
 #ifdef FIXIT_VERSION_3
-#if (0)//PG
-			Fancy_Text_Print("V%s", d_dialog_x+d_dialog_w- (18 * RESFACTOR),
-				d_dialog_y+d_dialog_h-(5 * RESFACTOR), GadgetClass::Get_Color_Scheme(), TBLACK,
-				TPF_EFNT|TPF_NOSHADOW|TPF_RIGHT,
-				Version_Name());
-#endif
 #else
 #ifndef WIN32
 			Fancy_Text_Print("V%s", d_dialog_x+d_dialog_w- (18 * RESFACTOR),
@@ -892,13 +886,6 @@ int Main_Menu(unsigned long )
 				retval = (input & 0x7FFF) - BUTTON_EXPAND;
 				process = false;
 				break;
-#if (0)
-			case KN_BACKSPACE:
-				Show_Who_Was_Responsible ();
-				display = true;
-				Theme.Play_Song(THEME_INTRO);
-				break;
-#endif	//(0)
 			case KN_UP:
 				buttons[curbutton]->Turn_Off();
 				buttons[curbutton]->Flag_To_Redraw();
@@ -977,18 +964,6 @@ int Main_Menu(unsigned long )
 
 
 			case KN_LMOUSE:
-#if (0)//PG
-				if (Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
-
-													9*RESFACTOR, 10*RESFACTOR,
-													79*RESFACTOR, 24*RESFACTOR)){
-					Show_Who_Was_Responsible();
-					display = true;
-					Theme.Play_Song(THEME_INTRO);
-
-					break;
-				}
-#endif
 #ifdef FIXIT_ANTS
 			#ifdef FIXIT_PATCH_108
 			if (Is_Counterstrike_Installed() == true)

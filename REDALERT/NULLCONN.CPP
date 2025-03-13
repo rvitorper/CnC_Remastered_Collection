@@ -160,59 +160,6 @@ void NullModemConnClass::Init (PORT *port)
 int NullModemConnClass::Send (char *buf, int buflen, void *, int )
 {
 	return 0;
-#if (0)//PG
-	int *ibuf;
-	SerialHeaderType *header;
-	unsigned long sendlen;
-
-	/*------------------------------------------------------------------------
-	Error if we haven't been properly initialized
-	------------------------------------------------------------------------*/
-#ifdef WIN32
-	if ( PortHandle == NULL ) return(false);
-
-#else	//WIN32
-	int status;
-	if ( Port == NULL ) {
-		return(0);
-	}
-#endif	//WIN32
-
-	/*------------------------------------------------------------------------
-	Package the data into the Send Buffer
-	------------------------------------------------------------------------*/
-	header = (SerialHeaderType *) SendBuf;
-	header->MagicNumber	= PACKET_SERIAL_START;
-	header->Length			= (short) buflen;
-	header->MagicNumber2	= PACKET_SERIAL_VERIFY;
-
-	sendlen = sizeof( SerialHeaderType );
-	memcpy (SendBuf + sendlen, buf, buflen);
-	sendlen += buflen;
-	ibuf = (int *)(SendBuf + sendlen);
-	*ibuf = Compute_CRC( buf, buflen );
-	sendlen += sizeof( int );
-
-	*(SendBuf + sendlen) = '\r';
-	sendlen += 1;
-
-	/*------------------------------------------------------------------------
-	Send the data
-	------------------------------------------------------------------------*/
-#ifdef WIN32
-		SerialPort->Write_To_Serial_Port((unsigned char *)SendBuf, (int)sendlen );
-		return (true);
-
-#else	//WIN32
-	status = WriteBuffer( Port, SendBuf, sendlen );
-	if ( status == ASSUCCESS ) {
-		return(1);
-	}
-	else {
-		return(0);
-	}
-#endif	//WIN32
-#endif//PG
 }	/* end of Send */
 
 
