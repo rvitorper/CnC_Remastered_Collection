@@ -76,14 +76,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include	"function.h"
 
-#ifdef WOLAPI_INTEGRATION
-//#include "WolDebug.h"
-#include "WolapiOb.h"
-extern WolapiObject* pWolapi;
-
-bool bReconnectDialogCancelled;
-#endif
-
 
 /********************************** Defines *********************************/
 #define SHOW_MONO	0
@@ -676,13 +668,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 					}
 					fclose(fp);
 				}
-
-#ifdef WOLAPI_INTEGRATION
-				//	"Reconnecting" dialog is about to be shown.
-				//	At this point, begin wolapi "disconnect pinging", if appropriate.
-				if( Session.Type == GAME_INTERNET && pWolapi && pWolapi->GameInfoCurrent.bTournament )
-					pWolapi->Init_DisconnectPinging();
-#endif
 			}
 
 			if (Process_Reconnect_Dialog(&timeout_timer, their_frame,				//	(Returns immediately.)
@@ -690,12 +675,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 				return (RC_CANCEL);
 			}
 			reconnect_dlg = 1;
-
-#ifdef WOLAPI_INTEGRATION
-				//	Continue wolapi "disconnect pinging", if appropriate.
-				if( Session.Type == GAME_INTERNET && pWolapi && pWolapi->bDoingDisconnectPinging )
-					pWolapi->Pump_DisconnectPinging();
-#endif
 		}
 
 		//---------------------------------------------------------------------

@@ -69,18 +69,6 @@
 #define FIELD_VIDEO_MEMORY						"VIDM"
 #define FIELD_SHADOW_REGROWS					"SHAD"
 
-#ifdef WOLAPI_INTEGRATION
-#define FIELD_HOSTORNOT							"SDFX"
-#define FIELD_TOURNAMENT						"TRNY"
-#define FIELD_NUM_INITIAL_PLAYERS				"NUMP"
-#define FIELD_NUM_REMAINING_PLAYERS				"REMN"
-#define FIELD_DISCONNECT_PINGS					"PING"
-#define FIELD_COMPUTERTOOKOVER					"QUIT"
-//#define FIELD_HARDWARE_GUID					"GUID"
-#define FIELD_PLAYER1_IP						"ADR1"
-#define FIELD_PLAYER2_IP						"ADR2"
-#endif
-
 //	ajw The following were never used (thank god).
 #define FIELD_PLAYER1_HANDLE					"NAM1"
 #define FIELD_PLAYER2_HANDLE					"NAM2"
@@ -164,13 +152,6 @@ long			GameEndTime;
 void			*PacketLater = NULL;
 
 //#include "WolDebug.h"
-
-#ifdef WOLAPI_INTEGRATION
-#include "WolapiOb.h"
-extern WolapiObject* pWolapi;
-
-extern bool bReconnectDialogCancelled;
-#endif
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood server          *

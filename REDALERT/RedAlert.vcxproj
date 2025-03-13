@@ -204,7 +204,6 @@
     <ClCompile Include="HELP.CPP" />
     <ClCompile Include="HOUSE.CPP" />
     <ClCompile Include="HSV.CPP" />
-    <ClCompile Include="ICONLIST.CPP" />
     <ClCompile Include="IDATA.CPP" />
     <ClCompile Include="INFANTRY.CPP" />
     <ClCompile Include="INI.CPP" />
@@ -284,7 +283,6 @@
     <ClCompile Include="RAND.CPP" />
     <ClCompile Include="RANDOM.CPP" />
     <ClCompile Include="RAWFILE.CPP" />
-    <ClCompile Include="RAWOLAPI.CPP" />
     <ClCompile Include="READLINE.CPP" />
     <ClCompile Include="RECT.CPP" />
     <ClCompile Include="REINF.CPP" />
@@ -296,7 +294,6 @@
     <ClCompile Include="SCORE.CPP" />
     <ClCompile Include="SCROLL.CPP" />
     <ClCompile Include="SDATA.CPP" />
-    <ClCompile Include="SEDITDLG.CPP" />
     <ClCompile Include="SESSION.CPP" />
     <ClCompile Include="SHA.CPP" />
     <ClCompile Include="Shape.cpp" />
@@ -373,16 +370,8 @@
     <ClCompile Include="Win32Lib\WRITEPCX.CPP" />
     <ClCompile Include="Win32Lib\_DIPTABL.CPP" />
     <ClCompile Include="WINSTUB.CPP" />
-    <ClCompile Include="WOLAPIOB.CPP" />
-    <ClCompile Include="WOLEDIT.CPP" />
     <ClCompile Include="WOLSTRNG.CPP" />
-    <ClCompile Include="WOL_CGAM.CPP" />
-    <ClCompile Include="WOL_CHAT.CPP" />
-    <ClCompile Include="WOL_DNLD.CPP" />
     <ClCompile Include="WOL_GSUP.CPP" />
-    <ClCompile Include="WOL_LOGN.CPP" />
-    <ClCompile Include="WOL_MAIN.CPP" />
-    <ClCompile Include="WOL_OPT.CPP" />
     <ClCompile Include="WSPIPX.CPP" />
     <ClCompile Include="WSPROTO.CPP" />
     <ClCompile Include="WSPUDP.CPP" />
@@ -477,7 +466,6 @@
     <ClInclude Include="HELP.H" />
     <ClInclude Include="HOUSE.H" />
     <ClInclude Include="HSV.H" />
-    <ClInclude Include="ICONLIST.H" />
     <ClInclude Include="INFANTRY.H" />
     <ClInclude Include="INI.H" />
     <ClInclude Include="INLINE.H" />
@@ -550,7 +538,6 @@
     <ClInclude Include="RAMFILE.H" />
     <ClInclude Include="RANDOM.H" />
     <ClInclude Include="RAWFILE.H" />
-    <ClInclude Include="RAWOLAPI.H" />
     <ClInclude Include="READLINE.H" />
     <ClInclude Include="RECT.H" />
     <ClInclude Include="REGION.H" />
@@ -566,7 +553,6 @@
     <ClInclude Include="SCREEN.H" />
     <ClInclude Include="SCROLL.H" />
     <ClInclude Include="SEARCH.H" />
-    <ClInclude Include="SEDITDLG.H" />
     <ClInclude Include="SEQCONN.H" />
     <ClInclude Include="SESSION.H" />
     <ClInclude Include="SHA.H" />
@@ -598,7 +584,6 @@
     <ClInclude Include="TEXTBTN.H" />
     <ClInclude Include="THEME.H" />
     <ClInclude Include="TOGGLE.H" />
-    <ClInclude Include="TOOLTIP.H" />
     <ClInclude Include="TRIGGER.H" />
     <ClInclude Include="TRIGTYPE.H" />
     <ClInclude Include="TXTLABEL.H" />
@@ -664,11 +649,8 @@
     <ClInclude Include="Win32Lib\WWMEM.H" />
     <ClInclude Include="Win32Lib\wwstd.h" />
     <ClInclude Include="Win32Lib\WW_WIN.H" />
-    <ClInclude Include="WOLAPIOB.H" />
     <ClInclude Include="WOLDEBUG.H" />
-    <ClInclude Include="WOLEDIT.H" />
     <ClInclude Include="WOLSTRNG.H" />
-    <ClInclude Include="WOL_GSUP.H" />
     <ClInclude Include="WSNWLINK.H" />
     <ClInclude Include="WSPIPX.H" />
     <ClInclude Include="WSPROTO.H" />

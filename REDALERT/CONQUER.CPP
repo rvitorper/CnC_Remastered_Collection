@@ -1111,13 +1111,7 @@ static void Message_Input(KeyNumType &input)
 	**	'to' portion.  At the other end, the buffer allocated to display the
 	**	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
 	*/
-#ifdef WOLAPI_INTEGRATION
-	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && 
-		( ( input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) ) || input == PAGE_RESPOND_KEY ) && 
-		!Session.Messages.Is_Edit()) {
-#else
 	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) && !Session.Messages.Is_Edit()) {
-#endif
 		memset (txt, 0, 40);
 
 		/*
@@ -1149,12 +1143,8 @@ static void Message_Input(KeyNumType &input)
 					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
 
 				Map.Flag_To_Redraw(false);
-
-#ifdef WOLAPI_INTEGRATION
-			} else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan && input != PAGE_RESPOND_KEY ) {
-#else
+				
 			} else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan) {
-#endif
 				id = Ipx.Connection_ID(input - KN_F1);
 				Session.MessageAddress = (*(Ipx.Connection_Address (id)));
 				sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
@@ -1164,38 +1154,6 @@ static void Message_Input(KeyNumType &input)
 
 				Map.Flag_To_Redraw(false);
 			}
-#ifdef WOLAPI_INTEGRATION
-			else if( Session.Type == GAME_INTERNET && pWolapi && !pWolapi->bConnectionDown && input == PAGE_RESPOND_KEY )
-			{
-				if( *pWolapi->szExternalPager )
-				{
-					//	Respond to a page from external ww online user that paged me.
-					//	Set MessageAddress to all zeroes, as a flag to ourselves later on.
-					NetNumType blip;
-					NetNodeType blop;
-					memset( blip, 0, 4 );
-					memset( blop, 0, 6 );
-					Session.MessageAddress = IPXAddressClass( blip, blop );
-
-					//	Tell pWolapi not to reset szExternalPager for the time being.
-					pWolapi->bFreezeExternalPager = true;
-
-					sprintf( txt, Text_String( TXT_TO ), pWolapi->szExternalPager );
-
-					Session.Messages.Add_Edit(Session.ColorIdx,
-						TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-					Map.Flag_To_Redraw(false);
-
-					Keyboard->Clear();
-				}
-				else
-				{
-					Session.Messages.Add_Message( NULL, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD, TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE );
-					Sound_Effect( VOC_SYS_ERROR );
-				}
-			}
-#endif
 		}
 #if(MPATH)
 		/*
@@ -1251,11 +1209,6 @@ static void Message_Input(KeyNumType &input)
 	if (rc==2 && Session.Type != GAME_NORMAL) {
 		if (copy_input==KN_ESC) {
 			Map.Flag_To_Redraw(true);
-#ifdef WOLAPI_INTEGRATION
-			if( pWolapi )
-				//	Just in case user was responding to a page from outside the game, and we had frozen the "szExternalPager".
-				pWolapi->bFreezeExternalPager = false;
-#endif
 		} else {
 			Map.Flag_To_Redraw(false);
 		}
