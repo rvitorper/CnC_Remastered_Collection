@@ -504,14 +504,6 @@ int IPXGlobalConnClass::Service_Receive_Queue (void)
  *=========================================================================*/
 void IPXGlobalConnClass::Set_Bridge(NetNumType bridge)
 {
-#ifdef WINSOCK_IPX
-
-	if (Configured) {
-		bridge = bridge;
-		IsBridge = 0;
-	}
-
-#else	//WINSOCK_IPX
 	if (Configured) {
 		memcpy (BridgeNet, bridge, 4);
 		memset (BridgeNode, 0xff, 6);
@@ -523,8 +515,6 @@ void IPXGlobalConnClass::Set_Bridge(NetNumType bridge)
 			IsBridge = 0;
 		}
 	}
-#endif	//WINSOCK_IPX
-
 } 	/* end of Set_Bridge */
 
 

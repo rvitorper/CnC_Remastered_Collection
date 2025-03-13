@@ -44,12 +44,8 @@
 
 #include	"function.h"
 
-#ifdef WINSOCK_IPX
-#include "WSProto.h"
-#else	//WINSOCK_IPX
 #include "tcpip.h"
 #include "ipx95.h"
-#endif	//WINSOCK_IPX
 
 void output(short,short)
 {}

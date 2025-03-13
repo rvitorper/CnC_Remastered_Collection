@@ -65,30 +65,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#ifdef TESTCODE
-class A {
-	public:
-		enum {VAR=1};
-};
-
-template<class T>
-class B {
-	public:
-		enum {VAR2=T::VAR};  // this is the line in question.
-};
-
-B<A> test;
-#endif
-
-
 
 #include	"function.h"
 #ifdef WIN32
-#ifdef WINSOCK_IPX
-#include	"WSProto.h"
-#else	//WINSOCK_IPX
 #include	"tcpip.h"
-#endif	//WINSOCK_IPX
 #else
 #include	"fakesock.h"
 TcpipManagerClass	Winsock;
@@ -103,14 +83,6 @@ TcpipManagerClass	Winsock;
 #include	<share.h>
 #include	"ccdde.h"
 #include	"vortex.h"
-
-#ifdef WOLAPI_INTEGRATION
-//#include "WolDebug.h"
-#include "WolStrng.h"
-#include "WolapiOb.h"
-extern WolapiObject* pWolapi;
-#define PAGE_RESPOND_KEY	KN_RETURN	//KN_COMMA
-#endif
 
 #ifdef MPEGMOVIE
 #ifdef MCIMPEG

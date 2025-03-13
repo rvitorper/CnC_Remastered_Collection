@@ -59,15 +59,7 @@
 #include	"function.h"
 #include	"loaddlg.h"
 #ifdef WIN32
-#ifdef WINSOCK_IPX
-#include	"WSProto.h"
-#include	"WSPUDP.h"
-#include	"WSPIPX.h"
-#include	"internet.h"
-#else	//WINSOCK_IPX
 #include	"tcpip.h"
-#endif	//WINSOCK_IPX
-
 #endif
 #include	<conio.h>
 #include	<dos.h>
@@ -443,10 +435,6 @@ bool Init_Game(int , char * [])
 
 	return(true);
 }
-
-#ifdef WINSOCK_IPX			//	Steve Tall missed this one - ajw
-extern bool Get_Broadcast_Addresses (void);
-#endif
 
 /***********************************************************************************************
  * Select_Game -- The game's main menu                                                         *
@@ -1018,42 +1006,6 @@ bool Select_Game(bool fade)
 								*/
 								SetForegroundWindow ( MainWindow );
 								ShowWindow ( MainWindow, ShowCommand );
-
-#ifdef WINSOCK_IPX
-
-								if (PacketTransport ) delete PacketTransport;
-								PacketTransport = new UDPInterfaceClass;
-								assert ( PacketTransport != NULL);
-
-								if (PacketTransport->Init()) {
-									WWDebugString ("RA95 - About to read multiplayer settings.\n");
-									Session.Read_MultiPlayer_Settings ();
-
-									WWDebugString ("RA95 - About to call Start_Server or Start_Client.\n");
-									PacketTransport->Start_Listening();
-
-									/*
-									** Flush out any pending packets from a previous game.
-									*/
-									PacketTransport->Discard_In_Buffers();
-									PacketTransport->Discard_Out_Buffers();
-
-								} else {
-									delete PacketTransport;
-									PacketTransport = NULL;
-									WWDebugString ("RA95 - Winsock failed to initialise.\n");
-									Session.Type = GAME_NORMAL;
-									selection = SEL_EXIT;
-									Special.IsFromWChat = false;
-									break;
-								}
-
-								WWDebugString ("RA95 - About to call Init_Network.\n");
-								Init_Network();
-
-
-#else	//WINSOCK_IPX
-
 								WWDebugString ("RA95 - About to initialise Winsock.\n");
 								if (Winsock.Init()) {
 									WWDebugString ("RA95 - About to read multiplayer settings.\n");
@@ -1102,7 +1054,6 @@ bool Select_Game(bool fade)
 									Special.IsFromWChat = false;
 									break;
 								}
-#endif	//WINSOCK_IPX
 								WWDebugString ("RA95 - About to call Init_Network.\n");
 								Init_Network();
 
@@ -1112,10 +1063,6 @@ bool Select_Game(bool fade)
 								} else {
 									Read_Game_Options( "C&CSPAWN.INI" );
 								}
-#ifdef WINSOCK_IPX
-								WWDebugString ("RA95 - About to set addresses.\n");
-								PacketTransport->Set_Broadcast_Address (PlanetWestwoodIPAddress);
-#endif	//WINSOCK_IPX
 								if (PlanetWestwoodIsHost) {
 
 									WWDebugString ("RA95 - About to call Server_Remote_Connect.\n");
@@ -1126,12 +1073,7 @@ bool Select_Game(bool fade)
 										/*
 										** We failed to connect to the other player
 										*/
-#ifdef WINSOCK_IPX
-										delete PacketTransport;
-										PacketTransport = NULL;
-#else	//WINSOCK_IPX
 										Winsock.Close();
-#endif	//WINSOCK_IPX
 										Session.Type = GAME_NORMAL;
 										selection = SEL_NONE;
 										DDEServer.Delete_MPlayer_Game_Info();	// Make sure we dont go round in an infinite loop
@@ -1146,12 +1088,7 @@ bool Select_Game(bool fade)
 										/*
 										** We failed to connect to the other player
 										*/
-#ifdef WINSOCK_IPX
-										delete PacketTransport;
-										PacketTransport = NULL;
-#else	//WINSOCK_IPX
 										Winsock.Close();
-#endif	//WINSOCK_IPX
 										Session.Type = GAME_NORMAL;
 										selection = SEL_NONE;
 										DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont go round in an infinite loop
@@ -1252,25 +1189,6 @@ bool Select_Game(bool fade)
 							/*
 							** Init network system & remote-connect
 							*/
-#ifdef WINSOCK_IPX
-							if (PacketTransport ) delete PacketTransport;
-//							if (WWMessageBox().Process("Select a protocol to use for network play.", "UDP", "IPX")) {
-								PacketTransport = new IPXInterfaceClass;
-								assert ( PacketTransport != NULL);
-//							}else{
-//								PacketTransport = new UDPInterfaceClass;	//IPXInterfaceClass;
-//								assert ( PacketTransport != NULL);
-//								if (!Get_Broadcast_Addresses()) {
-//									Session.Type = GAME_NORMAL;
-//									display = true;
-//									selection = SEL_NONE;
-//									delete PacketTransport;
-//									PacketTransport = NULL;
-//									break;
-//								}
-//							}
-
-#endif	//WINSOCK_IPX
 							WWDebugString ("RA95 - About to call Init_Network.\n");
 							if (Session.Type == GAME_IPX && Init_Network() && Remote_Connect()) {
 #ifdef FIXIT_VERSION_3
@@ -1284,10 +1202,6 @@ bool Select_Game(bool fade)
 								Session.Type = GAME_NORMAL;
 								display = true;
 								selection = SEL_NONE;
-#ifdef WINSOCK_IPX
-								delete PacketTransport;
-								PacketTransport = NULL;
-#endif	//WINSOCK_IPX
 							}
 							break;
 

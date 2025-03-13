@@ -48,9 +48,6 @@
 //#include <mem.h>
 #include "ipxaddr.h"
 
-#ifdef WINSOCK_IPX
-#include	"WSProto.h"
-#endif	//WINSOCK_IPX
 
 
 /***************************************************************************
@@ -181,25 +178,6 @@ void IPXAddressClass::Set_Address(NetNumType net, NetNodeType node)
  *=========================================================================*/
 void IPXAddressClass::Set_Address(IPXHeaderType *header)
 {
-#ifdef WINSOCK_IPX
-	ProtocolEnum protocol = PROTOCOL_IPX;
-	if ( PacketTransport ) protocol = PacketTransport->Get_Protocol();
-
-	switch ( protocol ) {
-
-		case PROTOCOL_IPX:
-			memcpy(NetworkNumber,header->SourceNetworkNumber,4);
-			memcpy(NodeAddress,header->SourceNetworkNode,6);
-			break;
-
-		case PROTOCOL_UDP:
-			unsigned char *addr = (unsigned char*) header;
-			memset (NodeAddress, 0, 6);
-			memcpy (NodeAddress, addr, 4);
-			memset (NetworkNumber, 0, 4);
-			break;
-	}
-#else	//WINSOCK_IPX
 
 	if (header) {
 		memcpy(NetworkNumber,header->SourceNetworkNumber,4);
@@ -211,8 +189,6 @@ void IPXAddressClass::Set_Address(IPXHeaderType *header)
 		memset(NetworkNumber, 1 ,4);
 		memset(NodeAddress, 1, 6);
 	}
-
-#endif	//WINSOCK_IPX
 
 }	/* end of Set_Address */
 

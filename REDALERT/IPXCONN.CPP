@@ -50,10 +50,6 @@
 #include <string.h>
 #include "ipxconn.h"
 
-#ifdef WINSOCK_IPX
-#include "WSProto.h"
-
-#else
 
 #include "ipx95.h"
 #ifdef WIN32
@@ -61,7 +57,6 @@
 #else	//WIN32
 #include "fakesock.h"
 #endif	//WIN32
-#endif	//WINSOCK_IPX
 
 
 
@@ -124,12 +119,6 @@ IPXConnClass::IPXConnClass (int numsend, int numreceive, int maxlen,
 		Address = (*address);
 	ID = id;
 	strcpy (Name, name);
-
-#ifdef WINSOCK_IPX
-	Address.Get_Address(net,node);
-	memcpy(ImmediateAddress,node,6);
-	Immed_Set = 0;
-#else
 	if ( !Winsock.Get_Connected() ) {
 		/*------------------------------------------------------------------------
 		If our Address field is an actual address (ie NULL wasn't passed to the
@@ -164,7 +153,6 @@ IPXConnClass::IPXConnClass (int numsend, int numreceive, int maxlen,
 			Immed_Set = 0;
 		}
 	}
-#endif	//WINSOCK_IPX
 }	/* end of IPXConnClass */
 
 
@@ -272,25 +260,6 @@ int IPXConnClass::Start_Listening(void)
 {
 #ifdef WIN32
 
-#ifdef WINSOCK_IPX
-	/*
-	** Open the socket.
-	*/
-	if (!Open_Socket(Socket))
-		return(false);
-
-	/*
-	** start listening on the socket.
-	*/
-	if ( PacketTransport->Start_Listening () ) {
-		Listening =1;
-		return (true);
-	} else {
-		Close_Socket(Socket);
-		return (false);
-	}
-
-#else
 	if (Winsock.Get_Connected ()) return (true);
 
 	/*------------------------------------------------------------------------
@@ -306,7 +275,6 @@ int IPXConnClass::Start_Listening(void)
 		Close_Socket(Socket);
 		return (false);
 	}
-#endif	//WINSOCK_IPX
 
 #else	//WIN32
 
@@ -392,13 +360,6 @@ int IPXConnClass::Start_Listening(void)
  *=========================================================================*/
 int IPXConnClass::Stop_Listening(void)
 {
-#ifdef WINSOCK_IPX
-	if ( PacketTransport ) PacketTransport->Stop_Listening();
-	Listening = 0;
-
-	//	All done.
-	return(1);
-#else
 	/*------------------------------------------------------------------------
 	Don't do anything unless we're already Listening.
 	------------------------------------------------------------------------*/
@@ -432,7 +393,6 @@ int IPXConnClass::Stop_Listening(void)
 	All done.
 	------------------------------------------------------------------------*/
 	return(1);
-#endif	//WINSOCK_IPX
 
 }	/* end of Stop_Listening */
 
@@ -488,13 +448,6 @@ int IPXConnClass::Send(char *buf, int buflen, void *, int)
 int IPXConnClass::Open_Socket(unsigned short socket)
 {
 	int rc;
-#ifdef WINSOCK_IPX
-	rc = PacketTransport->Open_Socket(socket);
-
-	SocketOpen = rc;
-	return ( rc );
-
-#else	//WINSOCK_IPX
 	if (Winsock.Get_Connected()) {
 		SocketOpen = 1;
 		return (true);
@@ -532,7 +485,6 @@ int IPXConnClass::Open_Socket(unsigned short socket)
 	SocketOpen = 1;
 
 	return(1);
-#endif	//WINSOCK_IPX
 
 }	/* end of Open_Socket */
 
@@ -554,11 +506,6 @@ int IPXConnClass::Open_Socket(unsigned short socket)
  *=========================================================================*/
 void IPXConnClass::Close_Socket(unsigned short socket)
 {
-#ifdef WINSOCK_IPX
-	socket = socket;
-	PacketTransport->Close_Socket();
-	SocketOpen = 0;
-#else	//WINSOCK_IPX
 	if (Winsock.Get_Connected()) {
 		SocketOpen = 0;
 		return;
@@ -575,7 +522,6 @@ void IPXConnClass::Close_Socket(unsigned short socket)
 	}
 
 	SocketOpen = 0;
-#endif	//WINSOCK_IPX
 }	/* end of Close_Socket */
 
 
@@ -610,14 +556,6 @@ void IPXConnClass::Close_Socket(unsigned short socket)
 int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
 	NetNodeType immed)
 {
-#ifdef WINSOCK_IPX
-
-	immed = immed;
-	assert ( immed == NULL );
-	PacketTransport->WriteTo ( (void*)buf, buflen, (void*) address );
-	return (true);
-
-#else	//WINSOCK_IPX
 	NetNumType net;
 	NetNodeType node;
 	int rc;
@@ -754,7 +692,6 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
 	}
 
 #endif	//WIN32
-#endif	//WINSOCK_IPX
 
 }	/* end of Send_To */
 
@@ -776,11 +713,6 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
  *=========================================================================*/
 int IPXConnClass::Broadcast(char *buf, int buflen)
 {
-#ifdef WINSOCK_IPX
-	PacketTransport->Broadcast (buf, buflen);
-	return (true);
-
-#else	//WINSOCK_IPX
 
 #ifdef WIN32
 
@@ -869,7 +801,6 @@ int IPXConnClass::Broadcast(char *buf, int buflen)
 	}
 
 #endif	//WIN32
-#endif	//WINSOCK_IPX
 }	/* end of Broadcast */
 
 /************************** end of ipxconn.cpp *****************************/

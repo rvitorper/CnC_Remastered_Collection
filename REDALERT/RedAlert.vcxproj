@@ -129,7 +129,6 @@
     <ClCompile Include="BBDATA.CPP" />
     <ClCompile Include="BDATA.CPP" />
     <ClCompile Include="BFIOFILE.CPP" />
-    <ClCompile Include="BIGCHECK.CPP" />
     <ClCompile Include="BLOWFISH.CPP" />
     <ClCompile Include="BLOWPIPE.CPP" />
     <ClCompile Include="BLWSTRAW.CPP" />
@@ -401,7 +400,6 @@
     <ClInclude Include="BASE.H" />
     <ClInclude Include="BASE64.H" />
     <ClInclude Include="BFIOFILE.H" />
-    <ClInclude Include="BIGCHECK.H" />
     <ClInclude Include="BLOWFISH.H" />
     <ClInclude Include="BLOWPIPE.H" />
     <ClInclude Include="BLWSTRAW.H" />

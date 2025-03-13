@@ -71,12 +71,6 @@
 #include "ipxmgr.h"
 #include "wwlib32.h"	// to enable mono output
 
-#ifdef WINSOCK_IPX
-
-#include "WSProto.h"
-#include "WSPIPX.h"
-
-#else	//WINSOCK_IPX
 
 #include "ipx95.h"
 #ifdef WIN32
@@ -84,8 +78,6 @@
 #else
 #include	"fakesock.h"
 #endif	//WIN32
-
-#endif	//WINSOCK_IPX
 
 // Turn off "expression is not meaningful".
 //#pragma warning 628 9
@@ -116,26 +108,6 @@ IPXManagerClass::IPXManagerClass (int glb_maxlen, int pvt_maxlen,
 	unsigned short product_id)
 {
 	int i;
-#ifdef WINSOCK_IPX
-	/*
-	** Find out if Packet protocol services are available through Winsock.
-	*/
-	if ( PacketTransport ) {
-		delete  PacketTransport;
-		PacketTransport = NULL;
-	}
-	PacketTransport = new WinsockInterfaceClass;
-	assert ( PacketTransport != NULL );
-
-	if ( PacketTransport->Init() ){
-		IPXStatus = 1;
-	}else{
-		IPXStatus = 0;
-	}
-	delete PacketTransport;
-	PacketTransport = NULL;
-
-#else	//WINSOCK_IPX
 
 	//------------------------------------------------------------------------
 	//	Initialize data members
@@ -149,7 +121,6 @@ IPXManagerClass::IPXManagerClass (int glb_maxlen, int pvt_maxlen,
 	else {
 		IPXStatus = 1;
 	}
-#endif	//WINSOCK_IPX
 
 	//........................................................................
 	//	Set listening state flag to off
@@ -980,102 +951,6 @@ int IPXManagerClass::Service(void)
 	int packetlen;
 	IPXAddressClass address;
 
-#ifdef WINSOCK_IPX
-
-
-	unsigned char temp_receive_buffer[1024];
-	int	temp_receive_buffer_len;
-	int	temp_address_len;
-
-
-	char temp_address [128];
-
-	if ( PacketTransport ) {
-
-		do {
-			temp_receive_buffer_len = sizeof (temp_receive_buffer);
-			temp_address_len = sizeof (temp_address);
-			packetlen = PacketTransport->Read ( temp_receive_buffer, temp_receive_buffer_len, temp_address, temp_address_len );
-			if ( packetlen ) {
-				CurDataBuf = (char*)temp_receive_buffer;
-				address = *((IPXAddressClass*) temp_address);
-
-				packet = (CommHeaderType *)CurDataBuf;
-				if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-
-					/*
-					** Put the packet in the Global Queue
-					*/
-					if (!GlobalChannel->Receive_Packet (packet, packetlen, &address))
-						ReceiveOverflows++;
-				} else {
-					if (packet->MagicNumber == ProductID) {
-
-						/*
-						** Find the Private Queue that this packet is for
-						*/
-						bool found_address = false;
-						for (i = 0; i < NumConnections; i++) {
-							if (Connection[i]->Address == address) {
-								found_address = true;
-								if (!Connection[i]->Receive_Packet (packet, packetlen))
-									ReceiveOverflows++;
-								break;
-							}
-						}
-						if( Session.Type == GAME_INTERNET )
-						{
-							/*
-							** This packet came from an unknown source. If it looks like one of our players
-							** packets then it might be from a player whos IP has changed.
-							*/
-							if (!found_address) {
-								if (packet->Code == ConnectionClass::PACKET_DATA_NOACK){
-									/*
-									** Magic number and packet code are valid. It's probably a C&C packet.
-									*/
-									EventClass *event = (EventClass*) (((char*) packet) + sizeof (CommHeaderType));
-
-									/*
-									** If this is a framesync packet then grab the address and match it to an existing player.
-									*/
-									if (event->Type == EventClass::FRAMESYNC) {
-										int id = event->ID;
-
-										assert (id != PlayerPtr->ID);
-										for ( int i=1 ; i<Session.Players.Count() ; i++) {
-											if (Session.Players[i]->Player.ID == id) {
-
-												int iConnectionIndex = Connection_Index(id);
-												if( iConnectionIndex != CONNECTION_NONE ) //	(else Create_Connections() has not yet been called)
-												{
-													/*
-													** Found a likely candidate. Update his address. It should be OK to drop this
-													** packet since it's a framesync packet and will will pick up the next one.
-													*/
-													Session.Players[i]->Address = address;
-													Connection[iConnectionIndex]->Address = address;
-												}
-												break;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-		} while (packetlen);
-
-	}
-
-
-
-
-#else	//WINSOCK_IPX
-
 #ifdef WIN32
 
 	unsigned char temp_receive_buffer[1024];
@@ -1218,7 +1093,6 @@ int IPXManagerClass::Service(void)
 	}
 
 #endif	//WIN32
-#endif	//WINSOCK_IPX
 
 	//------------------------------------------------------------------------
 	//	Service all connections.  If a connection reports that it's gone "bad",
