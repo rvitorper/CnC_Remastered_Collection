@@ -1725,11 +1725,7 @@ ResultType ObjectClass::Take_Damage(int & damage, int distance, WarheadType warh
 		** any case, return that no damage was done.
 		*/
 		if (damage < 0) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (What_Am_I() == RTTI_INFANTRY || What_Am_I() == RTTI_UNIT || What_Am_I() == RTTI_AIRCRAFT) {
-#else
-			if (What_Am_I() == RTTI_INFANTRY) {
-#endif
 				Clicked_As_Target(PlayerPtr->Class->House, 7); // 2019/09/20 JAS - Added record of who clicked on the object
 				Strength -= damage;
 				if (Strength > maxstrength) {

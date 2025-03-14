@@ -1657,13 +1657,11 @@ void TeamClass::Coordinate_Attack(void)
 				 tt != TEMPLATE_BRIDGE_1A && tt != TEMPLATE_BRIDGE_1B &&
 				 tt != TEMPLATE_BRIDGE_2A && tt != TEMPLATE_BRIDGE_2B &&
 				 tt != TEMPLATE_BRIDGE_3A && tt != TEMPLATE_BRIDGE_3B ) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	FootClass *unit = Member;
 	TeamMissionClass const * mission = &Class->MissionList[CurrentMission];
 	if(unit->What_Am_I() != RTTI_UNIT || 
 		*(UnitClass *)unit != UNIT_CHRONOTANK || 
 		mission->Mission != TMISSION_SPY)
-#endif
 				Target = 0;		// invalidize the target so it'll go to next mission.
 			}
 		}
@@ -1686,27 +1684,23 @@ void TeamClass::Coordinate_Attack(void)
 					unit->Assign_Mission(MISSION_CAPTURE);
 					unit->Assign_Target(Target);
 				} else {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-				if (mission->Mission == TMISSION_SPY && unit->What_Am_I() == RTTI_UNIT && *(UnitClass *)unit == UNIT_CHRONOTANK) {
-					UnitClass *tank = (UnitClass *)unit;
-					tank->Teleport_To(::As_Cell(Target));
-					tank->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
-					Scen.Do_BW_Fade();
-					Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
-					tank->Assign_Target(TARGET_NONE);
-					tank->Assign_Mission(MISSION_GUARD);
-				} else {
-#endif
-					if (unit->Mission != MISSION_ATTACK && unit->Mission != MISSION_ENTER && unit->Mission != MISSION_CAPTURE) {
-						unit->Transmit_Message(RADIO_OVER_OUT);
-						unit->Assign_Mission(MISSION_ATTACK);
-						unit->Assign_Target(TARGET_NONE);
-						unit->Assign_Destination(TARGET_NONE);
+					if (mission->Mission == TMISSION_SPY && unit->What_Am_I() == RTTI_UNIT && *(UnitClass *)unit == UNIT_CHRONOTANK) {
+						UnitClass *tank = (UnitClass *)unit;
+						tank->Teleport_To(::As_Cell(Target));
+						tank->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
+						Scen.Do_BW_Fade();
+						Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
+						tank->Assign_Target(TARGET_NONE);
+						tank->Assign_Mission(MISSION_GUARD);
+					} else {
+						if (unit->Mission != MISSION_ATTACK && unit->Mission != MISSION_ENTER && unit->Mission != MISSION_CAPTURE) {
+							unit->Transmit_Message(RADIO_OVER_OUT);
+							unit->Assign_Mission(MISSION_ATTACK);
+							unit->Assign_Target(TARGET_NONE);
+							unit->Assign_Destination(TARGET_NONE);
+						}
 					}
 				}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-				}
-#endif
 				if (unit->TarCom != Target) {
 					unit->Assign_Target(Target);
 				}
@@ -2122,12 +2116,8 @@ int TeamClass::TMission_Unload(void)
 			** if the unit is a minelayer, with mines in it, and the cell it's
 			** on doesn't have a building (read: mine) in it already.
 			*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			/* Also, allow unload if it's a MAD Tank. */
 			if (unit->Is_Something_Attached() || (unit->What_Am_I() == RTTI_UNIT && *(UnitClass *)unit == UNIT_MINELAYER && unit->Ammo) || (unit->What_Am_I() == RTTI_UNIT && *(UnitClass *)unit == UNIT_MAD )) {
-#else
-			if (unit->Is_Something_Attached() || (unit->What_Am_I() == RTTI_UNIT && *(UnitClass *)unit == UNIT_MINELAYER && unit->Ammo) ) {
-#endif
 				if (unit->Is_Something_Attached()) {
 					/*
 					** Passenger-carrying vehicles will always return false until
@@ -2772,17 +2762,12 @@ int TeamClass::TMission_Spy(void)
 		{
 		CELL cell = ::As_Cell(MissionTarget);
 		CellClass * cellptr = &Map[cell];
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		ObjectClass * bldg = cellptr->Cell_Building();
-#else
-		ObjectClass * bldg = cellptr->Cell_Object();
-#endif
 		if (bldg != NULL)
 			{
 			Assign_Mission_Target(bldg->As_Target());
 			Coordinate_Attack();
 			}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		else
 			{
 			FootClass *member = Member;
@@ -2806,7 +2791,6 @@ int TeamClass::TMission_Spy(void)
 					}
 				}
 			}
-#endif
 		}
 	else
 		{

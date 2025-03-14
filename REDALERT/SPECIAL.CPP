@@ -352,11 +352,7 @@ char const * Fetch_Password(int caption, int message, int btext)
  * HISTORY:                                                                                    *
  *   08/13/1996 JLB : Created.                                                                 *
  *=============================================================================================*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 int Fetch_Difficulty(bool amath)
-#else
-int Fetch_Difficulty(void)
-#endif
 {
 	int const w = 250 * RESFACTOR;
 	int const h = 80 * RESFACTOR;
@@ -371,7 +367,6 @@ int Fetch_Difficulty(void)
 	char buffer[512];
 	strncpy(buffer, Text_String(TXT_DIFFICULTY), sizeof(buffer)-1);
 	buffer[sizeof(buffer)-1] = '\0';
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // If it's an aftermath mission, trim the sentence to get rid of the campaign stuff.
 	if (amath) {
 		int index=0;
@@ -380,7 +375,6 @@ int Fetch_Difficulty(void)
 			buffer[index+1]=0;
 		}
 	}
-#endif
 	//PG_TO_FIX
 	//Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD|TPF_NOSHADOW);
 	int width;

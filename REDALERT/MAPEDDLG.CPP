@@ -398,21 +398,21 @@ int MapEditClass::Save_Scenario(void)
  *   - House (GDI, NOD)                                                    *
  *   - Scenario #                                                          *
  *                                                                         *
- *           здддддддддддддддддддддддддддддддддд©                          *
- *           Ё            Caption               Ё                          *
- *           Ё                                  Ё                          *
- *           Ё         Scenario ___             Ё                          *
- *           Ё          Version ___             Ё                          *
- *           Ё                                  Ё                          *
- *           Ё         [East]  [West]           Ё                          *
- *           Ё                                  Ё                          *
- *           Ё         [    GDI     ]           Ё                          *
- *           Ё         [    NOD     ]           Ё                          *
- *           Ё         [Multi-Player]           Ё                          *
- *           Ё                                  Ё                          *
- *           Ё         [OK]  [Cancel]           Ё                          *
- *           Ё                                  Ё                          *
- *           юдддддддддддддддддддддддддддддддддды                          *
+ *           О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫д©                          *
+ *           О©╫            Caption               О©╫                          *
+ *           О©╫                                  О©╫                          *
+ *           О©╫         Scenario ___             О©╫                          *
+ *           О©╫          Version ___             О©╫                          *
+ *           О©╫                                  О©╫                          *
+ *           О©╫         [East]  [West]           О©╫                          *
+ *           О©╫                                  О©╫                          *
+ *           О©╫         [    GDI     ]           О©╫                          *
+ *           О©╫         [    NOD     ]           О©╫                          *
+ *           О©╫         [Multi-Player]           О©╫                          *
+ *           О©╫                                  О©╫                          *
+ *           О©╫         [OK]  [Cancel]           О©╫                          *
+ *           О©╫                                  О©╫                          *
+ *           О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫                          *
  *                                                                         *
  * INPUT:                                                                  *
  *      caption      string to use as a title                              *
@@ -552,11 +552,7 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 	**	Buttons
 	*/
 	ControlClass * commands = NULL;		// the button list
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	EditClass editbtn (BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT|TPF_NOSHADOW, D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H, EditClass::ALPHANUMERIC);
-#else
-	EditClass editbtn (BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT|TPF_NOSHADOW, D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H, EditClass::NUMERIC);
-#endif
 
 	TextButtonClass varabtn(BUTTON_VAR_A, "A", TPF_EBUTTON, D_VARA_X, D_VARA_Y, D_VARA_W, D_VARA_H);
 	TextButtonClass varbbtn(BUTTON_VAR_B, "B", TPF_EBUTTON, D_VARB_X, D_VARB_Y, D_VARB_W, D_VARB_H);
@@ -576,7 +572,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 	*/
 	Set_Logic_Page(SeenBuff);
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (scen_nump < 100) {
 		sprintf(scen_buf, "%d", scen_nump);		// init edit buffer
 	} else {
@@ -591,9 +586,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 		}
 		scen_buf[2] = 0;
 	}
-#else
-	sprintf(scen_buf, "%d", scen_nump);		// init edit buffer
-#endif
 	editbtn.Set_Text(scen_buf, 5);
 
 	varabtn.Turn_Off();
@@ -659,7 +651,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 					neubtn.Turn_On();
 					break;
 			}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		} else {
 			switch (Scen.ScenarioName[2]) {
 				case 'G':
@@ -674,7 +665,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 					playermbtn.Turn_On();
 					break;
 			}
-#endif
 		}
 	}
 
@@ -849,7 +839,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 	/*
 	**	Save selections & return
 	*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (scen_buf[0] <= '9' && scen_buf[1] <= '9') {
 		scen_nump = atoi(scen_buf);
 	} else {
@@ -876,9 +865,6 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
 		scen_nump = (first * 36) + second;
 //Mono_Printf("Converted to: %d, %d = %d\n",first, second, scen_nump);Keyboard->Get();Keyboard->Get();
 	}
-#else
-	scen_nump = atoi(scen_buf);
-#endif
 
 	return(0);
 }
@@ -895,26 +881,26 @@ int MapEditClass::Pick_Scenario(char const * caption, int & scen_nump, ScenarioP
  * properly exit the screen, since they have a blank undisplayed cell to   *
  * exit onto.                                                              *
  *                                                                         *
- *   зддддддддддддддддддддддддддддддддддддддддддддддддддддд©               *
- *   Ё                                                     Ё               *
- *   Ё  зддддддддддддддддддддд©   Clear Terrain            Ё               *
- *   Ё  Ё                     Ё   Water                    Ё               *
- *   Ё  Ё                     Ё   Tiberium                 Ё               *
- *   Ё  Ё                     Ё   Rock/Wall/Road           Ё               *
- *   Ё  Ё     (Map Area)      Ё   GDI Unit                 Ё               *
- *   Ё  Ё                     Ё   NOD Unit                 Ё               *
- *   Ё  Ё                     Ё   Neutral Unit             Ё               *
- *   Ё  Ё                     Ё   Terrain Object           Ё               *
- *   Ё  Ё                     Ё   Starting Cell            Ё               *
- *   Ё  юддддддддддддддддддддды                            Ё               *
- *   Ё                                                     Ё               *
- *   Ё      X            Y            Width      Height    Ё               *
- *   Ё      ##           ##            ##          ##      Ё               *
- *   Ё                                                     Ё               *
- *   Ё                                                     Ё               *
- *   Ё               [OK]            [Cancel]              Ё               *
- *   Ё                                                     Ё               *
- *   юддддддддддддддддддддддддддддддддддддддддддддддддддддды               *
+ *   О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫д©               *
+ *   О©╫                                                     О©╫               *
+ *   О©╫  О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫д©   Clear Terrain            О©╫               *
+ *   О©╫  О©╫                     О©╫   Water                    О©╫               *
+ *   О©╫  О©╫                     О©╫   Tiberium                 О©╫               *
+ *   О©╫  О©╫                     О©╫   Rock/Wall/Road           О©╫               *
+ *   О©╫  О©╫     (Map Area)      О©╫   GDI Unit                 О©╫               *
+ *   О©╫  О©╫                     О©╫   NOD Unit                 О©╫               *
+ *   О©╫  О©╫                     О©╫   Neutral Unit             О©╫               *
+ *   О©╫  О©╫                     О©╫   Terrain Object           О©╫               *
+ *   О©╫  О©╫                     О©╫   Starting Cell            О©╫               *
+ *   О©╫  О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫                            О©╫               *
+ *   О©╫                                                     О©╫               *
+ *   О©╫      X            Y            Width      Height    О©╫               *
+ *   О©╫      ##           ##            ##          ##      О©╫               *
+ *   О©╫                                                     О©╫               *
+ *   О©╫                                                     О©╫               *
+ *   О©╫               [OK]            [Cancel]              О©╫               *
+ *   О©╫                                                     О©╫               *
+ *   О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫               *
  *                                                                         *
  * INPUT:                                                                  *
  *      x,y,w,h:      initial size parameters (-1 = center the thing)      *
@@ -2476,22 +2462,22 @@ void MapEditClass::Handle_Triggers(void)
  *                                                                         *
  * CurTrigger can be NULL when this function is called.                    *
  *                                                                         *
- *    здддддддддддддддддддддддддддддддддддддддддддддддддддддддд©           *
- *    Ё                       Triggers                         Ё           *
- *    Ё    зддддддддддддддддддддддддддддддддддддддддддддбд©    Ё           *
- *    Ё    Ё Name     Event     Action    House   Team  ЁЁ    Ё           *
- *    Ё    Ё Name     Event     Action    House   Team  цд╢    Ё           *
- *    Ё    Ё Name     Event     Action    House   Team  Ё Ё    Ё           *
- *    Ё    Ё Name     Event     Action    House   Team  Ё Ё    Ё           *
- *    Ё    Ё                                            Ё Ё    Ё           *
- *    Ё    Ё                                            Ё Ё    Ё           *
- *    Ё    Ё                                            цд╢    Ё           *
- *    Ё    Ё                                            ЁЁ    Ё           *
- *    Ё    юддддддддддддддддддддддддддддддддддддддддддддады    Ё           *
- *    Ё                                                        Ё           *
- *    Ё      [Edit]        [New]        [Delete]      [OK]     Ё           *
- *    Ё                                                        Ё           *
- *    юдддддддддддддддддддддддддддддддддддддддддддддддддддддддды           *
+ *    О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫д©           *
+ *    О©╫                       Triggers                         О©╫           *
+ *    О©╫    О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫д©    О©╫           *
+ *    О©╫    О©╫ Name     Event     Action    House   Team  О©╫О©╫    О©╫           *
+ *    О©╫    О©╫ Name     Event     Action    House   Team  О©╫д╢    О©╫           *
+ *    О©╫    О©╫ Name     Event     Action    House   Team  О©╫ О©╫    О©╫           *
+ *    О©╫    О©╫ Name     Event     Action    House   Team  О©╫ О©╫    О©╫           *
+ *    О©╫    О©╫                                            О©╫ О©╫    О©╫           *
+ *    О©╫    О©╫                                            О©╫ О©╫    О©╫           *
+ *    О©╫    О©╫                                            О©╫д╢    О©╫           *
+ *    О©╫    О©╫                                            О©╫О©╫    О©╫           *
+ *    О©╫    О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫    О©╫           *
+ *    О©╫                                                        О©╫           *
+ *    О©╫      [Edit]        [New]        [Delete]      [OK]     О©╫           *
+ *    О©╫                                                        О©╫           *
+ *    О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫           *
  *                                                                         *
  * INPUT:                                                                  *
  *      none.                                                              *

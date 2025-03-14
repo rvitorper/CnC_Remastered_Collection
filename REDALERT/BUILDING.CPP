@@ -535,12 +535,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const
 		if (factory != NULL) {
 			TechnoClass * obj = factory->Get_Object();
 			if (obj != NULL) {
-#ifdef FIXIT_CSII
 				CC_Draw_Shape(obj, obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y, window, SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_NORMAL, NULL);
-#else
-				void const * remapper = obj->House->Remap_Table(false, obj->Techno_Type_Class()->Remap);
-				CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y, window, SHAPE_CENTER|SHAPE_WIN_REL | ((remapper != NULL) ? SHAPE_FADING : SHAPE_NORMAL), remapper);
-#endif
 			}
 		}
 	}

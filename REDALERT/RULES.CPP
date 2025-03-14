@@ -271,7 +271,6 @@ RulesClass::RulesClass(void) :
 	HealthBarDisplayMode(HB_SELECTED),
 	ResourceBarDisplayMode(RB_SELECTED)
 {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;
 	MTankDistance = 30;
 	QuakeUnitDamage = 0x080;
@@ -285,7 +284,6 @@ RulesClass::RulesClass(void) :
 #endif
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 	CarrierLaunchDelay = 60;
-#endif
 #endif
 }
 
@@ -382,7 +380,6 @@ bool RulesClass::Process(CCINIClass & ini)
 bool RulesClass::General(CCINIClass & ini)
 {
 	static char const * const GENERAL = "General";
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	static char const * const AFTERMATH = "Aftermath";
 
 	if(ini.Is_Present(AFTERMATH)) {
@@ -407,7 +404,6 @@ bool RulesClass::General(CCINIClass & ini)
 #endif
 	}
 
-#endif
 
 	if (ini.Is_Present(GENERAL)) {
 		TurboBoost = ini.Get_Fixed(GENERAL, "TurboBoost", TurboBoost);
@@ -646,9 +642,7 @@ bool RulesClass::Heap_Maximums(CCINIClass & ini)
 	new WarheadTypeClass("Super");
 	new WarheadTypeClass("Organic");
 	new WarheadTypeClass("Nuke");
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	new WarheadTypeClass("Mechanical");
-#endif
 
 	Weapons.Set_Heap(WeaponMax);
 	new WeaponTypeClass("Colt45");
@@ -691,14 +685,12 @@ bool RulesClass::Heap_Maximums(CCINIClass & ini)
 	new WeaponTypeClass("Mandible");
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	new WeaponTypeClass("PortaTesla");
 	new WeaponTypeClass("GoodWrench");
 	new WeaponTypeClass("SubSCUD");
 	new WeaponTypeClass("TTankZap");
 	new WeaponTypeClass("APTusk");
 	new WeaponTypeClass("Democharge");
-#endif
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 	new WeaponTypeClass("AirAssault");
 #endif

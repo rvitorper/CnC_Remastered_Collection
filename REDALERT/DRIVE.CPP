@@ -1298,17 +1298,13 @@ void DriveClass::AI(void)
 	** has his timer expired such that he needs to teleport back?
 	*/
 	if (IsMoebius) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	 if (What_Am_I() != RTTI_UNIT || ((UnitClass *)this)->Class->Type != UNIT_CHRONOTANK) {
-#endif
 		if (MoebiusCountDown == 0) {
 			IsMoebius = false;
 			Teleport_To(MoebiusCell);
 			MoebiusCell = 0;
 		}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	 }
-#endif
 	}
 
 	/*

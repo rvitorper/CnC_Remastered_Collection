@@ -564,11 +564,7 @@ int Main_Menu(unsigned long )
 	bool bExpansionCS = Expansion_CS_Present();
 	bool bExpansionAM = Expansion_AM_Present();
 #else
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	bool expansions = Expansion_CS_Present() | Expansion_AM_Present();
-#else
-	bool expansions = Expansion_CS_Present();
-#endif
 #endif
 	KeyNumType input;								// input from user
 	int retval;										// return value

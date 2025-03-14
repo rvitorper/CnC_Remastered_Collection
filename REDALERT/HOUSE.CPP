@@ -770,7 +770,6 @@ bool HouseClass::Can_Build(ObjectTypeClass const * type, HousesType house) const
 	*/
 	if (((TechnoTypeClass const *)type)->Level == -1) return(false);
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	/*
 	** If this is a CounterStrike II-only unit, and we're playing a multiplayer
 	** game in 'downshifted' mode against CounterStrike or Red Alert, then
@@ -794,7 +793,6 @@ bool HouseClass::Can_Build(ObjectTypeClass const * type, HousesType house) const
 				break;
 		}
 	}
-#endif
 
 	/*
 	**	The computer can always build everything.
@@ -1520,7 +1518,6 @@ void HouseClass::Super_Weapon_Handler(void)
 			*/
 			if (SuperWeapon[SPC_CHRONOSPHERE].Remove()) {
 				if (this == PlayerPtr) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					if (Map.IsTargettingMode == SPC_CHRONOSPHERE || Map.IsTargettingMode == SPC_CHRONO2) {
 						if (Map.IsTargettingMode == SPC_CHRONO2) {
 							TechnoClass * tech = (TechnoClass *)::As_Object(UnitToTeleport);
@@ -1532,12 +1529,6 @@ void HouseClass::Super_Weapon_Handler(void)
 							Map.IsTargettingMode = SPC_NONE;
 						}
 					}
-#else
-					if (Map.IsTargettingMode == SPC_CHRONOSPHERE ||
-						 Map.IsTargettingMode == SPC_CHRONO2) {
-						 Map.IsTargettingMode = SPC_NONE;
-					}
-#endif
 					Map.Column[1].Flag_To_Redraw();
 				}
 				IsRecalcNeeded = true;
@@ -2711,11 +2702,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 				what = "SONAR";
 				for (int index = 0; index < Vessels.Count(); index++) {
 					VesselClass * sub = Vessels.Ptr(index);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
-#else
-					if (*sub == VESSEL_SS) {
-#endif
 						sub->PulseCountDown = 15 * TICKS_PER_SECOND;
 						sub->Do_Uncloak();
 					}
@@ -2849,11 +2836,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						case RTTI_VESSEL:
 						case RTTI_AIRCRAFT:
 							tech->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_MINUTE;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 							if (tech->What_Am_I() == RTTI_UNIT && *(UnitClass *)tech == UNIT_DEMOTRUCK) {
 								tech->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_SECOND;
 							}
-#endif
 							tech->Mark(MARK_CHANGE);
 							Sound_Effect(VOC_IRON1, tech->Center_Coord());
 							if (this == PlayerPtr) {
@@ -2887,13 +2872,11 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 #endif
 
 						if (tech->What_Am_I() != RTTI_UNIT || !((UnitClass *)tech)->IsDeploying) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	bool porthim = true;
 	if(tech->What_Am_I() == RTTI_UNIT && ((UnitClass *)tech)->Class->Type == UNIT_CHRONOTANK) {
 		porthim = false;
 	}
 	if (porthim) {
-#endif
 							HouseClass* old_player_ptr = PlayerPtr;
 							Logic_Switch_Player_Context(this);
 							Map.IsTargettingMode = SPC_CHRONO2;
@@ -2902,9 +2885,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 							UnitToTeleport = tech->As_Target();
 							fired = true;
 							what = "CHRONO";
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	}
-#endif
 						}
 					}
 				}
@@ -2915,11 +2896,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 			{
 				TechnoClass * tech = (TechnoClass *)::As_Object(UnitToTeleport);
 				CELL oldcell = cell;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				if (tech != NULL && tech->IsActive && tech->Is_Foot() && tech->What_Am_I() != RTTI_AIRCRAFT) {
-#else
-				if (tech != NULL && tech->Is_Foot() && tech->What_Am_I() != RTTI_AIRCRAFT) {
-#endif
 					/*
 					** Destroy any infantryman that gets teleported
 					*/
@@ -2930,10 +2907,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						inf->Mark(MARK_DOWN);
 						int damage = inf->Strength;
 						inf->Take_Damage(damage, 0, WARHEAD_FIRE, 0, true);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					} else if(tech->What_Am_I() == RTTI_UNIT && *(UnitClass *)tech == UNIT_DEMOTRUCK) {
 						tech->Assign_Target(tech->As_Target());
-#endif
 					} else {
 						/*
 						**	Warp the unit to the new location.
@@ -2943,7 +2918,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						oldcell = drive->MoebiusCell;
 						drive->Teleport_To(cell);
 						drive->IsMoebius = true;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if(tech->What_Am_I() == RTTI_UNIT && *(UnitClass *)tech == UNIT_CHRONOTANK) {
 		drive->IsMoebius = false;
 	}
@@ -2951,9 +2925,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 	if (tech->What_Am_I() == RTTI_UNIT && *(UnitClass *)tech == UNIT_CHRONOTANK) {
 		drive->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
 	}
-#else
-						drive->MoebiusCountDown = Rule.ChronoDuration * TICKS_PER_MINUTE;
-#endif
 						Scen.Do_BW_Fade();
 						Sound_Effect(VOC_CHRONO, drive->Coord);
 
@@ -2972,13 +2943,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 				if (this == PlayerPtr) {
 					Map.IsTargettingMode = SPC_NONE;
 				}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if(tech && tech->IsActive && (tech->What_Am_I() != RTTI_UNIT || *(UnitClass *)tech != UNIT_CHRONOTANK)) {
-#endif
 				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	}
-#endif
 				IsRecalcNeeded = true;
 				fired = true;
 				what = "CHRONO2";
@@ -2995,10 +2962,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 				**	might appear where the object teleported to or it might appear
 				**	where it teleported from -- random chance.
 				*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // Don't allow a vortex if the teleportation was due to a chrono tank.
 	if(tech && tech->IsActive && (tech->What_Am_I() != RTTI_UNIT || *(UnitClass *)tech != UNIT_CHRONOTANK))
-#endif
 				if (!ChronalVortex.Is_Active() && Percent_Chance(Rule.VortexChance * 100)) {
 					int x = Random_Pick(0, Map.MapCellWidth-1);
 					int y = Random_Pick(0, Map.MapCellHeight-1);
@@ -6359,13 +6324,9 @@ int HouseClass::AI_Infantry(void)
 		for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
 			if (Can_Build(&InfantryTypeClass::As_Reference(index), ActLike) && InfantryTypeClass::As_Reference(index).Level <= (unsigned)Control.TechLevel) {
 				typetrack[count].Value = 0;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 This looks like a potential bug. It is prob. for save game format compatibility.
 				int clipindex = index;
 				if (clipindex >= INFANTRY_RA_COUNT) clipindex -= INFANTRY_RA_COUNT;
 				if ((enemy != NULL && enemy->IQuantity[clipindex] > IQuantity[clipindex]) || Available_Money() > Rule.InfantryReserve || CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
-#else
-				if ((enemy != NULL && enemy->IQuantity[index] > IQuantity[index]) || Available_Money() > Rule.InfantryReserve || CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
-#endif
 
 					switch (index) {
 						case INFANTRY_E1:
@@ -6580,9 +6541,7 @@ void HouseClass::Tracking_Remove(TechnoClass const * techno)
 			CurInfantry--;
 			if (!((InfantryClass *)techno)->IsTechnician) {
 				type = ((InfantryTypeClass const &)techno->Class_Of()).Type;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				if (type >= INFANTRY_RA_COUNT) type -= INFANTRY_RA_COUNT;
-#endif
 				IQuantity[type]--;
 			}
 			break;
@@ -6590,18 +6549,14 @@ void HouseClass::Tracking_Remove(TechnoClass const * techno)
 		case RTTI_UNIT:
 			CurUnits--;
 			type = ((UnitTypeClass const &)techno->Class_Of()).Type;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (type >= UNIT_RA_COUNT) type -= UNIT_RA_COUNT;
-#endif
 			UQuantity[type]--;
 			break;
 
 		case RTTI_VESSEL:
 			CurVessels--;
 			type = ((VesselTypeClass const &)techno->Class_Of()).Type;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (type >= VESSEL_RA_COUNT) type -= VESSEL_RA_COUNT;
-#endif
 			VQuantity[type]--;
 			break;
 
@@ -6663,13 +6618,9 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 			CurInfantry++;
 			infantry = ((InfantryTypeClass const &)techno->Class_Of()).Type;
 			if (!((InfantryClass *)techno)->IsTechnician) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				quant = infantry;
 				if (quant >= INFANTRY_RA_COUNT) quant -= INFANTRY_RA_COUNT;
 				IQuantity[quant]++;
-#else
-				IQuantity[infantry]++;
-#endif
 				if (!((InfantryTypeClass const &)techno->Class_Of()).IsCivilian && Session.Type == GAME_INTERNET) {
 					InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
 				}
@@ -6680,13 +6631,9 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 		case RTTI_UNIT:
 			CurUnits++;
 			unit = ((UnitTypeClass const &)techno->Class_Of()).Type;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			quant = unit;
 			if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
 			UQuantity[quant]++;
-#else
-			UQuantity[unit]++;
-#endif
 			UScan |= (1L << unit);
 			if (Session.Type == GAME_INTERNET) {
 				UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
@@ -6696,13 +6643,9 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 		case RTTI_VESSEL:
 			CurVessels++;
 			vessel = ((VesselTypeClass const &)techno->Class_Of()).Type;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			quant = vessel;
 			if (quant >= VESSEL_RA_COUNT) quant -= VESSEL_RA_COUNT;
 			VQuantity[quant]++;
-#else
-			VQuantity[vessel]++;
-#endif
 			VScan |= (1L << vessel);
 			if (Session.Type == GAME_INTERNET) {
 				VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);

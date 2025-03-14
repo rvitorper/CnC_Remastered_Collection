@@ -119,7 +119,6 @@ bool SaveTanya;
 bool AntsEnabled = false;
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool NewUnitsEnabled = false;
 bool SecretUnitsEnabled = false;
 int MTankDistance = 15;
@@ -127,13 +126,11 @@ bool OverrideNewUnitsEnabled = false;	 // ST - 12/13/2019 12:21PM
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 int CarrierLaunchDelay = 60;
 #endif
-#endif
 
 int NewINIFormat = 0;
 
 bool TimeQuake;
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
 fixed QuakeUnitDamage=0x300;
@@ -144,7 +141,6 @@ fixed ChronoTankDuration=0x300;	// chrono override for chrono tanks
 #ifdef FIXIT_ENGINEER	//	checked - ajw 9/28/98
 fixed EngineerDamage=0x55;			// Amount of damage an engineer does
 fixed EngineerCaptureLevel=0x40;	// Building damage level before engineer can capture
-#endif
 #endif
 
 #ifdef WIN32
@@ -204,9 +200,7 @@ char const * TutorialText[225];
 **	program's run, but may need to be referenced intermitently.
 */
 CCINIClass RuleINI;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 CCINIClass AftermathINI;
-#endif
 
 /***************************************************************************
 **	This points to the benchmark objects that are allocated only if the

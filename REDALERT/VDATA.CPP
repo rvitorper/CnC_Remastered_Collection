@@ -142,7 +142,6 @@ static VesselTypeClass const VesselPTBoat(
 );
 
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // Missile Submarine
 static VesselTypeClass const VesselMissileSubmarine(
 	VESSEL_MISSILESUB,
@@ -160,7 +159,6 @@ static VesselTypeClass const VesselMissileSubmarine(
 	8,							// Rotation stages.
 	14							// Turret center offset along body centerline.
 );
-#endif
 
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 // Transport
@@ -321,9 +319,7 @@ void VesselTypeClass::Init_Heap(void)
 	new VesselTypeClass(VesselCruiser);					// VESSEL_CA
 	new VesselTypeClass(VesselTransport);				// VESSEL_TRANSPORT
 	new VesselTypeClass(VesselPTBoat);					// VESSEL_PT
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	new VesselTypeClass(VesselMissileSubmarine);		// VESSEL_MISSILESUB
-#endif
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 	new VesselTypeClass(VesselCarrier);					// VESSEL_CARRIER
 #endif

@@ -324,7 +324,6 @@ void LogicClass::AI(void)
 
 		if (TimeQuake && obj != NULL && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
 			int damage = (int)obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (TimeQuakeCenter) {
 				if(::Distance(obj->As_Target(),TimeQuakeCenter)/256 < MTankDistance) {
 					switch(obj->What_Am_I()) {
@@ -347,9 +346,6 @@ void LogicClass::AI(void)
 			} else {
 				obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
 			}
-#else
-			obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
-#endif
 		}
 		/*
 		**	If the object was destroyed in the process of performing its AI, then

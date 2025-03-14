@@ -1384,12 +1384,8 @@ int DisplayClass::Cell_Shadow(CELL cell, HouseClass *house) const
 	**	problem of accessing cells off the bounds of map and into
 	**	who-knows-what memory.
 	*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if ((unsigned)(Cell_X(cell)-1) >= MAP_CELL_W-2) return(-1);
 	if ((unsigned)(Cell_Y(cell)-1) >= MAP_CELL_H-2) return(-1);
-#else
-	if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-1);
-#endif
 	//if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-2);
 
 	CellClass const * cellptr = &(*this)[cell];
@@ -3108,12 +3104,10 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType & key)
 					}
 
 				}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				else {	// If the object is no longer valid, cancel targetting mode.
 					action = ACTION_NOMOVE;
 					Map.IsTargettingMode = SPC_NONE;
 				}
-#endif
 			}
 
 			if (Map.PendingObject) {

@@ -759,17 +759,14 @@ bool Is_Mission_Counterstrike (char *file_name)
 	if ( isdigit ( file_name[5] )){
 		sscanf (file_name, "SCM%03d", &scenario_number);
 	} else {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		if (!isdigit(file_name[3]) || !isdigit(file_name[4])) {
 			return(false);
 		}
-#endif
 		sscanf (file_name, "SCM%02d", &scenario_number);
 	}
 	return ( scenario_number > 24 );
 }
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool Is_Mission_Aftermath (char *file_name)
 {
 	//	ajw added
@@ -809,7 +806,6 @@ bool Is_Mission_126x126 (char *file_name)		//	This is no longer used. ajw
 	return (false);
 }
 
-#endif
 
 
 
@@ -854,7 +850,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
 									Is_Mission_Counterstrike ((char*)fname)));
 #else	//	FIXIT_VERSION_3
-#ifdef FIXIT_CSII	//	checked - ajw
 			bool official = Is_Mission_126x126( (char *)fname);
 			if (!official) {
 				official = !Is_Mission_Aftermath((char *)fname);
@@ -862,10 +857,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 
 			Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
 									Is_Mission_Counterstrike ((char*)fname)));
-#else
-			Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
-									Is_Mission_Counterstrike ((char*)fname)));
-#endif
 #endif	//	FIXIT_VERSION_3
 		}
 /*		//	ajw Copy file for viewing.
@@ -907,17 +898,12 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
 									Is_Mission_Counterstrike ((char*)fname)));
 #else	//	FIXIT_VERSION_3
-#ifdef FIXIT_CSII	//	checked - ajw
 				bool official = Is_Mission_126x126( (char *)fname);
 				if (!official) {
 					official = !Is_Mission_Aftermath((char *)fname);
 				}
 				Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
 									Is_Mission_Counterstrike ((char*)fname)));
-#else
-				Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
-									Is_Mission_Counterstrike ((char*)fname)));
-#endif
 #endif	//	FIXIT_VERSION_3
 			}
 		}
@@ -926,7 +912,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 	}
 
 
-  #ifdef FIXIT_CSII		//	checked - ajw
 	/*
 	**	Fetch the Counterstrike multiplayer scenario packet data.
 	** Load the scenarios regardless of whether counterstrike's installed,
@@ -973,7 +958,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 #ifdef FIXIT_VERSION_3
 	}
 #endif
-  #endif
 
 #ifdef FIXIT_VERSION_3		//	Aftermath scenarios are now in their own pkt file.
 	if( Is_Aftermath_Installed() )
@@ -1039,17 +1023,12 @@ void SessionClass::Read_Scenario_Descriptions (void)
 				char const * fname = ini.Get_Entry("Missions", index);
 				char buffer[128];
 				ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_CSII
 				bool official = Is_Mission_126x126( (char *)fname);
 				if (!official) {
 					official = !Is_Mission_Aftermath((char *)fname);
 				}
 				Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
 										Is_Mission_Counterstrike ((char*)fname)));
-#else
-				Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
-									Is_Mission_Counterstrike ((char*)fname)));
-#endif
 			}
 
 		} while(_dos_findnext(&block) == 0);
@@ -1072,7 +1051,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 		} while(_dos_findnext(&block) == 0);
 	}
 
-  #ifdef FIXIT_CSII
 	/*
 	**	Fetch the Counterstrike multiplayer scenario packet data.
 	** Load the scenarios regardless of whether counterstrike's installed,
@@ -1101,7 +1079,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			}
 		}
 //	}
-  #endif
 
 #endif	//WIN32
 }

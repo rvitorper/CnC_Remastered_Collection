@@ -2112,11 +2112,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const
 	if (What_Am_I() == RTTI_INFANTRY) {
 		if (((InfantryClass *)this)->Class->IsDog || Combat_Damage() < 0) {
 			method = THREAT_INFANTRY | (method & (THREAT_RANGE | THREAT_AREA));
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if(*(InfantryClass *)this == INFANTRY_MECHANIC) {
 				method = (THREAT_VEHICLES | THREAT_AIR) | (method & (THREAT_RANGE | THREAT_AREA));
 			}
-#endif
 		}
 	}
 
@@ -2490,10 +2488,6 @@ void TechnoClass::AI(void)
 	**	tell it not to.
 	*/
 	if (!House->IsHuman && As_Techno(TarCom) && As_Techno(TarCom)->House->Is_Ally(this) && Combat_Damage() >= 0) {
-//#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 (commented out)
-//if(What_Am_I() == RTTI_INFANTRY && *(InfantryClass *)this==INFANTRY_GENERAL && Session.Type==GAME_NORMAL && House->Class->House==HOUSE_UKRAINE) {
-//} else
-//#endif
 		Assign_Target(TARGET_NONE);
 	}
 
@@ -2849,11 +2843,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const
 	/*
 	**	If the object is on the ground, then don't allow firing if it can't fire upon ground objects.
 	*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (object != NULL && object->Height == 0 && (object->What_Am_I() != RTTI_VESSEL || (*((VesselClass*)object) != VESSEL_SS && *((VesselClass*)object) != VESSEL_MISSILESUB )) &&
-#else
-	if (object != NULL && object->Height == 0 && (object->What_Am_I() != RTTI_VESSEL || *((VesselClass*)object) != VESSEL_SS) &&
-#endif
 		!weapon->Bullet->IsAntiGround) {
 
 		return(FIRE_CANT);
@@ -2885,14 +2875,12 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const
 	**	If cloaked, then firing is disabled.
 	*/
 	if (Cloak != UNCLOAKED) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // Special hack for John Archer's Hunt-The-Wumpus multiplayer mission... if
 // the object firing is a cloaked civilian, don't require uncloaking before
 // allowing firing.
 		if (What_Am_I()==RTTI_INFANTRY && ((InfantryClass *)this)->Class->IsCivilian ) {
 			return(FIRE_OK);
 		}
-#endif
 		return(FIRE_CLOAKED);
 	}
 
@@ -3307,15 +3295,10 @@ BulletClass * TechnoClass::Fire_At(TARGET target, int which)
 			ElectricZapDelay = 3;
 			ElectricZapTarget = target_coord;
 			ElectricZapWhich = which;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if(What_Am_I() != RTTI_INFANTRY) {
 				Set_Stage(0);
 				Set_Rate(0);
 			}
-#else
-			Set_Stage(0);
-			Set_Rate(0);
-#endif
 			if (Ammo <= 1 && What_Am_I() == RTTI_BUILDING) {
 				((BuildingClass *)this)->IsCharged = false;
 			}
@@ -4118,13 +4101,11 @@ void TechnoClass::Record_The_Kill(TechnoClass * source)
 		*/
 		source->House->PointTotal += points;
 	}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // Hack check: if they were trying to teleport this unit when it died, take
 //	the map mode out of teleportation mode.
 	if(IsOwnedByPlayer && Map.IsTargettingMode == SPC_CHRONO2 && House->UnitToTeleport == As_Target()) {
 		Map.IsTargettingMode = SPC_NONE;
 	}
-#endif
 	switch (What_Am_I()) {
 		case RTTI_BUILDING:
 			{
@@ -4261,15 +4242,11 @@ void TechnoClass::Do_Uncloak(void)
 		Cloak = UNCLOAKING;
 		CloakingDevice.Set_Stage(0);
 		CloakingDevice.Set_Rate(1);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		if(What_Am_I() == RTTI_VESSEL) {
 			Sound_Effect(VOC_SUBSHOW, Coord);
 		} else {
 			Sound_Effect(VOC_IRON1, Coord);
 		}
-#else
-		Sound_Effect(VOC_SUBSHOW, Coord);
-#endif
 	}
 }
 
@@ -4302,15 +4279,11 @@ void TechnoClass::Do_Cloak(void)
 		Cloak = CLOAKING;
 		CloakingDevice.Set_Stage(0);
 		CloakingDevice.Set_Rate(1);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		if(What_Am_I() == RTTI_VESSEL) {
 			Sound_Effect(VOC_SUBSHOW, Coord);
 		} else {
 			Sound_Effect(VOC_IRON1, Coord);
 		}
-#else
-		Sound_Effect(VOC_SUBSHOW, Coord);
-#endif
 	}
 }
 
@@ -5828,7 +5801,6 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const
 				CC_Draw_Pip(this, Class_Of().PipShapes, shape, x+index*3, y, window, SHAPE_CENTER|SHAPE_WIN_REL);
 			}
 		}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		/*
 		** Check if it's a Chrono tank, to show the recharge gauge.
 		*/
@@ -5855,7 +5827,6 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const
 				}
 				CC_Draw_Pip(this, Class_Of().PipShapes, shape, x+index*3, y, window, SHAPE_CENTER|SHAPE_WIN_REL);
 			}
-#endif
 		} else {
 			bool building = false;
 			int pip = PIP_FULL;	// green
@@ -6481,7 +6452,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 
 	int divisor = hptr->Factory_Count(What_Am_I());
 	if (divisor != 0) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		// Hack: allow the multiple-factory bonus, but only up to two factories if
 		//			this is an AM<->AM game.
 		if (NewUnitsEnabled) {
@@ -6490,9 +6460,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		else {
 			time /= divisor;
 		}
-#else
-		time /= divisor;
-#endif
 	}
 
 	return(time);

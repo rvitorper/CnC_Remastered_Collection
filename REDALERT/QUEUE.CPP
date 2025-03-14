@@ -129,9 +129,7 @@ typedef enum RetcodeEnum {
 	RC_CANCEL,						// user cancelled
 } RetcodeType;
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 extern void Enable_Secret_Units(void);
-#endif
 
 /********************************* Prototypes *******************************/
 //...........................................................................

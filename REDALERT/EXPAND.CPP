@@ -65,7 +65,6 @@ bool Expansion_CS_Present(void)
 //	RawFileClass file("EXPAND.MIX");
 //	return(file.Is_Available());
 }
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 /***********************************************************************************************
  * Expansion_AM_Present -- Is the Aftermath expansion available?                               *
  *                                                                                             *
@@ -87,7 +86,6 @@ bool Expansion_AM_Present(void)
 //	RawFileClass file("EXPAND2.MIX");
 //	return(file.Is_Available());
 }
-#endif
 
 
 const char* ExpandNames[] = {
@@ -107,7 +105,6 @@ const char* ExpandNames[] = {
 	"SCU36EA",
 	"SCU37EA",
 	"SCU38EA",
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	"SCG43EA",		// Harbor Reclamation
 	"SCG41EA",		// In the nick of time
 	"SCG40EA",		// Caught in the act
@@ -127,7 +124,6 @@ const char* ExpandNames[] = {
 	"SCU46EA",		// Brothers in Arms
 	"SCU47EA",		// Deus Ex Machina
 	"SCU48EA",		// Grunyev Revolution
-#endif
 	NULL
 	};
 
@@ -170,7 +166,6 @@ const char* XlatNames[] = {
 	"Die Spitze der Welt",
 	"Paradoxe Gleichung",
 	"Nukleare Eskalation",
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	"Ein sicherer Hafen",			  //	"SCG43EA",		// Harbor Reclamation
 	"Zeitkritische Routine",		  //	"SCG41EA",		// In the nick of time
 	"Auf frischer Tat ertappt",	  //	"SCG40EA",		// Caught in the act
@@ -178,20 +173,18 @@ const char* XlatNames[] = {
 	"Harte Verhandlungen",			  //	"SCG47EA",		// Negotiations
 	"Ferngelenktes Kriegsspielzeug",//	"SCG45EA",		// Monster Tank Madness
 	"Licht aus",						  //	"SCG44EA",		// Time Flies
-	"Molekulare KriegsfÅhrung",	  //	"SCG48EA",		// Absolut MADness
+	"Molekulare KriegsfÔøΩhrung",	  //	"SCG48EA",		// Absolut MADness
 	"Bauernopfer",						  //	"SCG46EA",		// Pawn
 
-	"TestgelÑnde",						  //	"SCU43EA",		// Testing Grounds
+	"TestgelÔøΩnde",						  //	"SCU43EA",		// Testing Grounds
 	"Schocktherapie",					  //	"SCU40EA",		// Shock Therapy
 	"Der Letzte seiner Art",		  //	"SCU42EA",		// Let's Make a Steal
 	"Probefahrt",						  //	"SCU41EA",		// Test Drive
 	"Schlaftrunk",						  //	"SCU45EA",		// Don't Drink The Water
-	"Der jÅngste Tag",				  //	"SCU44EA",		// Situation Critical
-	"WaffenbrÅder",					  //	"SCU46EA",		// Brothers in Arms
+	"Der jÔøΩngste Tag",				  //	"SCU44EA",		// Situation Critical
+	"WaffenbrÔøΩder",					  //	"SCU46EA",		// Brothers in Arms
 	"Deus Ex Machina",				  //	"SCU47EA",		// Deus Ex Machina
 	"Die Replikanten von Grunyev",  //	"SCU48EA",		// Grunyev Revolution
-
-#endif
 	NULL
 };
 
@@ -202,41 +195,39 @@ const char* XlatNames[] = {
 	"Gaz Sarin 1: Ravitaillement Fatal",
 	"Gaz Sarin 2: En Sous-sol",
 	"Gaz Sarin 3: Attaque Chirurgicale",
-	"Gräce OccupÇe 1: Guerre PrivÇe",
-	"Gräce OccupÇe 2: Evacuation",
-	"Conflit SibÇrien 1: Traces Fraåches",
-	"Conflit SibÇrien 2: Pris au Piäge",
-	"Conflit SibÇrien 3: Terres de Glace",
-	"Mise Ö l'Epreuve",
-	"AssiÇgÇs",
-	"La Souriciäre",
-	"L'HÇritage de Tesla",
+	"GrÔøΩce OccupÔøΩe 1: Guerre PrivÔøΩe",
+	"GrÔøΩce OccupÔøΩe 2: Evacuation",
+	"Conflit SibÔøΩrien 1: Traces FraÔøΩches",
+	"Conflit SibÔøΩrien 2: Pris au PiÔøΩge",
+	"Conflit SibÔøΩrien 3: Terres de Glace",
+	"Mise ÔøΩ l'Epreuve",
+	"AssiÔøΩgÔøΩs",
+	"La SouriciÔøΩre",
+	"L'HÔøΩritage de Tesla",
 	"Tandem de Choc",
 	"Jusqu'au Sommet du Monde",
 	"Effets Secondaires",
-	"Intensification nuclÇaire",
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
+	"Intensification nuclÔøΩaire",
 "Le vieux port",				//	"SCG43EA",		// Harbor Reclamation
-"Juste Ö temps",				//	"SCG41EA",		// In the nick of time
+"Juste ÔøΩ temps",				//	"SCG41EA",		// In the nick of time
 "La main dans le sac",		//	"SCG40EA",		// Caught in the act
 "Production interrompue",	//	"SCG42EA",		// Production Disruption
-"NÇgociations",				//	"SCG47EA",		// Negotiations
+"NÔøΩgociations",				//	"SCG47EA",		// Negotiations
 "Tanks en folie!",			//	"SCG45EA",		// Monster Tank Madness
 "Le temps passe",				//	"SCG44EA",		// Time Flies
-"DÇmence absolue",			//	"SCG48EA",		// Absolut MADness
+"DÔøΩmence absolue",			//	"SCG48EA",		// Absolut MADness
 "Le pion",						//	"SCG46EA",		// Pawn
 
 "Terrains d'essais",			//	"SCU43EA",		// Testing Grounds
-"ThÇrapie de choc",			//	"SCU40EA",		// Shock Therapy
+"ThÔøΩrapie de choc",			//	"SCU40EA",		// Shock Therapy
 "Au voleur!",					//	"SCU42EA",		// Let's Make a Steal
 "Essai de conduite",			//	"SCU41EA",		// Test Drive
 "Ne buvez pas la tasse",	//	"SCU45EA",		// Don't Drink The Water
 "Situation critique",		//	"SCU44EA",		// Situation Critical
-"Fräres d'armes",				//	"SCU46EA",		// Brothers in Arms
+"FrÔøΩres d'armes",				//	"SCU46EA",		// Brothers in Arms
 "Deus Ex Machina",			//	"SCU47EA",		// Deus Ex Machina
-"La RÇvolution de Grunyev",//	"SCU48EA",		// Grunyev Revolution
+"La RÔøΩvolution de Grunyev",//	"SCU48EA",		// Grunyev Revolution
 
-#endif
 
 	NULL,
 };
@@ -248,23 +239,15 @@ const char* XlatNames[] = {
 #ifndef WIN32	 //VG
 
 	#define	OPTION_WIDTH	236
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 #error Can never again build without WIN32 defined.
 	#define	OPTION_HEIGHT	162
-#else
-	#define	OPTION_HEIGHT	162
-#endif
 	#define	OPTION_X			((320 - OPTION_WIDTH) / 2)
 	#define	OPTION_Y			(200 - OPTION_HEIGHT) / 2
 
 #else
 
 	#define	OPTION_WIDTH	560
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	#define	OPTION_HEIGHT	332
-#else
-	#define	OPTION_HEIGHT	300
-#endif
 	#define	OPTION_X			((640 - OPTION_WIDTH) / 2)
 	#define	OPTION_Y			(400 - OPTION_HEIGHT) / 2
 #endif
@@ -394,11 +377,7 @@ bool Expansion_Dialog(void)
 	CCFileClass file;
 	char buffer[128], buffer2[128];
 	char * sbuffer = (char*)_ShapeBuffer;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 - Though disgusted.
 	for (int index = 20; index < (36+18); index++) {
-#else
-	for (int index = 20; index < 36; index++) {
-#endif
 
 #ifndef CS_DEBUG
 		strcpy(buffer,ExpandNames[index - 20]);

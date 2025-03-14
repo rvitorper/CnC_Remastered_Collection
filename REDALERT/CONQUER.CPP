@@ -96,10 +96,7 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 
 void * Get_Shape_Header_Data(void * ptr);
 extern bool Spawn_WChat(bool can_launch);
-
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 void Enable_Secret_Units(void);
-#endif
 
 extern bool Is_Mission_Aftermath (char *file_name);
 extern bool Is_Mission_Counterstrike (char *file_name);
@@ -246,12 +243,8 @@ void Main_Game(int argc, char * argv[])
 			**	Non-scenario-editor-mode: call the game's main loop
 			*/
 			if (!Debug_Map) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				TimeQuake = PendingTimeQuake;
 				PendingTimeQuake = false;
-#else
-				TimeQuake = false;
-#endif
 				if (Main_Loop()) {
 					break;
 				}
@@ -3962,16 +3955,13 @@ bool Is_Counterstrike_Installed (void)
 	return true;		// Remasters always have Counterstrike. ST - 10/18/2019 11:06AM
 }
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 /***********************************************************************************************
  *=============================================================================================*/
 bool Is_Aftermath_Installed (void)
 {
 	return true;		// Remasters always have Aftermath. ST - 10/18/2019 11:06AM
 }
-#endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 void Enable_Secret_Units(void)
 {
 #if 0
@@ -3983,7 +3973,6 @@ void Enable_Secret_Units(void)
 	}
 #endif
 }
-#endif
 
 #ifdef FIXIT_VERSION_3
 bool Force_Scenario_Available( const char* szName )

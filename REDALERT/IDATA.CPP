@@ -982,7 +982,6 @@ static InfantryTypeClass const DrChan(
 	0								// pointer to override remap table
 );
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 
 // Shock Trooper
 static InfantryTypeClass const ShockTrooper(
@@ -1026,7 +1025,6 @@ static InfantryTypeClass const Mechanic(
 	25,							// Frame of projectile launch while prone.
 	0								// pointer to override remap table
 );
-#endif
 
 /***********************************************************************************************
  * InfantryTypeClass::InfantryTypeClass -- Constructor for infantry type class objects.        *
@@ -1201,10 +1199,8 @@ void InfantryTypeClass::Init_Heap(void)
 	new InfantryTypeClass(Einstein);
 	new InfantryTypeClass(Delphi);
 	new InfantryTypeClass(DrChan);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	new InfantryTypeClass(ShockTrooper);
 	new InfantryTypeClass(Mechanic);
-#endif
 }
 
 

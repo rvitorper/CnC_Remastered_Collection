@@ -613,7 +613,6 @@ static UnitTypeClass const UnitAnt3(
 );
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // Chrono Tank
 static UnitTypeClass const UnitChrono(
 	UNIT_CHRONOTANK,
@@ -769,7 +768,6 @@ true,//		false,				// Is this a gigundo-rotund-enormous unit?
 	MISSION_HUNT			// ORDERS:		Default order to give new unit.
 );
 
-#endif
 #endif
 
 /***********************************************************************************************
@@ -947,14 +945,12 @@ void UnitTypeClass::Init_Heap(void)
 	new UnitTypeClass(UnitAnt3);			// UNIT_ANT3
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	new UnitTypeClass(UnitChrono);		// UNIT_CHRONOTANK
 	new UnitTypeClass(UnitTesla);			// UNIT_TESLATANK
 	new UnitTypeClass(UnitMAD);			// UNIT_MAD
 	new UnitTypeClass(UnitDemoTruck);	// UNIT_DEMOTRUCK
 #ifdef FIXIT_PHASETRANSPORT	//	checked - ajw 9/28/98
 	new UnitTypeClass(UnitPhase);			//	UNIT_PHASETRANSPORT
-#endif
 #endif
 
 }

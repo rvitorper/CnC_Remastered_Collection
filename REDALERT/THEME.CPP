@@ -90,7 +90,6 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
 	{"TWINMIX1",	TXT_THEME_TWINMIX1,	0,		222,	true,		false,	true,	HOUSEF_SOVIET|HOUSEF_SPAIN},
 	{"UNDER3",		TXT_THEME_UNDER3,		0,		246,	true,		false,	true,	HOUSEF_ALLIES|HOUSEF_SPAIN},
 	{"VR2",			TXT_THEME_VR2,			0,		255,	true,		false,	true,	HOUSEF_SOVIET|HOUSEF_SPAIN},
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	{"BOG",			TXT_THEME_BOG,			0,		212,	true,		false,	true,	HOUSEF_ALLIES|HOUSEF_SPAIN},
 	{"FLOAT_V2",	TXT_THEME_FLOAT_V2,	0,		274,	true,		false,	true,	HOUSEF_SOVIET|HOUSEF_SPAIN},
 	{"GLOOM",		TXT_THEME_GLOOM,		0,		236,	true,		false,	true,	HOUSEF_ALLIES|HOUSEF_SPAIN},
@@ -99,7 +98,6 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
 	{"SEARCH",		TXT_THEME_SEARCH,		0,		276,	true,		false,	true,	HOUSEF_SOVIET|HOUSEF_SPAIN},
 	{"TRACTION",	TXT_THEME_TRACTION,	0,		237,	true,		false,	true,	HOUSEF_ALLIES|HOUSEF_SPAIN},
 	{"WASTELND",	TXT_THEME_WASTELND,	0,		242,	true,		false,	true,	HOUSEF_SOVIET|HOUSEF_SPAIN},
-#endif
 };
 
 

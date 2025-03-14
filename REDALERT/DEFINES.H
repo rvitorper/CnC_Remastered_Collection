@@ -896,7 +896,6 @@ typedef enum ThemeType : char {
 	THEME_UNDER3,
 	THEME_VR2,
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	THEME_BOG,
 	THEME_FLOAT_V2,
 	THEME_GLOOM,
@@ -905,7 +904,6 @@ typedef enum ThemeType : char {
 	THEME_SEARCH,
 	THEME_TRACTION,
 	THEME_WASTELND,
-#endif
 
 	THEME_COUNT,
 	THEME_LAST=(int)THEME_COUNT-1,
@@ -1586,18 +1584,14 @@ typedef enum InfantryType : char {
 	INFANTRY_DELPHI,			// Agent "Delphi"
 	INFANTRY_CHAN,				// Dr. Chan
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // CounterStrike II only!
 	INFANTRY_SHOCK,			// Shock Trooper
 	INFANTRY_MECHANIC,
-#endif
 
 	INFANTRY_COUNT,
 	INFANTRY_FIRST=0
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 ,
 	INFANTRY_RA_COUNT = INFANTRY_SHOCK
-#endif
 } InfantryType;
 
 #define INFANTRYF_DOG	(1L << INFANTRY_DOG)
@@ -1632,7 +1626,6 @@ typedef enum UnitType : char {
 	UNIT_ANT3,					// Warrior ant.
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // CS II ONLY!
 	UNIT_CHRONOTANK,			// Chrono-shifting tank
 	UNIT_TESLATANK,			// Tesla-equipped tank
@@ -1641,14 +1634,11 @@ typedef enum UnitType : char {
 #ifdef FIXIT_PHASETRANSPORT	//	checked - ajw 9/28/98
 	UNIT_PHASE,					// cloaking APC for special missions
 #endif
-#endif
 
 	UNIT_COUNT,
 	UNIT_FIRST=0
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 ,
 	UNIT_RA_COUNT = UNIT_CHRONOTANK
-#endif
 } UnitType;
 
 //PG inline UnitType operator++(UnitType &, int);
@@ -1677,20 +1667,16 @@ typedef enum VesselType : char {
 	VESSEL_CA,						// Heavy weapon patrol craft
 	VESSEL_TRANSPORT,				// Unit transporter
 	VESSEL_PT,						// Light weapon patrol craft
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // CS II ONLY
 	VESSEL_MISSILESUB,			// Missile-equipped submarine
-#endif
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 	VESSEL_CARRIER,
 #endif
 
 	VESSEL_COUNT,
 	VESSEL_FIRST=0
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 ,
 	VESSEL_RA_COUNT = VESSEL_MISSILESUB
-#endif
 } VesselType;
 
 //inline VesselType operator++(VesselType &, int);
@@ -2675,9 +2661,7 @@ typedef enum WarheadType : char {
 	WARHEAD_TESLA,				// Electrocution warhead for infantrymen
 	WARHEAD_DOG,				// Slavering attack beast mauling infantryman
 	WARHEAD_NUKE,				// Nuclear missile
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	WARHEAD_MECHANICAL,		// repair weapon for vehicles
-#endif
 	WARHEAD_COUNT,
 	WARHEAD_FIRST=0
 } WarheadType;
@@ -2731,14 +2715,12 @@ typedef enum WeaponType : char {
 	WEAPON_MANDIBLE,
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	WEAPON_PORTATESLA,
 	WEAPON_GOODWRENCH,
 	WEAPON_SUBSCUD,
 	WEAPON_TTANKZAP,
 	WEAPON_APTUSK,
 	WEAPON_DEMOCHARGE,
-#endif
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 	WEAPON_CARRIER,
 #endif
@@ -3307,7 +3289,6 @@ typedef enum VocType : short {
 	VOC_RAMBO2,
 	VOC_RAMBO3,
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	VOC_MECHYES1,
 	VOC_MECHHOWDY1,
 	VOC_MECHRISE1,
@@ -3334,10 +3315,7 @@ typedef enum VocType : short {
 	VOC_MAD_CHARGE,
 	VOC_MAD_EXPLODE,
 	VOC_SHOCK_TROOP1,
-
 	VOC_BEACON,
-
-#endif
 	VOC_COUNT,
 	VOC_FIRST=0
 } VocType;

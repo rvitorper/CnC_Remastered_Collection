@@ -1689,12 +1689,8 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 		memcpy(&Special, SpecialBackup, sizeof(SpecialClass));
 	}
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	TimeQuake = PendingTimeQuake;
 	PendingTimeQuake = false;
-#else
-	TimeQuake = false;
-#endif
 			
 	/*
 	** Allocate extra memory for uncompressed shapes as needed
@@ -1768,11 +1764,9 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	FirstUpdate = false;
 
 	TimeQuake = false;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (!PendingTimeQuake) {
 		TimeQuakeCenter = 0;
 	}
-#endif
 
 	/*
 	**	Manage the inter-player message list.  If Manage() returns true, it means

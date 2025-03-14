@@ -2491,11 +2491,7 @@ crate_money:
 				*/
 				while (utp == NULL) {
 #ifdef FIXIT_ANTS
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					UnitType utype = Random_Pick(UNIT_FIRST, (UnitType)(UNIT_RA_COUNT-1 -3));
-#else
-					UnitType utype = Random_Pick(UNIT_FIRST, (UnitType)(UNIT_COUNT-1 -3));
-#endif
 #else
 					UnitType utype = Random_Pick(UNIT_FIRST, (UnitType)(UNIT_COUNT-1));
 #endif

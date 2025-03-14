@@ -46,74 +46,74 @@
 Map (screen) class heirarchy.
 
  MapeditClass (most derived class) -- scenario editor
-        ³
+        ï¿½
    MouseClass -- handles mouse animation and display control
-        ³
+        ï¿½
   ScrollClass -- map scroll handler
-        ³
+        ï¿½
     HelpClass -- pop-up help text handler
-        ³
+        ï¿½
      TabClass -- file folder tab screen mode control dispatcher
-        ³
+        ï¿½
  SidebarClass -- displays and controls construction list sidebar
-        ³
+        ï¿½
    PowerClass -- display power production/consumption bargraph
-        ³
+        ï¿½
    RadarClass -- displays and controls radar map
-        ³
+        ï¿½
  DisplayClass -- general tactical map display handler
-        ³
+        ï¿½
      MapClass -- general tactical map data handler
-        ³
+        ï¿½
  GScreenClass (pure virtual base class) -- generic screen control
 
                           AbstractClass
-                                  ³
-                                  ³
-                                  ³
-                                  ³
+                                  ï¿½
+                                  ï¿½
+                                  ï¿½
+                                  ï¿½
                             ObjectClass
-                                  ³
-       ÚÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄ¿
-   AnimClass  ³  TemplateClass    ³        ÃÄ FuseClass     ³    TerrainClass
-              ³                   ³        ÃÄ FlyClass      ³
-              ³                   ³  BulletClass            ³
+                                  ï¿½
+       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+   AnimClass  ï¿½  TemplateClass    ï¿½        ï¿½ï¿½ FuseClass     ï¿½    TerrainClass
+              ï¿½                   ï¿½        ï¿½ï¿½ FlyClass      ï¿½
+              ï¿½                   ï¿½  BulletClass            ï¿½
        OverlayClass        MissionClass               SmudgeClass
-                                  ³
+                                  ï¿½
                              RadioClass
-                                  ³
-                                  ÃÄ CrewClass
-                                  ÃÄ FlasherClass
-                                  ÃÄ StageClass
-                                  ÃÄ CargoClass
+                                  ï¿½
+                                  ï¿½ï¿½ CrewClass
+                                  ï¿½ï¿½ FlasherClass
+                                  ï¿½ï¿½ StageClass
+                                  ï¿½ï¿½ CargoClass
                             TechnoClass
-                                  ³
-                       ÚÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                                  ï¿½
+                       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
                    FootClass                           BuildingClass
-                       ³
-         ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÁÂÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-    DriveClass  InfantryClass         ÃÄ FlyClass
-         ³                      AircraftClass
-       ÚÄÁÄÄÄÄÄÄÄÄÄ¿
-       ³           ³
-       ³     VesselClass
-       ³
+                       ï¿½
+         ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+    DriveClass  InfantryClass         ï¿½ï¿½ FlyClass
+         ï¿½                      AircraftClass
+       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+       ï¿½           ï¿½
+       ï¿½     VesselClass
+       ï¿½
     UnitClass
 
 
                             AbstractTypeClass
-                                    ³
+                                    ï¿½
                               ObjectTypeClass
-                                    ³
-             ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-             ³                      ³            ³                 ³
-       TechnoTypeClass              ³            ³                 ³
-             ³                BulletTypeClass    ³                 ³
-             ³                           TemplateTypeClass         ³
-    ÚÄÄÄÄÄÄÄÄÁÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄ¿    TerrainTypeClass
-    ³              ³           ³              ³        ³
-UnitTypeClass      ³   BuildingTypeClass      ³  VesselTypeClass
-                   ³                          ³
+                                    ï¿½
+             ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+             ï¿½                      ï¿½            ï¿½                 ï¿½
+       TechnoTypeClass              ï¿½            ï¿½                 ï¿½
+             ï¿½                BulletTypeClass    ï¿½                 ï¿½
+             ï¿½                           TemplateTypeClass         ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿    TerrainTypeClass
+    ï¿½              ï¿½           ï¿½              ï¿½        ï¿½
+UnitTypeClass      ï¿½   BuildingTypeClass      ï¿½  VesselTypeClass
+                   ï¿½                          ï¿½
            AircraftTypeClass          InfantryTypeClass
 #endif
 
@@ -508,9 +508,7 @@ CrateType Crate_From_Name(char const * name);
 Rect const Shape_Dimensions(void const * shapedata, int shapenum);
 void IPX_Call_Back(void);
 bool Is_Counterstrike_Installed (void);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool Is_Aftermath_Installed (void);
-#endif
 
 
 #if(TEN)
@@ -631,9 +629,7 @@ void Nod_Ending(void);
 bool Expansion_Present(void);
 bool Expansion_Dialog(void);
 bool Expansion_CS_Present(void);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool Expansion_AM_Present(void);
-#endif
 /*
 **	FINDPATH.CPP
 */
@@ -933,11 +929,7 @@ int Alloc_Object(ScoreAnimClass *obj);
 */
 void Special_Dialog(bool simple=false);
 char const * Fetch_Password(int caption, int message, int btext=TXT_OK);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 int Fetch_Difficulty(bool amath=false);
-#else
-int Fetch_Difficulty(void);
-#endif
 
 /*
 **	STARTUP.CPP

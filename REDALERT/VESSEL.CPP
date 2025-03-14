@@ -813,12 +813,10 @@ ActionType VesselClass::What_Action(ObjectClass const * object) const
 			action = ACTION_ENTER;
 		}
 	}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (action == ACTION_ATTACK && object->What_Am_I() == RTTI_VESSEL &&
 		 (*this == VESSEL_MISSILESUB || *this == VESSEL_CA) ) {
 		 	action = ACTION_NOMOVE;
 	}
-#endif
 	/*
 	**	If it doesn't know what to do with the object, then just
 	**	say it can't move there.
@@ -999,11 +997,7 @@ ResultType VesselClass::Take_Damage(int & damage, int distance, WarheadType warh
 		**	When damaged and below half strength, start smoking if
 		**	it isn't already smoking (and it's not a submarine).
 		*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached && (*this != VESSEL_SS && *this != VESSEL_MISSILESUB) ) {
-#else
-		if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached && (*this != VESSEL_SS) ) {
-#endif
 			AnimClass * anim = new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
 			if (anim != NULL) anim->Attach_To(this);
 		}
@@ -1112,22 +1106,14 @@ Mono_Set_Cursor(0,0);
 			if (!isseatarget) {
 				return(FIRE_CANT);
 			} else {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				if (Is_Target_Vessel(target) && (*As_Vessel(target) != VESSEL_SS && *As_Vessel(target) != VESSEL_MISSILESUB) ) {
-#else
-				if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS) {
-#endif
 					if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
 						return(FIRE_CANT);
 					}
 				}
 			}
 		} else {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (Is_Target_Vessel(target) && (*As_Vessel(target) == VESSEL_SS || *As_Vessel(target) == VESSEL_MISSILESUB)) {
-#else
-			if (Is_Target_Vessel(target) && *As_Vessel(target) == VESSEL_SS) {
-#endif
 				return(FIRE_CANT);
 			}
 		}

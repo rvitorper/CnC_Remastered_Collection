@@ -293,7 +293,6 @@ bool Init_Game(int , char * [])
 	if (RuleINI.Load(CCFileClass("RULES.INI"), false)) {
 		Rule.Process(RuleINI);
 	}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	//  Aftermath runtime change 9/29/98
 	//	This is safe to do, as only rules for aftermath units are included in this ini.
 	if (Is_Aftermath_Installed() == true) {
@@ -301,7 +300,6 @@ bool Init_Game(int , char * [])
 			Rule.Process(AftermathINI);
 		}
 	}
-#endif
 
 	Session.MaxPlayers = Rule.MaxPlayers;
 
@@ -495,10 +493,8 @@ bool Select_Game(bool fade)
 	unsigned char cBoxName[]= "\x00\x00";
 #endif
 	
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	int cdcheck = 0;
 	bool cs = Is_Counterstrike_Installed();
-#endif
 
 //	#ifndef DVD // Denzil - We want the menu screen			ajw No we don't
 //	if (Special.IsFromInstall) {
@@ -508,9 +504,7 @@ bool Select_Game(bool fade)
 
 	Show_Mouse();
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;	// Assume new units disabled, unless specifically .INI enabled or multiplayer negotiations enable it.
-#endif
 
 #ifndef WOLAPI_INTEGRATION
 #ifdef WIN32
@@ -746,7 +740,6 @@ bool Select_Game(bool fade)
 						}
 					}
 #else	//	FIXIT_VERSION_3
-	#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					if (cs) {
 						cdcheck = 2;
 					}
@@ -760,11 +753,6 @@ bool Select_Game(bool fade)
 					if(!Force_CD_Available(cdcheck)) {
 					   return(false);
 					}
-	#else
-					if(!Force_CD_Available(2)) {
-					   return(false);
-					}
-	#endif
 					if(!Expansion_Dialog()){
 					   selection = SEL_NONE;
 					   break;
@@ -772,11 +760,7 @@ bool Select_Game(bool fade)
 #endif	//	FIXIT_VERSION_3
 
 #ifdef FIXIT_DIFFICULTY
-	#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 					switch (Fetch_Difficulty(cdcheck >= 3)) {
-	#else
-					switch (Fetch_Difficulty()) {
-	#endif
 		 				case 0:
 							Scen.CDifficulty = DIFF_HARD;
 							Scen.Difficulty = DIFF_EASY;
@@ -1248,7 +1232,6 @@ bool Select_Game(bool fade)
 		}
 	}
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	switch(Session.Type) {
 		case GAME_MODEM:
 		case GAME_NULL_MODEM:
@@ -1269,7 +1252,6 @@ bool Select_Game(bool fade)
 		default:
 			break;
 	}
-#endif
 	/*
 	**	Load the scenario.  Specify variation 'A' for the editor; for the game,
 	**	don't specify a variation, to make 'Set_Scenario_Name()' pick a random one.
@@ -2676,27 +2658,17 @@ static void Init_Bootstrap_Mixfiles(void)
 	int temp = RequiredCD;
 	RequiredCD = -2;
 
-#ifdef FIXIT_CSII	//	Ok. ajw
 	CCFileClass file2("EXPAND2.MIX");
 	if (file2.Is_Available()) {
 		new MFCD("EXPAND2.MIX", &FastKey);
 		bool ok = MFCD::Cache("EXPAND2.MIX");
 		assert(ok);
 	}
-#endif
 
-#ifdef FIXIT_CSII	//	Ok. ajw
 	bool ok1;
- #if 0
-	new MFCD("HIRES1.MIX", &FastKey);
-	ok1 = MFCD::Cache("HIRES1.MIX");
-	assert(ok1);
- #else
 	new MFCD("LORES1.MIX", &FastKey);
 	ok1 = MFCD::Cache("LORES1.MIX");
 	assert(ok1);
- #endif
-#endif
 
 #ifdef FIXIT_ANTS	//	Ok. ajw
 	CCFileClass file("EXPAND.MIX");

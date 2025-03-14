@@ -96,14 +96,12 @@ extern int NewINIFormat;
 extern bool AntsEnabled;
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 extern bool NewUnitsEnabled;
 extern bool SecretUnitsEnabled;
 extern int MTankDistance;
 extern bool OverrideNewUnitsEnabled;	 // ST - 12/13/2019 12:19PM	
 #ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
 extern int CarrierLaunchDelay;
-#endif
 #endif
 
 #ifdef FIXIT_NAME_OVERRIDE
@@ -148,9 +146,7 @@ extern char const *				TutorialText[225];
 extern Buffer *					TheaterBuffer;
 extern GetCDClass					CDList;
 extern CCINIClass					RuleINI;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 extern CCINIClass					AftermathINI;
-#endif
 //extern Benchmark *				Benches;
 extern int							MapTriggerID;
 extern int							LogicTriggerID;
@@ -265,7 +261,6 @@ extern bool SaveTanya;
 
 extern bool TimeQuake;
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 extern bool PendingTimeQuake;
 extern TARGET TimeQuakeCenter;
 extern fixed QuakeUnitDamage;
@@ -276,7 +271,6 @@ extern fixed ChronoTankDuration;		// chrono override for chrono tanks
 #ifdef FIXIT_ENGINEER	//	checked - ajw 9/28/98
 extern fixed EngineerDamage;			// Amount of damage an engineer does
 extern fixed EngineerCaptureLevel;	// Building damage level before engineer can capture
-#endif
 #endif
 
 /*

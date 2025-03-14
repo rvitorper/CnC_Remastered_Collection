@@ -252,7 +252,6 @@ struct SoundEffectNameStruct {
 	{"RAMBO1",     20,   IN_NOVAR},			
 	{"RAMBO2", 		20,   IN_NOVAR}, 
 	{"RAMBO3",     20,   IN_NOVAR},
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	{"MYES1",		20,	IN_NOVAR},	// VOC_MECHYES1			Mechanic: "Yes sir!"
 	{"MHOWDY1",		20,	IN_NOVAR},	// VOC_MECHHOWDY1			Mechanic: "Howdy!"
 	{"MRISE1",		20,	IN_NOVAR},	// VOC_MECHRISE1			Mechanic: "Rise 'n shine!"
@@ -282,8 +281,6 @@ struct SoundEffectNameStruct {
 	{"SHKTROP1",	20,	IN_NOVAR},	// VOC_SHOCK_TROOP1		Shock Trooper fires
 
 	{"BEACON", 		10,	IN_NOVAR},	// VOC_BEACON			Beacon sound.
-
-#endif
 };
 
 
@@ -559,12 +556,8 @@ int Sound_Effect(VocType voc, fixed volume, int variation, signed short pan_valu
 	"BASEATK1",		//	VOX_BASE_UNDER_ATTACK			our base is under attack
 	"NOBUILD1",		//	VOX_UNABLE_TO_BUILD				unable to build more
 	"PRIBLDG1",		//	VOX_PRIMARY_SELECTED				primary building selected
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 #ifdef ENGLISH
 	"TANK01",		// VOX_MADTANK_DEPLOYED				M.A.D. Tank Deployed
-#else
-	"none",
-#endif
 #else
 	"none",
 #endif

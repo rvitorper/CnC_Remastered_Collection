@@ -106,10 +106,8 @@ int _build_tech[11] = {
 #define TXT_HACKHACK  Text_String(TXT_ACCOMPLISHED)
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 bool Is_Mission_Counterstrike (char *file_name);
 bool Is_Mission_Aftermath (char *file_name);
-#endif
 
 /***********************************************************************************************
  * ScenarioClass::ScenarioClass -- Constructor for the scenario control object.                *
@@ -473,7 +471,6 @@ bool Read_Scenario(char * name)
 	Clear_Scenario();
 	ScenarioInit++;
 	if (Read_Scenario_INI(name)) {
-#ifdef FIXIT_CSII	//	ajw - Added runtime check for Aftermath to skirmish mode case.
 		bool readini = false;
 		switch(Session.Type) {
 			case GAME_NORMAL:
@@ -540,7 +537,6 @@ bool Read_Scenario(char * name)
 				Rule.Difficulty(ini);
 			}
 		}
-#endif
 		Fill_In_Data();
 		Map.Set_View_Dimensions(0, 0, Map.MapCellWidth, Map.MapCellHeight);
 	} else {
@@ -1949,7 +1945,6 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player, S
 	/*
 	** generate the filename
 	*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 //Mono_Printf("In set_scenario_name, scenario # = %d\n",scenario);Keyboard->Get();Keyboard->Get();
 	if (scenario < 100) {
 		sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
@@ -1965,9 +1960,6 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player, S
 
 		sprintf(ScenarioName, "SC%c%c%c%c%c.INI", c_player, first, second, c_dir, c_var);
 	}
-#else
-	sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
-#endif
 }
 
 
@@ -1980,7 +1972,6 @@ void ScenarioClass::Set_Scenario_Name(char const * name)
 		char buf[3];
 		memcpy(buf, &ScenarioName[3], 2);
 		buf[2] = '\0';
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		if (buf[0] > '9' || buf[1] > '9') {
 			char first = buf[0];
 			char second = buf[1];
@@ -2000,9 +1991,6 @@ void ScenarioClass::Set_Scenario_Name(char const * name)
 		} else {
 			Scenario = atoi(buf);
 		}
-#else
-		Scenario = atoi(buf);
-#endif
 	}
 }
 
@@ -2071,7 +2059,6 @@ bool Read_Scenario_INI(char * fname, bool )
 			** all CDs.
 			*/
 			if (Session.Type != GAME_NORMAL) {
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				RequiredCD = -1;	// default that any CD will do.
 // If it's a counterstrike mission, require the counterstrike CD, unless the
 // Aftermath CD is already in the drive, in which case, leave it there.
@@ -2086,13 +2073,6 @@ bool Read_Scenario_INI(char * fname, bool )
 				if(Is_Mission_Aftermath(Scen.ScenarioName)) {
 					RequiredCD = 3;
 				}
-#else
-				if (Scen.Scenario > 24) {
-					RequiredCD = 2;
-				} else {
-					RequiredCD = -1;
-				}
-#endif
 			} else {
 
 				/*
@@ -2101,14 +2081,12 @@ bool Read_Scenario_INI(char * fname, bool )
 				*/
      			if (Scen.Scenario >= 20 || Scen.ScenarioName[2] == 'A') {
 					RequiredCD = 2;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
      				if (Scen.Scenario >= 36 && Scen.ScenarioName[2] != 'A') {
 						RequiredCD = 3;
 #ifdef BOGUSCD
 	RequiredCD = -1;
 #endif
 					}
-#endif
 				} else {
 
 					/*
@@ -2127,7 +2105,6 @@ bool Read_Scenario_INI(char * fname, bool )
      			}
 			}
 		}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 // If we're asking for a CD swap, check to see if we need to set the palette
 // to avoid a black screen.  If this is a normal RA game, and the CD being
 // requested is an RA CD, then don't set the palette, leave the map screen up.
@@ -2143,7 +2120,6 @@ bool Read_Scenario_INI(char * fname, bool )
 			}
 			GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
 		}
-#endif
 		if (!Force_CD_Available(RequiredCD)) {
 			Prog_End("Read_Scenario_INI Force_CD_Available failed", true);
 			if (!RunningAsDLL) {	//PG
@@ -2248,7 +2224,6 @@ bool Read_Scenario_INI(char * fname, bool )
 	Rule.IQ(RuleINI);
 	Rule.Objects(RuleINI);
 	Rule.Difficulty(RuleINI);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 - Except does this _change_ any rules, or just add to them? - Just adds.
 	Rule.General(AftermathINI);
 	Rule.Recharge(AftermathINI);
 	Rule.AI(AftermathINI);
@@ -2258,7 +2233,6 @@ bool Read_Scenario_INI(char * fname, bool )
 	Rule.IQ(AftermathINI);
 	Rule.Objects(AftermathINI);
 	Rule.Difficulty(AftermathINI);
-#endif
 
 	/*
 	**	For civilians, remove the graphics name override from the base rules (can still be overridden in scenario-specific INI).
@@ -2647,14 +2621,12 @@ bool Read_Scenario_INI(char * fname, bool )
 	/*
 	**	Return with flag saying that the scenario file was read.
 	*/
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 - Added runtime check.
 	if( Is_Aftermath_Installed() )
 	{
 		if (Session.Type == GAME_SKIRMISH || Session.Type == GAME_GLYPHX_MULTIPLAYER) {
 			bAftermathMultiplayer = NewUnitsEnabled = OverrideNewUnitsEnabled;
 		}
 	}	
-#endif
 	ScenarioInit--;
 	return(true);
 }
@@ -3708,7 +3680,6 @@ void Disect_Scenario_Name(char const * name, int & scenario, ScenarioPlayerType 
 	char buf[3];
 	memcpy(buf, &name[3], 2);
 	buf[2] = '\0';
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	char first = buf[0];
 	char second = buf[1];
 	if (first <= '9' && second <= '9') {
@@ -3734,9 +3705,6 @@ void Disect_Scenario_Name(char const * name, int & scenario, ScenarioPlayerType 
 		}
 		scenario = (36 * first) + second;
 	}
-#else
-	scenario = atoi(buf);
-#endif
 
 	/*
 	**	Fetch the scenario player (side).

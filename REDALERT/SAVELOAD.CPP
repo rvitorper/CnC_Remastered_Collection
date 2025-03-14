@@ -106,9 +106,7 @@ extern bool SpawnedFromWChat;
 
 static int Reconcile_Players(void);
 extern bool Is_Mission_Counterstrike (char *file_name);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 extern bool Is_Mission_Aftermath (char *file_name);
-#endif
 
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe.                                            *
@@ -399,9 +397,7 @@ bool Save_Game(const char *file_name, const char *descr)
 	**	Save the save-game version, for loading verification
 	*/
 	unsigned long version = SAVEGAME_VERSION;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	version++;
-#endif
 	fpipe.Put(&version, sizeof(version));
 
 	int pos = file.Seek(0, SEEK_CUR);
@@ -560,15 +556,10 @@ bool Load_Game(const char *file_name)
 		return(false);
 	}
 	GameVersion = version;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (version != SAVEGAME_VERSION && ((version-1) != SAVEGAME_VERSION) ) {
 	      	return(false);
 	}
-#else
-	if (version != SAVEGAME_VERSION /*&& version != 0x0100616D*/){
-	      	return(false);
-	}
-#endif
+
 	/*
 	**	Get the message digest that is embedded in the file.
 	*/
@@ -647,22 +638,18 @@ bool Load_Game(const char *file_name)
 			int cd = -1;
 			if (Is_Mission_Counterstrike (Scen.ScenarioName)) {
 				cd = 2;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				if (Expansion_AM_Present()) {
 					int current_drive = CCFileClass::Get_CD_Drive();
 					int index = Get_CD_Index(current_drive, 1*60);
 					if (index == 3) cd = 3;
 				}
-#endif
 			}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if (Is_Mission_Aftermath (Scen.ScenarioName)) {
 				cd = 3;
 #ifdef BOGUSCD
 	cd = -1;
 #endif
 			}
-#endif
 			RequiredCD = cd;
 			if (!Force_CD_Available (RequiredCD)) {
 				Emergency_Exit(EXIT_FAILURE);
@@ -866,14 +853,12 @@ bool Load_Game(const char *file_name)
 #ifdef FIXIT_ANTS
 			if (Scen.Scenario > 19 || AntsEnabled) {
 			   RequiredCD = 2;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 				if(Scen.Scenario >= 36) {
 					RequiredCD = 3;
 #ifdef BOGUSCD
 	RequiredCD = -1;
 #endif
 				}
-#endif
 			} else {
 #endif	//FIXIT_ANTS
 				if (PlayerPtr->Class->House != HOUSE_USSR  && PlayerPtr->Class->House != HOUSE_UKRAINE) {
@@ -952,7 +937,6 @@ bool Load_Game(const char *file_name)
 	Rule.IQ(RuleINI);
 	Rule.Objects(RuleINI);
 	Rule.Difficulty(RuleINI);
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98 - But does this incorporate *changes*? - NO.
 	Rule.General(AftermathINI);
 	Rule.Recharge(AftermathINI);
 	Rule.AI(AftermathINI);
@@ -962,7 +946,6 @@ bool Load_Game(const char *file_name)
 	Rule.IQ(AftermathINI);
 	Rule.Objects(AftermathINI);
 	Rule.Difficulty(AftermathINI);
-#endif
 
 	/*
 	**	Override any rules values specified in this
@@ -972,12 +955,11 @@ bool Load_Game(const char *file_name)
 	Rule.Recharge(ini);
 	Rule.AI(ini);
 	Rule.Powerups(ini);
-	Rule.Land_Types(ini);                               \
+	Rule.Land_Types(ini);                               
 	Rule.Themes(ini);
 	Rule.IQ(ini);
 	Rule.Objects(ini);
 	Rule.Difficulty(ini);
-#ifdef FIXIT_CSII	//	ajw - Added runtime check for Aftermath to skirmish mode.
 	if (load_net) {
 		bool readini = false;
 		switch(Session.Type) {
@@ -1031,7 +1013,6 @@ if(Special.IsFromWChat || SpawnedFromWChat) {
 		}
 
 	}
-#endif
 
 	if (Scen.TransitTheme == THEME_NONE) {
 		Theme.Queue_Song(THEME_FIRST);
@@ -1493,11 +1474,7 @@ bool Get_Savefile_Info(int id, char * buf, unsigned * scenp, HousesType * housep
 	if (straw.Get(&version, sizeof(version)) != sizeof(version)) {
 		return(false);
 	}
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (version != SAVEGAME_VERSION && ((version-1 != SAVEGAME_VERSION)) ) {
-#else
-	if (version != SAVEGAME_VERSION) {
-#endif
 		return(false);
 	}
 	return(true);
