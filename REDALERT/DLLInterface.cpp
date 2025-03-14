@@ -485,49 +485,6 @@ void On_Sound_Effect(int sound_index, int variation, COORDINATE coord, int house
 	// END MBL 
 
 	DLLExportClass::On_Sound_Effect(PlayerPtr, sound_index, ext, variation, coord);
-
-
-#if 0
-	int voc = sound_index;
-	if (voc == VOC_NONE)
-	{
-		return;
-	}
-
-	// Borrowed from AUDIO.CPP Sound_Effect()
-	//
-	char const * ext = ""; // ".AUD";
-#ifdef TIBERIAN_DAWN
-	if (Special.IsJuvenile && SoundEffectName[voc].Where == IN_JUV) {
-		ext = ".JUV";
-	} else {
-#endif
-		if (SoundEffectName[voc].Where == IN_VAR) {
-			/*
-			**	For infantry, use a variation on the response. For vehicles, always
-			**	use the vehicle response table.
-			*/
-			if (variation < 0) {
-				if (ABS(variation) % 2) {
-					ext = ".V00";
-				} else {
-					ext = ".V02";
-				}
-			} else {
-				if (variation % 2) {
-					ext = ".V01";
-				} else {
-					ext = ".V03";
-				}
-			}
-		}
-#ifdef TIBERIAN_DAWN
-	}
-#endif
-	// END MBL 
-
-	DLLExportClass::On_Sound_Effect(PlayerPtr, sound_index, ext, variation, coord);
-#endif
 }
 
 
@@ -2911,22 +2868,6 @@ void DLLExportClass::On_Multiplayer_Game_Over(void)
 			//	uspoints += 1000; //BG 1000 bonus points for winning mission
 
 			// N/A for multi-player
-			#if 0
-				// Bias the base score upward according to the difficulty level.
-				switch (PlayerPtr->Difficulty) {
-					case DIFF_EASY:
-					uspoints += 500;
-					break;
-			
-					case DIFF_NORMAL:
-					uspoints += 1500;
-					break;
-			
-					case DIFF_HARD:
-					uspoints += 3500;
-					break;
-				}
-			#endif
 
 			int leadership = RA_Calculate_Leadership( player_ptr->Class->House, player_ptr->UnitsLost, player_ptr->BuildingsLost );
 			int economy = RA_Calculate_Economy( player_ptr->Available_Money(), player_ptr->StolenBuildingsCredits, player_ptr->HarvestedCredits, player_ptr->Control.InitialCredits );

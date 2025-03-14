@@ -78,10 +78,6 @@
 #include <stddef.h>			/* ptrdiff_t, size_t */
 #include <string.h>			/* memcpy, memmove, memcmp, memset */
 
-#if 0 && !defined(assert)
-#  error <assert.h> not included
-#endif
-
 #if defined(__BOUNDS_CHECKING_ON)
 #  include <unchecked.h>
 #else
@@ -251,18 +247,9 @@
 /***********************************************************************
 //
 ************************************************************************/
-
-#if 0 
-/* This line causes problems on some architectures */
-#define LZO_CHECK_MPOS_DET(m_pos,m_off,in,ip,max_offset) \
-	(BOUNDS_CHECKING_OFF_IN_EXPR( \
-		(m_off = ip - m_pos) > max_offset ))
-
-#else
 /* This is the safe (but slower) version */
 #define LZO_CHECK_MPOS_DET(m_pos,m_off,in,ip,max_offset) \
 		(m_pos == NULL || (m_off = ip - m_pos) > max_offset)
-#endif
 
 
 /* m_pos may point anywhere...

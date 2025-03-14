@@ -3661,13 +3661,7 @@ int BuildingClass::Mission_Deconstruction(void)
 				// MBL 07.10.2020 - In 1v1, sometimes both players will hear this SFX, or neither player will hear it
 				// Making it so all players hear it positionally in the map; Per thread discussion in https://jaas.ea.com/browse/TDRA-7245
 				//
-				#if 0
-					if (House->IsPlayerControl) {
-						Sound_Effect(VOC_CASHTURN, Coord);
-					}
-				#else
-					Sound_Effect(VOC_CASHTURN, Coord);
-				#endif
+				Sound_Effect(VOC_CASHTURN, Coord);
 				
 				/*
 				**	Destroy all attached objects. ST - 4/24/2020 9:38PM
@@ -3694,15 +3688,6 @@ int BuildingClass::Mission_Deconstruction(void)
 				House->IsRecalcNeeded = true;
 
   				// MBL 05.06.2020 - "Structure Sold" is being heard when selecting/moving a redepolyable Con Yard to turn back into an MCV (RA only), so moving below
-				#if 0
-				// MBL 04.06.2020: Fix being heard by wrong player
-				// if (IsOwnedByPlayer) Speak(VOX_STRUCTURE_SOLD);
-				if (IsOwnedByPlayer) {
-					if ((HouseClass *)House == PlayerPtr) {
-						Speak(VOX_STRUCTURE_SOLD);
-					}
-				}
-				#endif
 				bool mcv_redeployed = false;
 
 				/*

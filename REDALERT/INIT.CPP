@@ -2688,18 +2688,9 @@ static void Init_Bootstrap_Mixfiles(void)
 	new MFCD("LOCAL.MIX", &FastKey);			// Cached.
 	bool ok = MFCD::Cache("LOCAL.MIX");
 	assert(ok);
-
-#if 0
-	new MFCD("HIRES.MIX", &FastKey);
-	ok = MFCD::Cache("HIRES.MIX");
-	assert(ok);
-
-	new MFCD("NCHIRES.MIX", &FastKey);		//Non-cached hires stuff incl VQ palettes
-#else
 	new MFCD("LORES.MIX", &FastKey);
 	ok = MFCD::Cache("LORES.MIX");
 	assert(ok);
-#endif	//WIN32
 
 	RequiredCD = temp;
 }

@@ -1036,11 +1036,6 @@ bool RulesClass::Objects(CCINIClass & ini)
  *=============================================================================================*/
 bool RulesClass::Difficulty(CCINIClass & ini)
 {
-#if 0
-	Difficulty_Get(ini, Diff[DIFF_EASY], "Easy");
-	Difficulty_Get(ini, Diff[DIFF_NORMAL], "Normal");
-	Difficulty_Get(ini, Diff[DIFF_HARD], "Difficult");
-#endif
 	return(true);
 }
 
