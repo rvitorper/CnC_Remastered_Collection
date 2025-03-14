@@ -259,7 +259,6 @@
     <ClCompile Include="MP.CPP" />
     <ClCompile Include="MPGSET.CPP" />
     <ClCompile Include="MPLAYER.CPP" />
-    <ClCompile Include="MPU.CPP" />
     <ClCompile Include="MSGBOX.CPP" />
     <ClCompile Include="MSGLIST.CPP" />
     <ClCompile Include="NETDLG.CPP" />
@@ -516,7 +515,6 @@
     <ClInclude Include="MPGSET.H" />
     <ClInclude Include="MPMGRD.H" />
     <ClInclude Include="MPMGRW.H" />
-    <ClInclude Include="MPU.H" />
     <ClInclude Include="MSGBOX.H" />
     <ClInclude Include="MSGLIST.H" />
     <ClInclude Include="NULLCONN.H" />
@@ -597,7 +595,6 @@
     <ClInclude Include="VORTEX.H" />
     <ClInclude Include="W95TRACE.H" />
     <ClInclude Include="WARHEAD.H" />
-    <ClInclude Include="WATCOM.H" />
     <ClInclude Include="WEAPON.H" />
     <ClInclude Include="Win32Lib\AUDIO.H" />
     <ClInclude Include="Win32Lib\BUFFER.H" />

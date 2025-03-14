@@ -72,30 +72,6 @@
 
 unsigned int __cdecl Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 
-#if (0)
-	PROC	Cardinal_To_Fixed C near
-	USES	ebx, edx
-
-	ARG	base:DWORD
-	ARG	cardinal:DWORD
-
-	mov	eax,0FFFFh		; establish default return value
-
-	mov	ebx,[base]
-	or	ebx,ebx
-	jz	near ??retneg1		; if base==0, return 65535
-
-	mov	eax,[cardinal]		; otherwise, return (cardinal*256)/base
-	shl	eax,8
-	xor	edx,edx
-	div	ebx
-
-??retneg1:
-	ret
-
-	ENDP	Cardinal_To_Fixed
-#endif
-
 /*
 ;***********************************************************************************************
 ;* Fixed_To_Cardinal -- Converts a fixed point number into a cardinal number.                  *
@@ -115,24 +91,6 @@ unsigned int __cdecl Cardinal_To_Fixed(unsigned base, unsigned cardinal);
 ;*=============================================================================================*/
 
 unsigned int __cdecl Fixed_To_Cardinal(unsigned base, unsigned fixed);
-
-#if (0)
-	mov	eax,[base]
-	mul	[fixed]
-	add	eax,080h		; eax = (base * fixed) + 0x80
-
-	test	eax,0FF000000h		; if high byte set, return FFFF
-	jnz	??rneg1
-	shr	eax,8			; else, return eax/256
-	ret
-??rneg1	:
-	mov	eax,0FFFFh		; establish default return value
-	ret
-
-	ENDP	Fixed_To_Cardinal
-
-	END
-#endif
 
 
 

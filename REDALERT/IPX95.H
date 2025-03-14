@@ -40,48 +40,6 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
-#if (0)
-
-/*
-** Types for function pointers
-*/
-typedef BOOL __stdcall (*IPXInitialiseType) (void);
-typedef BOOL __stdcall (*IPXGetOutstandingBuffer95Type) (unsigned char*);
-typedef void __stdcall (*IPXShutDown95Type) (void);
-typedef int  __stdcall (*IPXSendPacket95Type) (unsigned char *, unsigned char *, int, unsigned char*, unsigned char*);
-typedef int  __stdcall (*IPXBroadcastPacket95Type) (unsigned char *, int);
-typedef BOOL __stdcall (*IPXStartListening95Type) (void);
-typedef int  __stdcall (*IPXOpenSocket95Type) (int);
-typedef void __stdcall (*IPXCloseSocket95Type) (int);
-typedef int  __stdcall (*IPXGetConnectionNumber95Type) (void);
-typedef int  __stdcall (*IPXGetLocalTarget95) (unsigned char *, unsigned char*, unsigned short, unsigned char*);
-
-
-
-/*
-** Function pointers
-*/
-//extern "C"{
-	extern IPXInitialiseType					IPX_Initialise;
-	extern IPXGetOutstandingBuffer95Type  	IPX_Get_Outstanding_Buffer95;
-	extern IPXShutDown95Type              	IPX_Shut_Down95;
-	extern IPXSendPacket95Type            	IPX_Send_Packet95;
-	extern IPXBroadcastPacket95Type       	IPX_Broadcast_Packet95;
-	extern IPXStartListening95Type        	IPX_Start_Listening95;
-	extern IPXOpenSocket95Type            	IPX_Open_Socket95;
-	extern IPXCloseSocket95Type           	IPX_Close_Socket95;
-	extern IPXGetConnectionNumber95Type   	IPX_Get_Connection_Number95;
-	extern IPXGetLocalTarget95            	IPX_Get_Local_Target95;
-//}
-
-/*
-** Functions
-*/
-bool Load_IPX_Dll (void);
-void Unload_IPX_Dll (void);
-#endif
-
 #if (1)
 extern "C"{
 	extern BOOL __stdcall IPX_Initialise(void);

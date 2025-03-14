@@ -206,29 +206,6 @@ void __cdecl Shake_Screen(int shakes);
 long __cdecl Reverse_Long(long number);
 short __cdecl Reverse_Short(short number);
 long __cdecl Swap_Long(long number);
-#if (0)
-/*=========================================================================*/
-/* The following prototype is for the file: FACING8.ASM							*/
-/*=========================================================================*/
-
-int __cdecl Desired_Facing8(int x1, int y1, int x2, int y2);
-
-/*=========================================================================*/
-/* The following prototype is for the file: FACING16.ASM							*/
-/*=========================================================================*/
-
-int __cdecl Desired_Facing16(int x1, int y1, int x2, int y2);
-
-/*=========================================================================*/
-/* The following prototype is for the file: FACINGFF.ASM							*/
-/*=========================================================================*/
-
-int __cdecl Desired_Facing256(int x1, int y1, int x2, int y2);
-
-/*=========================================================================*/
-/* The following prototype is for the file: FADING.ASM							*/
-/*=========================================================================*/
-#endif
 
 void * __cdecl Build_Fading_Table(void const *palette, void const *dest, long int color, long int frac);
 /*=========================================================================*/

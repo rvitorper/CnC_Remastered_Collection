@@ -139,15 +139,6 @@ UnitTypeClass      �   BuildingTypeClass      �  VesselTypeClass
 **	November of '94. Until the compiler supports this, use the following
 **	definition.
 */
-#if (0)
-#ifndef __BORLANDC__
-#ifndef TRUE_FALSE_DEFINED
-#define TRUE_FALSE_DEFINED
-enum {false=0,true=1};
-typedef int bool;
-#endif
-#endif
-#endif
 
 #ifndef BITMAPCLASS
 #define BITMAPCLASS

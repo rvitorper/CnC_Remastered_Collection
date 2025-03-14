@@ -84,20 +84,6 @@
 */
 #define WW_ERROR		-1
 
-#if (0) //PG
-#ifdef NULL
-#undef	NULL
-#endif
-
-#ifndef NULL
-#define NULL		0L
-#endif
-
-#ifdef VOID
-#undef VOID
-#endif
-#endif
-
 #define PRIVATE		static
 #define PUBLIC			/* Routines & data don't have a specifier */
 
@@ -179,70 +165,6 @@ template<class T> T MAX(T a, T b)
 		}\
 }
 
-#if (0)//PG
-// type definitions
-//=======================================
-typedef void 	VOID;
-
-//==================================================
-// Pharlape defines these for use so we use their
-// typedefs!
-//		typedef	unsigned char	BOOL;
-//		typedef signed long		LONG;
-//		typedef unsigned long	ULONG;
-//==================================================
-#ifndef PRIVATE
-#define  PRIVATE	static
-#endif
-
-// The purpose of the INT and UINT is for efficiency.  It says that while a short int (16 bit)
-// has enough precision, it is more efficient to pass in an int (32 bits).  For efficiency, most
-// WORD and UWORD should be an INT or UINT, especially on the stack and structures that will
-// not be in large arrays.  When size efficiency is more important then speed, use WORD UWORD.
-
-#define	VOID		void
-
-//#pragma	warn -eas
-#define	TRUE		1
-#define	FALSE		0
-
-/*
-**	The "bool" integral type was defined by the C++ comittee in
-**	November of '94. Until the compiler supports this, use the following
-**	definition.
-*/
-#ifndef __BORLANDC__
-#ifndef TRUE_FALSE_DEFINED
-#define TRUE_FALSE_DEFINED
-enum {false=0,true=1};
-typedef int bool;
-#endif
-#endif
-//#define	true		1
-//#define	false		0
-
-#define	BOOL		int					// 32 bits for speed. use CHAR for size optimizations.
-#if(0)
-#ifndef HMI_DRIVER
-#define	INT		int
-#define	UINT		unsigned int
-#define	BYTE		char
-#define	UBYTE		unsigned char
-#define  UCHAR	   unsigned char
-#define	WORD		signed 	short
-#define	UWORD		unsigned short
-#define  USHORT	unsigned short
-
-#define	LONG		signed 	long
-#define	ULONG		unsigned long
-#define  REALPTR	unsigned long
-
-#define	FARPTR  char far *
-
-#endif
-#endif
-#endif //PG
-
 /*
 **	The type of processor running on this system as
 **	returned by Processor().
@@ -253,7 +175,7 @@ typedef int bool;
 
 
 // Inline Routines
-//ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //
 // These Template functions are generally used
 // by classes when they havce over loaded > and <.
