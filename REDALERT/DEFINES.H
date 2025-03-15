@@ -249,21 +249,6 @@
 
 #define	PARM_INSTALL		0xD95C68A2		//	"FROMINSTALL"
 
-
-//
-// Allow normal game play in the MPath version
-//
-#if(MPATH)
-#define	PARM_ALLOW_SOLO	0xc901c9db	// AllowSoloPlayOptions
-#endif
-
-//
-// Allow normal game play in the TEN version
-//
-#if(TEN)
-#define	PARM_ALLOW_SOLO	0xc901c9db	// AllowSoloPlayOptions
-#endif
-
 /**********************************************************************
 **	Defines for verifying free disk space
 */

@@ -1483,12 +1483,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 //				BreakoutAllowed = false;
 				break;
 
-#if(MPATH)
-			case PARM_ALLOW_SOLO:
-				Session.AllowSolo = 1;
-				break;
-#endif
-
 			default:
 				processed = false;
 				break;

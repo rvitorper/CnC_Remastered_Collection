@@ -601,18 +601,6 @@ IPXManagerClass Ipx (
 
 
 
-#if(MPATH)
-/***************************************************************************
-** This is the connection manager for Ten.  Special Ten notes:
-** - MPATH connection ID's are equal to the HousesType for that player.
-** - The player's color is read from the OPTIONS.INI file
-** - MPath's broadcast destination address is 0
-*/
-MPlayerManClass *MPath = NULL;
-
-#endif
-
-
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
 ** multiplayer games.

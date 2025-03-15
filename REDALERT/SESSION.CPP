@@ -214,15 +214,6 @@ SessionClass::SessionClass(void)
 	TrapCell = NULL;				// for trapping a cell
 	TrapCheckHeap = 0;			// start checking the Heap
 	TrapPrintCRC = 0;				// output CRC file
-	
-
-#if(MPATH)
-	MPathPacket = NULL;
-	MPathSize = 200;
-	OptionsFile[0] = 0;
-	AllowSolo = 0;
-	NetResponseTime = 600;
-#endif	// MPATH
 
 }	// end of SessionClass
 

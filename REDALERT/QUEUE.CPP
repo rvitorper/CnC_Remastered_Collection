@@ -2720,11 +2720,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 					EventClass::FRAMEINFO && Session.Type != GAME_NORMAL &&
 					Session.Type != GAME_SKIRMISH) {
 
-
-#if(MPATH)
-					//Send_MPATH_Packet_Too_Late();
-#endif	// MPATH
-
 					Dump_Packet_Too_Late_Stuff(&DoList[j], net, their_frame,
 						their_sent, their_recv);
 					WWMessageBox().Process (TXT_PACKET_TOO_LATE);
@@ -2838,11 +2833,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 							0x001f);
 						if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
 							Print_CRCs(&DoList[j]);
-
-
-#if(MPATH)
-							//Send_MPATH_Out_Of_Sync();
-#endif	// MPATH
 							return (1);
 						}
 					}
