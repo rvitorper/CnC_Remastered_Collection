@@ -959,10 +959,6 @@ bool Select_Game(bool fade)
 						case GAME_SKIRMISH:
 							break;
 
-						case GAME_NULL_MODEM:
-						case GAME_MODEM:
-							break;
-
 #ifndef WOLAPI_INTEGRATION
 #if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - Internet play
 						/*
@@ -1080,11 +1076,6 @@ bool Select_Game(bool fade)
 					}
 //debugprint( "Session.Type = %i\n", Session.Type );
 					switch (Session.Type) {
-						/*
-						**	Modem, Null-Modem or internet
-						*/
-						case GAME_MODEM:
-						case GAME_NULL_MODEM:
 #ifndef WOLAPI_INTEGRATION
 						case GAME_INTERNET:
 #endif
@@ -1097,51 +1088,6 @@ bool Select_Game(bool fade)
 							Options.ScoreVolume = 0;
 #endif
 							break;
-
-						/*
-						**	Network (IPX): start a new network game.
-						*/
-						case GAME_IPX:
-							WWDebugString ("RA95 - Game type is IPX.\n");
-							/*
-							** Init network system & remote-connect
-							*/
-							WWDebugString ("RA95 - About to call Init_Network.\n");
-							if (Session.Type == GAME_IPX && Init_Network() && Remote_Connect()) {
-#ifdef FIXIT_VERSION_3
-								Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-								Options.ScoreVolume = 0;
-#endif
-								process = false;
-								Theme.Fade_Out();
-							} else {						// user hit cancel, or init failed
-								Session.Type = GAME_NORMAL;
-								display = true;
-								selection = SEL_NONE;
-							}
-							break;
-
-#if(MPATH)
-						/*
-						**	MPATH: jump straight into the game
-						*/
-						case GAME_MPATH:
-							if (Init_MPATH()) {
-#ifdef FIXIT_VERSION_3
-								Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-								Options.ScoreVolume = 0;
-#endif
-								process = false;
-								Theme.Fade_Out();
-							} else {
-								WWMessageBox().Process("Unable to initialize MPATH!");
-								//Prog_End();
-								Emergency_Exit(1);
-							}
-							break;
-#endif	// MPATH
 
 					}
 					break;
@@ -1233,20 +1179,6 @@ bool Select_Game(bool fade)
 	}
 
 	switch(Session.Type) {
-		case GAME_MODEM:
-		case GAME_NULL_MODEM:
-		case GAME_IPX:
-#ifdef FIXIT_VERSION_3
-			if( !bAftermathMultiplayer ) {
-#else
-			if (PlayingAgainstVersion < VERSION_AFTERMATH_CS) {
-#endif
-				NewUnitsEnabled = SecretUnitsEnabled = false;
-			} else {
-				NewUnitsEnabled = true;
-			}
-//			debugprint( "Non Internet game: NewUnitsEnabled = %i\n", NewUnitsEnabled );
-			break;
 		case GAME_INTERNET:
 			break;
 		default:
@@ -1311,14 +1243,7 @@ bool Select_Game(bool fade)
 
 	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
 		!Session.Play) {
-		if (Session.Type == GAME_TEN) {
-		} else if (Session.Type == GAME_MPATH) {
-#if(MPATH)
-			Session.Create_MPATH_Connections();
-#endif
-		} else {
-			Session.Create_Connections();
-		}
+		Session.Create_Connections();
 	}
 
 
@@ -1706,42 +1631,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 #endif
 
 #endif
-
-
-#if(MPATH)
-		/*
-		**	Enable MPATH
-		*/
-		if (strstr(string, "MPATH")) {
-
-#ifdef CHEAT_KEYS
-			Debug_Flag = true;
-			MonoClass::Enable();
-#endif
-
-			Session.Type = GAME_MPATH;
-			Special.IsFromInstall = false;
-			//
-			// Create the MPath network manager.  This allows us to keep
-			// the packet queues clean even while we're initializing the game,
-			// so the queues don't fill up in case we're slow, or the user
-			// didn't insert a CD.
-			//
-			MPath = new MPlayerManClass();
-			MPath->Init();
-			strcpy(Session.OptionsFile, "OPTIONS.INI");
-			MPath->Flush_All();
-			continue;
-		}
-
-		/*
-		**	Set the game options filename
-		*/
-		if (strstr(string, "OPTIONS:")) {
-			strcpy(Session.OptionsFile, string + 8);
-			continue;
-		}
-#endif	// MPATH
 
 
 #ifdef NEVER

@@ -344,11 +344,6 @@ GameType Select_MPlayer_Game (void)
 					Session.Type = GAME_SKIRMISH;
 					break;
 
-				case (BUTTON_IPX):
-					retval = GAME_IPX;
-					process = false;
-					break;
-
 				case (BUTTON_CANCEL):
 					retval = GAME_NORMAL;
 					process = false;

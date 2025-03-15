@@ -315,26 +315,6 @@ void Main_Game(int argc, char * argv[])
 			Session.RecordFile.Close();
 		}
 
-		if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-			if (!Session.Play) {
-				//PG Modem_Signoff();
-			}
-		} else {
-			if (Session.Type == GAME_IPX) {
-				if (!Session.Play) {
-					//PG Shutdown_Network();
-				}
-			}
-		}
-
-#if(MPATH)
-		if (Session.Type == GAME_MPATH) {
-			Shutdown_MPATH();
-			//Prog_End();
-			Emergency_Exit(0);
-		}
-#endif	// MPATH
-
 		/*
 		**	If we're playing back, the mouse will be hidden; show it.
 		** Also, set all variables back to normal, to return to the main menu.
@@ -853,22 +833,8 @@ static void Message_Input(KeyNumType &input)
 	*/
 	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) && !Session.Messages.Is_Edit()) {
 		memset (txt, 0, 40);
-
-		/*
-		**	For a serial game, send a message on F1 or F4; set 'txt' to the
-		**	"Message:" string & add an editable message to the list.
-		*/
-		if (Session.Type==GAME_NULL_MODEM || Session.Type==GAME_MODEM) {
-			if (input==KN_F1 || input==(KN_F1 + Session.MaxPlayers - 1)) {
-
-				strcpy(txt, Text_String(TXT_MESSAGE));	// "Message:"
-
-				Session.Messages.Add_Edit (Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-			}
-		} else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) && !Session.Messages.Is_Edit()) {
+		
+		if (Session.Type == GAME_INTERNET && !Session.Messages.Is_Edit()) {
 		/*
 		**	For a network game:
 		**	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
@@ -895,36 +861,6 @@ static void Message_Input(KeyNumType &input)
 				Map.Flag_To_Redraw(false);
 			}
 		}
-#if(MPATH)
-		/*
-		**	For a MPATH game:
-		**	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-		**	F8 = "To All:"
-		*/
-		else if (Session.Type == GAME_MPATH && !Session.Messages.Is_Edit()) {
-			if (input==(KN_F1 + Session.MaxPlayers - 1)) {
-
-				Session.MPathMessageAddress = 0;			// set to broadcast
-				strcpy(txt,Text_String(TXT_TO_ALL));	// "To All:"
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-
-			}  else if ((input - KN_F1) < MPath->Num_Connections() && !Session.ObiWan) {
-
-				id = MPath->Connection_ID(input - KN_F1);
-				Session.MPathMessageAddress = MPath->Connection_Address(id);
-				sprintf(txt,Text_String(TXT_TO),MPath->Connection_Name(id));
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-			}
-		}
-#endif	// MPATH
 	}
 
 	/*

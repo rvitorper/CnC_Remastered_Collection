@@ -287,26 +287,6 @@ int main(int argc, char * argv[])
 
 	if (Parse_Command_Line(argc, argv)) {
 
-#if(MPATH)
-	//
-	// Only allow the MPATH version of the game to run if the MPATH
-	// or AllowSoloPlayOptions arguments are specified.
-	//
-	if (Session.AllowSolo==0 && Session.Type != GAME_MPATH) {
-#ifdef WIN32
-		MessageBox(NULL, "Red Alert for MPATH\n (c) 1996 Westwood Studios",
-			"Red Alert", MB_OK);
-		exit(0);
-#else
-		printf("\n");
-		printf("                        Red Alert for MPATH\n");
-		printf("                     (c) 1996 Westwood Studios\n");
-		printf("\n");
-		exit(0);
-#endif	// WIN32
-	}
-#endif	// MPATH
-
 #ifdef WIN32
 
 		WindowsTimer = new WinTimerClass(60, FALSE);
@@ -557,8 +537,7 @@ int main(int argc, char * argv[])
 			**	configuration file says "no", then don't run the intro.
 			** Don't do this for TEN & MPath.
 			*/
-			if (!Special.IsFromInstall && Session.Type != GAME_TEN &&
-				Session.Type != GAME_MPATH) {
+			if (!Special.IsFromInstall) {
 				Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
 			}
 			SlowPalette = ini.Get_Bool("Options", "SlowPalette", false);
@@ -711,7 +690,6 @@ bool InitDDraw(void)
  *   03/20/1995 JLB : Created.                                                                 *
  *   08/07/2019  ST : Added why and fatal params                                               *
  *=============================================================================================*/
-#ifdef WIN32
 void __cdecl Prog_End(const char *why, bool fatal)
 {
 	GlyphX_Debug_Print("Prog_End()");
@@ -739,21 +717,6 @@ void __cdecl Prog_End(const char *why, bool fatal)
 
 	ProgEndCalled = true;
 }
-#else	//WIN32
-
-void Prog_End(void)
-{
-	if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-		NullModem.Change_IRQ_Priority(0);
-	}
-
-	Set_Video_Mode(RESET_MODE);
-	Remove_Keyboard_Interrupt();
-	Remove_Mouse();
-	Sound_End();
-	Remove_Timer_System();
-}
-#endif	//WIN32
 
 
 void Print_Error_End_Exit(char * string)

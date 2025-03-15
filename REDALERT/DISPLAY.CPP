@@ -4487,33 +4487,6 @@ void DisplayClass::Read_INI(CCINIClass & ini)
 	int w = ini.Get_Int(name, "Width", MAP_CELL_W-2);
 	int h = ini.Get_Int(name, "Height", MAP_CELL_H-2);
 
-#ifndef FIXIT_VERSION_3		//	Map size no longer restricted.
-
-#ifdef FIXIT_CSII	//	checked - ajw
-	if(Session.Type >= GAME_MODEM && Session.Type <= GAME_INTERNET && PlayingAgainstVersion < VERSION_AFTERMATH_CS) {
-		/*
-		**	HACK ALERT:
-		**	Force the map to be limited to the size that 96x96 would be. If the
-		**	size is greater (due to hacking?) then shrink it down to legal size.
-		** BG Note: only do this for multiplayer games against non-AfterMath.
-		*/
-		if (w * h > 96 * 96) {
-			h -= (((w*h) - (96*96)) / w) + 1;
-		}
-	}
-#else
-	/*
-	**	HACK ALERT:
-	**	Force the map to be limited to the size that 96x96 would be. If the
-	**	size is greater (due to hacking?) then shrink it down to legal size.
-	*/
-	if (w * h > 96 * 96) {
-		h -= (((w*h) - (96*96)) / w) + 1;
-	}
-#endif
-
-#endif	//	!FIXIT_VERSION_3
-
 	Set_Map_Dimensions( x, y, w, h );
 
 	/*

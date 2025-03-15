@@ -353,13 +353,7 @@ void Queue_AI(void)
 			case GAME_NORMAL:
 				Queue_AI_Normal();
 				break;
-
-			case GAME_MODEM:
-			case GAME_NULL_MODEM:
-			case GAME_IPX:
 			case GAME_INTERNET:
-			case GAME_TEN:
-			case GAME_MPATH:
 				Queue_AI_Multiplayer();
 				break;
 		}
@@ -700,32 +694,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 					dialog_timer = dialog_time;
 					timeout_timer = timeout;
 				}
-#ifdef FIXIT_MULTI_SAVE
-#ifdef FIXIT_VERSION_3
-				else if ((Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) ) {
-#else
-				else if ((Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) &&
-					        PlayingAgainstVersion != VERSION_RED_ALERT_104) {
-#endif
-					if (WWMessageBox().Process (TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
-						TXT_YES, TXT_NO, TXT_NONE) == 0) {
-						Session.EmergencySave = 1;
-//printf("Saving emergency game; frame:%d, CRC:%d\n",Frame,GameCRC);
-//Print_CRCs(NULL);
-//printf("Before Save: Count1:%d, Count2:%d, Seed:%d\n",
-//	Scen.RandomNumber.Count1,
-//	Scen.RandomNumber.Count2,
-//	Scen.RandomNumber.Seed);
-						Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
-//printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
-//	Scen.RandomNumber.Count1,
-//	Scen.RandomNumber.Count2,
-//	Scen.RandomNumber.Seed);
-						Session.EmergencySave = 0;
-					}
-					return (RC_CANCEL);
-				}
-#endif	// FIXIT_MULTI_SAVE
 				else {
 					return (RC_NOT_RESPONDING);
 				}
@@ -745,10 +713,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 		messages_this_loop = 0;
 		message_limit = 5;
 
-		if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
-			message_limit = 9999;
-		}
-
 		while ( (messages_this_loop++ < message_limit) &&
 			net->Get_Private_Message (multi_packet_buf, &packetlen, &id) ) {
 
@@ -760,73 +724,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 			Get an event ptr to the incoming message
 			..................................................................*/
 			event = (EventClass *)multi_packet_buf;
-
-			//------------------------------------------------------------------
-			// Special processing for a modem game: process SERIAL packets
-			//------------------------------------------------------------------
-			if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-				rc = Process_Serial_Packet(multi_packet_buf, first_time);
-				//...............................................................
-				// SERIAL packet received & processed
-				//...............................................................
-				if (rc == RC_SERIAL_PROCESSED) {
-					net->Service();
-					retry_timer = resend_delta;
-					dialog_timer = dialog_time;
-					timeout_timer = timeout;
-					continue;
-				}
-				//...............................................................
-				// other player has left the game
-				//...............................................................
-				else if (rc == RC_PLAYER_LEFT) {
-					if (first_time) {
-						num_ready++;
-					}
-					break;
-				}
-				//...............................................................
-				// Connection was lost
-				//...............................................................
-				else if (rc == RC_HUNG_UP) {
-#ifdef FIXIT_MULTI_SAVE
-#ifndef FIXIT_VERSION_3
-					if (PlayingAgainstVersion != VERSION_RED_ALERT_104){
-#endif
-						if (WWMessageBox().Process (TXT_ASK_EMERGENCY_SAVE_HUNG_UP,
-							TXT_YES, TXT_NO, TXT_NONE) == 0) {
-							Session.EmergencySave = 1;
-	//printf("Saving emergency game; frame:%d, CRC:%d\n",Frame,GameCRC);
-	//Print_CRCs(NULL);
-	//printf("Before Save: Count1:%d, Count2:%d, Seed:%d\n",
-	//	Scen.RandomNumber.Count1,
-	//	Scen.RandomNumber.Count2,
-	//	Scen.RandomNumber.Seed);
-							Save_Game (-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
-	//printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
-	//	Scen.RandomNumber.Count1,
-	//	Scen.RandomNumber.Count2,
-	//	Scen.RandomNumber.Seed);
-							Session.EmergencySave = 0;
-						}
-						return (RC_CANCEL);
-#ifndef FIXIT_VERSION_3
-					}else{
-						return (RC_NOT_RESPONDING);
-					}
-#endif
-
-#else
-					return (RC_NOT_RESPONDING);
-#endif	// FIXIT_MULTI_SAVE
-				}
-				//...............................................................
-				// If it was any other type of serial packet, break
-				//...............................................................
-				else if (rc != RC_NORMAL) {
-					break;
-				}
-			}
 
 			//------------------------------------------------------------------
 			//	Process the incoming packet
@@ -948,14 +845,6 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent)
 	unsigned long resp_time;			// connection response time, in ticks
 	EventClass ev;
 
-	//
-	// For now, TEN & MPATH don't measure the net's response time, so there's
-	// no point in adjusting our timing.  Do nothing.
-	//
-	if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
-		return;
-	}
-
 	//------------------------------------------------------------------------
 	// Measure the current connection response time.  This time will be in
 	// 60ths of a second, and represents full round-trip time of a packet.
@@ -992,16 +881,9 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent)
 			// response time.
 			//..................................................................
 			else {
-				if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-					ev.Data.FrameInfo.Delay = max( (resp_time / 8),
-						 MODEM_MIN_MAX_AHEAD );
-				} else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+				if (Session.Type == GAME_INTERNET) {
 					ev.Data.FrameInfo.Delay = max( (resp_time / 8),
 						 NETWORK_MIN_MAX_AHEAD );
-				}
-				else if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
-					ev.Data.FrameInfo.Delay = max( (resp_time / 8),
-						 MODEM_MIN_MAX_AHEAD );
 				}
 			}
 			OutList.Add(ev);
@@ -1313,7 +1195,7 @@ static int Send_Packets(ConnManClass *net, char *multi_packet_buf,
 	//
 	// 10/21/96 5:12PM - ST
 	//
-	if (Session.Type == GAME_INTERNET || Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM){
+	if (Session.Type == GAME_INTERNET){
 		cap = OutList.Count;
 		do_once = 0;
 	}
@@ -1804,34 +1686,9 @@ static int Handle_Timeout(ConnManClass *net, long *their_frame,
 	int id;
 
 	//------------------------------------------------------------------------
-	// For modem, attempt to reconnect; if that fails, save the game & bail.
-	//------------------------------------------------------------------------
-	if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-		if ( net->Num_Connections() ) {
-			if (!Reconnect_Modem()) {
-#ifndef FIXIT_MULTI_SAVE
-				//...............................................................
-				// Set 'Session.EmergencySave', so when this game is loaded, we
-				// won't check the CRC of the game state (this system & the
-				// other may be on different frames, in which case the CRC
-				// won't match).
-				//...............................................................
-				Session.EmergencySave = 1;
-				//Save_Game (-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
-				Session.EmergencySave = 0;
-#endif	// FIXIT_MULTI_SAVE
-				return (0);
-			} else {
-				return (1);
-			}
-		}
-	}
-
-	//------------------------------------------------------------------------
 	//	For network, destroy the oldest connection
 	//------------------------------------------------------------------------
-	else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET ||
-		Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
+	if (Session.Type == GAME_INTERNET) {
 		j = 0x7fffffff;
 		oldest_index = 0;
 		for (i = 0; i < net->Num_Connections(); i++) {
@@ -1861,14 +1718,9 @@ static int Handle_Timeout(ConnManClass *net, long *their_frame,
 				their_sent[i] = their_sent[i+1];
 				their_recv[i] = their_recv[i+1];
 			}
-			if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+			if (Session.Type == GAME_INTERNET) {
 				Destroy_Connection(id,1);
 			}
-#if(MPATH)
-			else if (Session.Type == GAME_MPATH) {
-				Destroy_MPATH_Connection(id,1);
-			}
-#endif
 		}
 	}
 
@@ -2935,13 +2787,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 					//	for that player.  The HousesType for this event is the
 					// connection ID.
 					//............................................................
-						if (Session.Type == GAME_MODEM ||
-							Session.Type == GAME_NULL_MODEM) {
-							//PG Destroy_Null_Connection( house, 0 );
-						} else if ((Session.Type == GAME_IPX ||
-							Session.Type == GAME_INTERNET ||
-							Session.Type == GAME_TEN ||
-							Session.Type == GAME_MPATH) && net) {
+						if ((
+							Session.Type == GAME_INTERNET) && net) {
 							index = net->Connection_Index (house);
 							if (index != -1) {
 								for (k = index; k < net->Num_Connections() - 1; k++) {
@@ -2949,16 +2796,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 									their_sent[k] = their_sent[k+1];
 									their_recv[k] = their_recv[k+1];
 								}
-								if (Session.Type == GAME_IPX ||
-									Session.Type == GAME_INTERNET) {
+								if (Session.Type == GAME_INTERNET) {
 									Destroy_Connection(house,0);
 								}
-
-#if(MPATH)
-								else if (Session.Type == GAME_MPATH) {
-									Destroy_MPATH_Connection(house,0);
-								}
-#endif	// MPATH
 							}
 						}
 						//

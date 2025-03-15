@@ -116,13 +116,8 @@ class CellClass;
 //...........................................................................
 typedef enum GameEnum {
 	GAME_NORMAL,									// not multiplayer
-	GAME_MODEM,										// modem game
-	GAME_NULL_MODEM,								// NULL-modem
-	GAME_IPX,										// IPX Network game
 	GAME_INTERNET,									// Internet H2H
 	GAME_SKIRMISH,									// 1 plr vs. AI's
-	GAME_TEN,										// TEN Network game
-	GAME_MPATH,										// MPath Network game
 	GAME_GLYPHX_MULTIPLAYER						// Multiplayer game controlled by the GLYPHX engine. ST - 5/14/2019 11:41AM
 } GameType;
 
