@@ -333,13 +333,6 @@ UnitClass::UnitClass(UnitType classid, HousesType house) :
 	*/
 	IsSecondShot = !Class->Is_Two_Shooter();
 	Strength = Class->MaxStrength;
-
-	/*
-	** Keep count of the number of units created.
-	*/
-//	if (Session.Type == GAME_INTERNET) {
-//		House->UnitTotals->Increment_Unit_Total((int)classid);
-//	}
 }
 
 
@@ -5188,7 +5181,7 @@ void UnitClass::Shroud_Regen(void)
 		int centerx, centery;
 		CELL trycell;
 
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER || Is_Legacy_Render_Enabled()) {
+		if (Is_Legacy_Render_Enabled()) {
 			// Only restore under the shroud if it's a valid field.
 			if (ShroudBits != (unsigned)-1L) {
 				centerx = Cell_X(ShroudCenter);
@@ -5219,25 +5212,8 @@ void UnitClass::Shroud_Regen(void)
 				}
 			}
 		}
-
-		/*
-		** Updated for client/server multiplayer. ST - 8/12/2019 3:25PM
-		*/
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-			if (House->IsPlayerControl) {
-				Map.Constrained_Look(Coord, 5 * CELL_LEPTON_W, PlayerPtr);
-			}
-		
-		} else {
-		
-			if (Is_Legacy_Render_Enabled()) {
-				for (int i = 0; i < Session.Players.Count(); i++) {
-					HouseClass *player_house = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-					if (player_house->IsHuman && player_house != House) {
-						Map.Constrained_Look(Coord, 5 * CELL_LEPTON_W, player_house);
-					}
-				}
-			}
+		if (House->IsPlayerControl) {
+			Map.Constrained_Look(Coord, 5 * CELL_LEPTON_W, PlayerPtr);
 		}
 	}
 }

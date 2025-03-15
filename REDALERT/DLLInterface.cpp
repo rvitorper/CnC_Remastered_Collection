@@ -1223,12 +1223,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Instance_Variation(int s
 			return false;
 		}
 	} else {
-		if (stricmp(game_type, "GAME_GLYPHX_MULTIPLAYER") == 0) {
-			GAME_TO_PLAY = GAME_GLYPHX_MULTIPLAYER;
-			scen_player = SCEN_PLAYER_MPLAYER;
-		} else {
-			return false;
-		}
+		return false;
 	}
 
 	/*
@@ -1335,65 +1330,6 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Instance_Variation(int s
 **************************************************************************************************/
 extern "C" __declspec(dllexport) bool __cdecl CNC_Read_INI(int scenario_index, int scenario_variation, int scenario_direction, const char *content_directory, const char *override_map_name, char *ini_buffer, int _ini_buffer_size)
 {
-	if (content_directory == NULL) {
-		return false;
-	}
-
-	DLLExportClass::Set_Content_Directory(content_directory);
-
-	Scen.Scenario = scenario_index;
-	ScenarioDirType scen_dir = (ScenarioDirType)scenario_direction;
-	
-	GAME_TO_PLAY = GAME_GLYPHX_MULTIPLAYER;
-	ScenarioPlayerType scen_player = SCEN_PLAYER_MPLAYER;
-
-	Force_CD_Available(ALWAYS_RELOAD_CD);
-
-	if (override_map_name && strlen(override_map_name)) {
-		strcpy(Scen.ScenarioName, override_map_name);
-	} else {
-		Scen.Set_Scenario_Name(Scen.Scenario, scen_player, scen_dir, (ScenarioVarType)scenario_variation);
-	}
-
-
-	if (_ini_buffer_size < _ShapeBufferSize) {
-		GlyphX_Debug_Print("INI file buffer may be too small");
-		return false;
-	}
-
-	if (!ini_buffer) {
-		GlyphX_Debug_Print("No INI file buffer");
-		return false;
-	}
-
-	memset(ini_buffer, _ini_buffer_size, 0);
-
-	CCFileClass file(Scen.ScenarioName);
-	if (!file.Is_Available()) {
-		GlyphX_Debug_Print("Failed to find scenario file");
-		GlyphX_Debug_Print(Scen.ScenarioName);
-		return(false);
-
-	} else {
-		
-		GlyphX_Debug_Print("Opened scenario file");
-		GlyphX_Debug_Print(Scen.ScenarioName);
-		
-		int bytes_read = file.Read(ini_buffer, _ini_buffer_size-1);
-		if (bytes_read == _ini_buffer_size - 1) {
-			GlyphX_Debug_Print("INI file buffer is too small");
-			return false;
-		}
-	}
-
-	/*
-	** Ini buffer should be zero terminated
-	*/
-	if ((int) strlen(ini_buffer) >= _ini_buffer_size) {
-		GlyphX_Debug_Print("INI file buffer overrun");
-		return false;
-	}
-
 	return true;
 }			  
 
@@ -1436,44 +1372,9 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Custom_Instance(const ch
 
 	ScenarioPlayerType scen_player;
 	strncpy(Scen.ScenarioName, fullname, _MAX_FNAME + _MAX_EXT);
-
-	if (multiplayer) {
-		GAME_TO_PLAY = GAME_GLYPHX_MULTIPLAYER;
-	} else {
-		GAME_TO_PLAY = GAME_NORMAL;
-	}	
+	
+	GAME_TO_PLAY = GAME_NORMAL;
 	scen_player = SCEN_PLAYER_MPLAYER;
-
-	//Scen.Scenario = scenario_index;
-	//ScenarioDirType scen_dir = (ScenarioDirType)scenario_direction;
-
-	//if (stricmp(game_type, "GAME_NORMAL") == 0) {
-	//	GAME_TO_PLAY = GAME_NORMAL;
-	//}
-	//else {
-	//	if (stricmp(game_type, "GAME_GLYPHX_MULTIPLAYER") == 0) {
-	//		GAME_TO_PLAY = GAME_GLYPHX_MULTIPLAYER;
-	//		scen_player = SCEN_PLAYER_MPLAYER;
-	//	}
-	//	else {
-	//		return false;
-	//	}
-	//}
-
-	///*
-	//**	Load the scenario.  Specify variation 'A' for the editor; for the game,
-	//**	don't specify a variation, to make 'Set_Scenario_Name()' pick a random one.
-	//**	Skip this if we've already loaded a save-game.
-	//*/
-
-	//Force_CD_Available(ALWAYS_RELOAD_CD);
-
-	//if (override_map_name && strlen(override_map_name)) {
-	//	strcpy(Scen.ScenarioName, override_map_name);
-	//}
-	//else {
-	//	Scen.Set_Scenario_Name(Scen.Scenario, scen_player, scen_dir, (ScenarioVarType)scenario_variation);
-	//}
 
 	HiddenPage.Clear();
 	VisiblePage.Clear();
@@ -1681,19 +1582,6 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 		//	Keyboard_Process(input);
 		//}
 
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			/*
-			** Process the sidebar. ST - 4/18/2019 11:59AM
-			*/
-			HouseClass *old_player_ptr = PlayerPtr;
-			for (int i=0 ; i<MULTIPLAYER_COUNT ; i++) {
-				HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-				DLLExportClass::Logic_Switch_Player_Context(player_ptr);
-				Sidebar_Glyphx_AI(player_ptr, input);
-			}
-			DLLExportClass::Logic_Switch_Player_Context(old_player_ptr);
-		}
-
 	//}
 
 	/*
@@ -1709,7 +1597,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	**	AI logic operations are performed here.
 	*/
 	//Skip this block of code on first update of single-player games. This helps prevents trigger generated messages on the first update from being lost during loading screen or movie. - LLL
-	static bool FirstUpdate = GAME_TO_PLAY != GAME_GLYPHX_MULTIPLAYER;;
+	static bool FirstUpdate = true;
 	if (!FirstUpdate) {
 		HouseClass *old_player_ptr = PlayerPtr;
 		Logic.Clear_Recently_Created_Bits();
@@ -1739,21 +1627,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	/*
 	**	Process all commands that are ready to be processed.
 	*/
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		Queue_AI();
-	} else {
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			DLLExportClass::Glyphx_Queue_AI();
-
-			/*
-			** Process the sidebar. ST - 3/22/2019 2:07PM
-			*/
-			for (int i=0 ; i<MULTIPLAYER_COUNT ; i++) {
-				HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-				Sidebar_Glyphx_Recalc(player_ptr);
-			}
-		}
-	}
+	Queue_AI();
 
 	/*
 	**	Keep track of elapsed time in the game.
@@ -1774,12 +1648,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 		PlayerRestarts = false;
 		Map.Help_Text(TXT_NONE);
 		GlyphX_Debug_Print("PlayerWins = true");
-
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			DLLExportClass::On_Multiplayer_Game_Over();
-		} else {
-			DLLExportClass::On_Game_Over(player_id, true);
-		}
+		DLLExportClass::On_Game_Over(player_id, true);
 
 		//DLLExportClass::Set_Event_Callback(NULL);
 		return false;
@@ -1792,12 +1661,8 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 		PlayerRestarts = false;
 		Map.Help_Text(TXT_NONE);
 		GlyphX_Debug_Print("PlayerLoses = true");
-
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			DLLExportClass::On_Multiplayer_Game_Over();
-		} else {
-			DLLExportClass::On_Game_Over(player_id, false);
-		}
+		
+		DLLExportClass::On_Game_Over(player_id, false);
 
 		//DLLExportClass::Set_Event_Callback(NULL);
 		return false;
@@ -1830,14 +1695,6 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	//Sync_Delay();
 	//DLLExportClass::Set_Event_Callback(NULL);
 	Color_Cycle();
-	
-	
-	/*
-	** Don't respect GameActive. Game will end in multiplayer on win/loss
-	*/
-	if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-		return true;
-	}
 
 	return(GameActive);
 }
@@ -1870,12 +1727,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Save_Load(bool save, const cha
 		if (stricmp(game_type, "GAME_NORMAL") == 0) {
 			GAME_TO_PLAY = GAME_NORMAL;
 		} else {
-			if (stricmp(game_type, "GAME_GLYPHX_MULTIPLAYER") == 0) {
-				GAME_TO_PLAY = GAME_GLYPHX_MULTIPLAYER;
-				//ScenPlayer = SCEN_PLAYER_MPLAYER;
-			} else {
-				return false;
-			}
+			return false;
 		}
 
 		while (Session.Players.Count() > 0) {
@@ -4566,167 +4418,6 @@ bool DLLExportClass::Get_Sidebar_State(uint64 player_id, unsigned char *buffer_i
 		}
 	
 	} else {
-		
-		
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			
-			SidebarGlyphxClass *context_sidebar = DLLExportClass::Get_Current_Context_Sidebar();
-			
-			/*
-			** Get each sidebar column
-			*/
-			for (int c = 0 ; c < 2 ; c++) {
-		
-				sidebar->EntryCount[c] = context_sidebar->Column[c].BuildableCount;
-				
-				/*
-				** Each production slot in the column
-				*/
-				for (int b=0 ; b < context_sidebar->Column[c].BuildableCount ; b++) {
-			
-					CNCSidebarEntryStruct &sidebar_entry = sidebar->Entries[entry_index++];
-					if ((entry_index + 1) * sizeof(CNCSidebarEntryStruct) + memory_needed > buffer_size) {
-						return false;
-					}
-
-					memset(&sidebar_entry, 0, sizeof(sidebar_entry));
-
-					sidebar_entry.AssetName[0] = 0;
-					sidebar_entry.Type = UNKNOWN;
-					sidebar_entry.BuildableID = context_sidebar->Column[c].Buildables[b].BuildableID;
-					sidebar_entry.BuildableType = context_sidebar->Column[c].Buildables[b].BuildableType;
-					sidebar_entry.BuildableViaCapture = context_sidebar->Column[c].Buildables[b].BuildableViaCapture;
-			   	sidebar_entry.Fake = false;
-			
-					TechnoTypeClass const * tech = Fetch_Techno_Type(context_sidebar->Column[c].Buildables[b].BuildableType, context_sidebar->Column[c].Buildables[b].BuildableID);
-				
-					sidebar_entry.SuperWeaponType = SW_NONE;
-
-					if (tech) {
-
-						// Updated to apply and difficulty abd/or faction price modifier; See https://jaas.ea.com/browse/TDRA-6864
-						// If this gets modified, also modify above for non-skirmish / non-multiplayer
-						//
-						// sidebar_entry.Cost = tech->Cost;
-						sidebar_entry.Cost = tech->Cost * PlayerPtr->CostBias;
-
-						sidebar_entry.PowerProvided = 0;
-						sidebar_entry.BuildTime = tech->Time_To_Build(PlayerPtr->Class->House); // sidebar_entry.BuildTime = tech->Time_To_Build() / 60;
-						strncpy(sidebar_entry.AssetName, tech->IniName, CNC_OBJECT_ASSET_NAME_LENGTH);
-					} else {
-						sidebar_entry.Cost = 0;
-						sidebar_entry.AssetName[0] = 0;
-					}	
-					
-					SuperClass* super_weapon = nullptr;
-					bool isbusy = false;
-
-					switch (context_sidebar->Column[c].Buildables[b].BuildableType) {
-						case RTTI_INFANTRYTYPE:
-							sidebar_entry.Type = INFANTRY_TYPE;
-							isbusy = (PlayerPtr->InfantryFactory != -1);
-							isbusy |= Infantry.Avail() <= 0;
-							break;
-						
-						case RTTI_UNITTYPE:
-							isbusy = (PlayerPtr->UnitFactory != -1);
-							isbusy |= Units.Avail() <= 0;
-							sidebar_entry.Type = UNIT_TYPE;
-							break;
-						
-						case RTTI_AIRCRAFTTYPE:
-							isbusy = (PlayerPtr->AircraftFactory != -1);
-							isbusy |= Aircraft.Avail() <= 0;
-							sidebar_entry.Type = AIRCRAFT_TYPE;
-							break;
-					
-						case RTTI_BUILDINGTYPE:
-						{	
-							isbusy = (PlayerPtr->BuildingFactory != -1);
-							isbusy |= Buildings.Avail() <= 0;
-							sidebar_entry.Type = BUILDING_TYPE;
-
-							const BuildingTypeClass* build_type = static_cast<const BuildingTypeClass*>(tech);
-							sidebar_entry.PowerProvided = build_type->Power - build_type->Drain;
-			   			sidebar_entry.Fake = build_type->IsFake;
-							break;
-						}
-
-						case RTTI_VESSELTYPE:
-							isbusy = (PlayerPtr->VesselFactory != -1);
-							isbusy |= Vessels.Avail() <= 0;
-							sidebar_entry.Type = VESSEL_TYPE;
-							break;
-
-						default:
-							sidebar_entry.Type = UNKNOWN;
-							break;
-
-						case RTTI_SPECIAL:
-							Fill_Sidebar_Entry_From_Special_Weapon(sidebar_entry, super_weapon, (SpecialWeaponType)sidebar_entry.BuildableID);
-							break;
-					}
-
-					if (super_weapon != nullptr)
-					{
-						sidebar_entry.Progress = (float)super_weapon->Anim_Stage() / (float)SuperClass::ANIMATION_STAGES;
-						sidebar_entry.Completed = super_weapon->Is_Ready();
-						sidebar_entry.Constructing = super_weapon->Anim_Stage() != SuperClass::ANIMATION_STAGES;
-						sidebar_entry.ConstructionOnHold = false;
-						sidebar_entry.PlacementListLength = 0;
-						sidebar_entry.PowerProvided = 0;
-						sidebar_entry.BuildTime = super_weapon->Get_Recharge_Time();
-					}
-					else
-					{
-
-						int fnumber = context_sidebar->Column[c].Buildables[b].Factory;
-						FactoryClass * factory = NULL;
-						if (tech && fnumber != -1) {
-							factory = Factories.Raw_Ptr(fnumber);
-						}
-			
-						sidebar_entry.Completed = false;
-						sidebar_entry.Constructing = false;
-						sidebar_entry.ConstructionOnHold = false;
-						sidebar_entry.Progress = 0.0f;
-						sidebar_entry.Busy = isbusy;
-						sidebar_entry.PlacementListLength = 0;
-			  
-						if (factory) {
-							if (factory->Is_Building()) {
-								sidebar_entry.Constructing = true;
-								sidebar_entry.Progress = (float)factory->Completion() / (float)FactoryClass::STEP_COUNT;
-								sidebar_entry.Completed = factory->Has_Completed();
-							}
-							else {
-								sidebar_entry.Completed = factory->Has_Completed();
-
-								if (!sidebar_entry.Completed)
-								{
-									sidebar_entry.ConstructionOnHold = true;
-									sidebar_entry.Progress = (float)factory->Completion() / (float)FactoryClass::STEP_COUNT;
-								}
-
-								if (sidebar_entry.Completed && sidebar_entry.Type == BUILDING_TYPE) {
-									if (tech) {
-										BuildingTypeClass *building_type = (BuildingTypeClass*)tech;
-										short const *occupy_list = building_type->Occupy_List(true);
-										if (occupy_list) {
-											while (*occupy_list != REFRESH_EOL && sidebar_entry.PlacementListLength < MAX_OCCUPY_CELLS) {
-												sidebar_entry.PlacementList[sidebar_entry.PlacementListLength] = *occupy_list;
-												sidebar_entry.PlacementListLength++;
-												occupy_list++;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 
 
@@ -5822,103 +5513,6 @@ BuildingClass *DLLExportClass::Get_Pending_Placement_Object(uint64 player_id, in
 		}
 
 	} else {
-		
-		if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-			
-			
-			SidebarGlyphxClass *context_sidebar = DLLExportClass::Get_Current_Context_Sidebar();
-		
-			for (int c = 0 ; c < 2 ; c++) {
-		
-				/*
-				** Each production slot in the column
-				*/
-				for (int b=0 ; b < context_sidebar->Column[c].BuildableCount ; b++) {
-					if (context_sidebar->Column[c].Buildables[b].BuildableID == buildable_id) {
-						if (context_sidebar->Column[c].Buildables[b].BuildableType == buildable_type) {
-					
-					
-							int genfactory = -1;
-							switch (buildable_type) {
-								case RTTI_INFANTRYTYPE:
-									genfactory = PlayerPtr->InfantryFactory;
-									break;
-
-								case RTTI_UNITTYPE:
-									genfactory = PlayerPtr->UnitFactory;
-									break;
-
-								case RTTI_AIRCRAFTTYPE:
-									genfactory = PlayerPtr->AircraftFactory;
-									break;
-
-								case RTTI_BUILDINGTYPE:
-									genfactory = PlayerPtr->BuildingFactory;
-									break;
-
-								default:
-									genfactory = -1;
-									break;
-							}
-
-							int fnumber = context_sidebar->Column[c].Buildables[b].Factory;
-							int spc = 0;
-							ObjectTypeClass const * choice = NULL;
-
-							if (buildable_type != RTTI_SPECIAL) {
-								choice  = Fetch_Techno_Type((RTTIType)buildable_type, buildable_id);
-							} else {
-								spc = buildable_id;
-							}
-
-							FactoryClass * factory = NULL;
-							if (fnumber != -1) {
-								factory = Factories.Raw_Ptr(fnumber);
-							}
-
-							if (spc == 0 && choice) {
-								if (fnumber == -1 && genfactory != -1) {
-									return(NULL);
-								}
-
-								if (factory) {
-
-									/*
-									**	If production has completed, then attempt to have the object exit
-									**	the factory or go into placement mode.
-									*/
-									if (factory->Has_Completed()) {
-								
-										TechnoClass * pending = factory->Get_Object();
-										if (!pending && factory->Get_Special_Item()) {
-											//Map.IsTargettingMode = true;
-										} else {
-											BuildingClass * builder = pending->Who_Can_Build_Me(false, false);
-											if (!builder) {
-												OutList.Add(EventClass(EventClass::ABANDON, buildable_type, buildable_id));
-												On_Speech(PlayerPtr, VOX_NO_FACTORY); // Speak(VOX_NO_FACTORY);
-											} else {
-
-												/*
-												**	If the completed object is a building, then change the
-												**	game state into building placement mode. This fact is
-												**	not transmitted to any linked computers until the moment
-												**	the building is actually placed down.
-												*/
-												if (pending->What_Am_I() == RTTI_BUILDING) {
-													return (BuildingClass*)pending;
-											 		//PlayerPtr->Manual_Place(builder, (BuildingClass *)pending);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 	}	
 	return NULL;
 }			  
@@ -6004,17 +5598,6 @@ bool DLLExportClass::Get_Shroud_State(uint64 player_id, unsigned char *buffer_in
 	*/
 	static unsigned int _shroud_bits[UNIT_MAX];
 
-	if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * obj = Units.Ptr(index);
-			if (obj->Class->IsGapper && obj->IsActive && obj->Strength) {
-				if (!obj->House->Is_Ally(PlayerPtr)) {
-					_shroud_bits[index] = obj->Apply_Temporary_Jamming_Shroud(PlayerPtr);
-				}
-			}
-		}
-	}
-
 	CNCShroudStruct *shroud = (CNCShroudStruct*) buffer_in;
 	
 	unsigned int memory_needed = sizeof(*shroud) + 256;		// Base amount needed. Will need more depending on how many entries there are
@@ -6087,17 +5670,6 @@ bool DLLExportClass::Get_Shroud_State(uint64 player_id, unsigned char *buffer_in
 	}
 
 	shroud->Count = entry_index;
-
-	if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * obj = Units.Ptr(index);
-			if (obj->Class->IsGapper && obj->IsActive && obj->Strength) {
-				if (!obj->House->Is_Ally(PlayerPtr)) {
-					obj->Unapply_Temporary_Jamming_Shroud(PlayerPtr, _shroud_bits[index]);
-				}
-			}
-		}
-	}
 	
 	return true;
 }	
@@ -6418,7 +5990,7 @@ bool DLLExportClass::Get_Dynamic_Map_State(uint64 player_id, unsigned char *buff
 					**	If there is a portion of the underlying icon that could be visible,
 					**	then draw it.  Also draw the cell if the shroud is off.
 					*/
-					if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER || cellptr->IsMapped || Debug_Unshroud) {
+					if (cellptr->IsMapped || Debug_Unshroud) {
 						Cell_Class_Draw_It(dynamic_map, entry_index, cellptr, xpixel, ypixel, debug_output);
 					}
 
@@ -8371,18 +7943,6 @@ void DLLExportClass::Debug_Heal_Unit(int x, int y)
 **************************************************************************************************/
 bool DLLExportClass::Legacy_Render_Enabled(void)
 {
-	if (GAME_TO_PLAY == GAME_GLYPHX_MULTIPLAYER) {
-		unsigned int num_humans = 0U;
-		for (int i = 0; i < MULTIPLAYER_COUNT; ++i) {
-			HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-			if (player_ptr && player_ptr->IsHuman) {
-				if (++num_humans > 1) break;
-			}
-		}
-		return num_humans < 2;
-	}
-
-	//return false;
 	return true;
 }
 
@@ -8640,7 +8200,7 @@ bool DLLExportClass::Load(Straw & file)
 	}
 
 	if (Is_Aftermath_Installed()) {
-		if (Session.Type == GAME_SKIRMISH || Session.Type == GAME_GLYPHX_MULTIPLAYER) {
+		if (Session.Type == GAME_SKIRMISH) {
 			bAftermathMultiplayer = NewUnitsEnabled = OverrideNewUnitsEnabled;
 		}
 	}	

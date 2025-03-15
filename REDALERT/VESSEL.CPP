@@ -113,13 +113,6 @@ VesselClass::VesselClass(VesselType classid, HousesType house) :
 	**	class cloakability flag.
 	*/
 	IsCloakable = Class->IsCloakable;
-
-	/*
-	** Keep count of the number of units created.
-	*/
-//	if (Session.Type == GAME_INTERNET) {
-//		House->UnitTotals->Increment_Unit_Total((int)classid);
-//	}
 }
 
 

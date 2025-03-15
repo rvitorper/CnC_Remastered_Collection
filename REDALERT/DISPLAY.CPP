@@ -1463,40 +1463,10 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass * house, bool check_radar_spie
 	** First check for the condition where we're spying on a house's radar
 	** facility, to see if his mapping is applicable to us.
 	*/
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-		// Original code. ST - 8/15/2019 10:26AM
-		if (house && house != PlayerPtr) {
-			if (house->RadarSpied & (1<<(PlayerPtr->Class->House))) house = PlayerPtr;
-			if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr)) house = PlayerPtr;
-		}
-	} else {
-		// Version to work with any human player, not just PlayerPtr
-		if (house && check_radar_spied) {
-			
-			for (int i=0 ; i<Session.Players.Count() ; i++) {
-				HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-				if (player_ptr->IsHuman) {
-					if (house->RadarSpied & (1<<(player_ptr->Class->House))) {
-						Map_Cell(cell, player_ptr, false, false);
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	** Maybe also recurse to map for allies
-	*/
-	if (ShareAllyVisibility && and_for_allies && Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		
-		for (int i=0 ; i<Session.Players.Count() ; i++) {
-			HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-			if (player_ptr && player_ptr->IsActive && player_ptr->IsHuman) {
-				if (player_ptr != house && house->Is_Ally(player_ptr)) {
-					Map_Cell(cell, player_ptr, check_radar_spied, false);
-				}
-			}
-		}
+	// Original code. ST - 8/15/2019 10:26AM
+	if (house && house != PlayerPtr) {
+		if (house->RadarSpied & (1<<(PlayerPtr->Class->House))) house = PlayerPtr;
+		if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr)) house = PlayerPtr;
 	}
 
 	CellClass * cellptr = &(*this)[cell];
@@ -4719,33 +4689,16 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance, HouseCla
 
 //			if (tech->What_Am_I() == RTTI_BUILDING && units_only) continue;
 
-			if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-				if (tech->House->IsPlayerControl) {
-					if (tech->IsDiscoveredByPlayer && Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
-						object->Look();
-					}
-				} else {
-					
-					if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal && tech->House->Is_Ally(PlayerPtr) &&
-						Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
-
-						tech->Look();
-					}
+			if (tech->House->IsPlayerControl) {
+				if (tech->IsDiscoveredByPlayer && Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
+					object->Look();
 				}
 			} else {
 				
-				if (tech->House->IsHuman) {
+				if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal && tech->House->Is_Ally(PlayerPtr) &&
+					Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
 
-					if (tech->House == house) {
-						if (tech->Is_Discovered_By_Player(house) && Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
-							object->Look();
-						}
-					} else {
-						if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal && tech->House->Is_Ally(house) && 
-							Distance(tech->Center_Coord(), center) <= (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) + distance) {
-							tech->Look();
-						}
-					}
+					tech->Look();
 				}
 			}
 		}

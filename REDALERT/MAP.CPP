@@ -484,20 +484,10 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass * house)
 	/*
 	** Updated for client/server multiplayer. ST - 8/12/2019 3:25PM
 	*/
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-		if (!house->IsPlayerControl) {
-			Map.Constrained_Look(Cell_Coord(cell), Rule.GapShroudRadius * CELL_LEPTON_W, PlayerPtr);
-		}
-		
-	} else {
-		
-		for (int i = 0; i < Session.Players.Count(); i++) {
-			HouseClass *player_house = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-			if (player_house->IsHuman && player_house != house) {
-				Map.Constrained_Look(Cell_Coord(cell), Rule.GapShroudRadius * CELL_LEPTON_W, player_house);
-			}
-		}
+	if (!house->IsPlayerControl) {
+		Map.Constrained_Look(Cell_Coord(cell), Rule.GapShroudRadius * CELL_LEPTON_W, PlayerPtr);
 	}
+		
 
 #ifdef OBSOLETE
 	/*
@@ -1026,15 +1016,6 @@ void MapClass::Logic(void)
 	**	Tiberium cells that can grow or spread.
 	*/
 	int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * TICKS_PER_MINUTE);
-
-	/*
-	** Use the Tiberium setting as a multiplier on growth rate. ST - 7/1/2020 3:05PM
-	*/
-	if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		if (Session.Options.Tiberium > 1) {
-			subcount *= Session.Options.Tiberium;
-		}
-	}		 
 
 	subcount = max(subcount, 1);
 	int index;

@@ -479,13 +479,6 @@ bool Read_Scenario(char * name)
 				readini = bAftermathMultiplayer;
 #endif
 				break;
-			case GAME_INTERNET:
-#ifndef FIXIT_VERSION_3			//	Loading of Aftermath rules depends on bAftermathMultiplayer now.
-				if (Is_Mission_Counterstrike(name)) {
-					readini = false;	// Don't allow AM units on a CS map in WChat
-					break;
-				}
-#endif		//	( Note lack of break; )
 			default:
 #ifdef FIXIT_VERSION_3
 				readini = bAftermathMultiplayer;
@@ -2621,7 +2614,7 @@ bool Read_Scenario_INI(char * fname, bool )
 	*/
 	if( Is_Aftermath_Installed() )
 	{
-		if (Session.Type == GAME_SKIRMISH || Session.Type == GAME_GLYPHX_MULTIPLAYER) {
+		if (Session.Type == GAME_SKIRMISH) {
 			bAftermathMultiplayer = NewUnitsEnabled = OverrideNewUnitsEnabled;
 		}
 	}	

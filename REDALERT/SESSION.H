@@ -116,9 +116,7 @@ class CellClass;
 //...........................................................................
 typedef enum GameEnum {
 	GAME_NORMAL,									// not multiplayer
-	GAME_INTERNET,									// Internet H2H
 	GAME_SKIRMISH,									// 1 plr vs. AI's
-	GAME_GLYPHX_MULTIPLAYER						// Multiplayer game controlled by the GLYPHX engine. ST - 5/14/2019 11:41AM
 } GameType;
 
 //...........................................................................

@@ -825,14 +825,6 @@ void SidebarClass::AI(KeyNumType & input, int x, int y)
 {
 	bool redraw = false;
 
-	//
-	// We need to process the sidebar differently in multiplayer. ST - 8/7/2019 10:48AM
-	//
-	if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		PowerClass::AI(input, x, y);
-		return;
-	}
-
 	/*
 	**	Toggle the sidebar in and out with the <TAB> key.
 	*/
@@ -944,11 +936,6 @@ void SidebarClass::AI(KeyNumType & input, int x, int y)
 void SidebarClass::Recalc(void)
 {
 	bool redraw = false;
-
-	// Done elsewhere for new multiplayer. ST - 8/7/2019 10:49AM
-	if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		return;
-	}
 
 	redraw |= Column[0].Recalc();
 	redraw |= Column[1].Recalc();

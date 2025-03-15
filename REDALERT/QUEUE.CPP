@@ -353,9 +353,6 @@ void Queue_AI(void)
 			case GAME_NORMAL:
 				Queue_AI_Normal();
 				break;
-			case GAME_INTERNET:
-				Queue_AI_Multiplayer();
-				break;
 		}
 	}
 
@@ -876,16 +873,6 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent)
 					(Session.FrameSendRate - 1)) / Session.FrameSendRate) *
 					Session.FrameSendRate), (Session.FrameSendRate * 2) );
 			}
-			//..................................................................
-			// For sending packets every frame, just use the 1-way connection
-			// response time.
-			//..................................................................
-			else {
-				if (Session.Type == GAME_INTERNET) {
-					ev.Data.FrameInfo.Delay = max( (resp_time / 8),
-						 NETWORK_MIN_MAX_AHEAD );
-				}
-			}
 			OutList.Add(ev);
 		}
 	}
@@ -1003,11 +990,8 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent)
 	//
 	//net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
 
-	if (Session.Type == GAME_INTERNET) {
-		net->Set_Timing (resp_time + 10, -1, ((resp_time + 10)* 8)+15);
-	}else{
-		net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
-	}
+	
+	net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
 
 }
 
@@ -1047,11 +1031,7 @@ static void Generate_Process_Time_Event(ConnManClass *net)
 	// connection timeout to allow for about 4 retries.
 	//
 	//net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
-	if (Session.Type == GAME_INTERNET) {
-		net->Set_Timing (resp_time + 10, -1, ((resp_time + 10)* 8)+15);
-	}else{
-		net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
-	}
+	net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
 
 
 	if (IsMono) {
@@ -1190,14 +1170,6 @@ static int Send_Packets(ConnManClass *net, char *multi_packet_buf,
 	//........................................................................
 	if (cap > (MAX_EVENTS * 64) - DoList.Count) {
 		cap = (MAX_EVENTS * 64) - DoList.Count;
-	}
-
-	//
-	// 10/21/96 5:12PM - ST
-	//
-	if (Session.Type == GAME_INTERNET){
-		cap = OutList.Count;
-		do_once = 0;
 	}
 
 	//------------------------------------------------------------------------
@@ -1681,48 +1653,6 @@ static int Process_Reconnect_Dialog(CDTimerClass<SystemTimerClass> *timeout_time
 static int Handle_Timeout(ConnManClass *net, long *their_frame,
 	unsigned short *their_sent, unsigned short *their_recv)
 {
-	int oldest_index;						// index of person requiring a reconnect
-	int i,j;
-	int id;
-
-	//------------------------------------------------------------------------
-	//	For network, destroy the oldest connection
-	//------------------------------------------------------------------------
-	if (Session.Type == GAME_INTERNET) {
-		j = 0x7fffffff;
-		oldest_index = 0;
-		for (i = 0; i < net->Num_Connections(); i++) {
-			if (their_frame[i] < j) {
-				j = their_frame[i];
-				oldest_index = i;
-			}
-		}
-
-		id = net->Connection_ID(oldest_index);
-#ifdef WIN32
-		/*
-		** Send the game statistics packet now if the game is effectivly over
-		*/
-		if (Session.Players.Count() == 2 &&
-				Session.Type == GAME_INTERNET &&
-				!GameStatisticsPacketSent) {
-			Register_Game_End_Time();
-			ConnectionLost = true;
-			Send_Statistics_Packet();		//	Disconnect, and I'll be the only one left.
-		}
-#endif	//WIN32
-
-		if (id != ConnManClass::CONNECTION_NONE) {
-			for (i = oldest_index; i < net->Num_Connections() - 1; i++) {
-				their_frame[i] = their_frame[i+1];
-				their_sent[i] = their_sent[i+1];
-				their_recv[i] = their_recv[i+1];
-			}
-			if (Session.Type == GAME_INTERNET) {
-				Destroy_Connection(id,1);
-			}
-		}
-	}
 
 	return (1);
 
@@ -1755,12 +1685,6 @@ static void Stop_Game(void)
 	if (IsMono) {
 		MonoClass::Disable();
 	}
-#ifdef WIN32
-	if (Session.Type == GAME_INTERNET){
-		ConnectionLost = true;
-		Send_Statistics_Packet();			//	Stop_Game()
-	}
-#endif	//WIN32
 
 	return;
 
@@ -2751,16 +2675,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 								break;
 							}
 						}
-
-						/*
-						** Send the game statistics packet now since the game is effectivly over
-						*/
-						if (Session.Players.Count() == 2 &&
-								Session.Type == GAME_INTERNET &&
-								!GameStatisticsPacketSent) {
-							Register_Game_End_Time();
-							Send_Statistics_Packet();		//	Event - player aborted, and there were only 2 left.
-						}
 					}
 #endif	//WIN32
 
@@ -2782,20 +2696,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 					//	for that player.  The HousesType for this event is the
 					// connection ID.
 					//............................................................
-						if ((
-							Session.Type == GAME_INTERNET) && net) {
-							index = net->Connection_Index (house);
-							if (index != -1) {
-								for (k = index; k < net->Num_Connections() - 1; k++) {
-									their_frame[k] = their_frame[k+1];
-									their_sent[k] = their_sent[k+1];
-									their_recv[k] = their_recv[k+1];
-								}
-								if (Session.Type == GAME_INTERNET) {
-									Destroy_Connection(house,0);
-								}
-							}
-						}
 						//
 						// Special case for recording playback: turn the house over
 						// to the computer.

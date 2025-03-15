@@ -484,13 +484,6 @@ int Main_Menu(unsigned long )
 	int	d_start_w = 118 * RESFACTOR;
 	int	d_start_h = 9 * RESFACTOR;
 	int	d_start_x = 102 * RESFACTOR;
-#ifndef FIXIT_VERSION_3			//	Removed button from main menu.
-#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - no internet play
-	int	d_internet_w = 118 * RESFACTOR;
-	int	d_internet_h = 9 * RESFACTOR;
-	int	d_internet_x = 102 * RESFACTOR;
-#endif	//WIN32
-#endif
 
 //#if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
 //	int	d_movie_w = 118 * RESFACTOR;
@@ -516,12 +509,7 @@ int Main_Menu(unsigned long )
 
 	int starty = d_dialog_y + (12 * RESFACTOR);
 
-//#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - No internet play
-//#ifndef FIXIT_VERSION_3
 	static int	max_buttons = 7;
-//#else
-//	static int	max_buttons = 6;
-//#endif
 
 //#if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
 //	max_buttons++;
@@ -605,12 +593,6 @@ int Main_Menu(unsigned long )
 
 	TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, TPF_BUTTON, d_start_x, starty, d_start_w, d_start_h);
 	starty += ystep;
-#ifndef FIXIT_VERSION_3
-#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - no internet play
-	TextButtonClass internetbutton (BUTTON_INTERNET, TXT_INTERNET, TPF_BUTTON, d_internet_x, starty, d_internet_w, d_internet_h);
-	starty += ystep;
-#endif	//WIN32
-#endif
 
 //#if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
 //	TextButtonClass moviebutton(BUTTON_MOVIE, "Movie Settings", TPF_BUTTON, d_movie_x, starty, d_movie_w, d_movie_h);
@@ -797,19 +779,6 @@ int Main_Menu(unsigned long )
 		*/
 		input = commands->Input();
 
-#ifndef FIXIT_VERSION_3
-#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - No Internet play
-		/*
-		** Check to see if WChat has told us to start playing an internet game
-		*/
-		if (DDEServer.Get_MPlayer_Game_Info()) {
-			retval = BUTTON_INTERNET - BUTTON_EXPAND;
-			process = false;
-			input = KN_NONE;
-		}
-#endif	//WIN32
-#endif
-
 		/*
 		**	If there is input, then take this opportunity to seed some bits
 		**	to the cryptographic random number generator.
@@ -846,15 +815,6 @@ int Main_Menu(unsigned long )
 				retval = (input & 0x7FFF) - BUTTON_EXPAND;
 				process = false;
 				break;
-
-#ifndef FIXIT_VERSION_3
-			#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - Internet play
-			case (BUTTON_INTERNET | KN_BUTTON):
-				retval = (input & 0x7FFF) - BUTTON_EXPAND;
-				process = false;
-				break;
-			#endif	//WIN32
-#endif
 
 //			#if defined(MPEGMOVIE)
 //			case (BUTTON_MOVIE | KN_BUTTON):

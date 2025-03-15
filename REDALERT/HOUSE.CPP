@@ -955,9 +955,6 @@ void HouseClass::AI(void)
 	if (IsToDie && BorrowedTime == 0) {
 		IsToDie = false;
 		Blowup_All();
-		if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-			MPlayer_Defeated();
-		}
 	}
 
 	/*
@@ -1147,7 +1144,7 @@ void HouseClass::AI(void)
 	**	Process any super weapon logic required.
 	*/
 
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER || !MPSuperWeaponDisable) {
+	if (!MPSuperWeaponDisable) {
 		Super_Weapon_Handler();
 	}
 
@@ -1414,17 +1411,9 @@ void HouseClass::Super_Weapon_Handler(void)
 		/*
 		** Updated for client/server multiplayer. ST  - 8/12/2019 11:32AM
 		*/
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-			if (IsPlayerControl) {
-				Map.Shroud_The_Map(PlayerPtr);
-			}
-		
-		} else {
-			
-			if (IsHuman) {
-				Map.Shroud_The_Map(this);
-			}
-		}	
+		if (IsPlayerControl) {
+			Map.Shroud_The_Map(PlayerPtr);
+		}
 	}
 
 	/*
@@ -1490,15 +1479,9 @@ void HouseClass::Super_Weapon_Handler(void)
 				**	Flag the sidebar to be redrawn if necessary.
 				*/
 				// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-				if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-					if (IsHuman) {
-						Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_GPS, this);
-					}
-				} else {
-					if (this == PlayerPtr) {
-						Map.Add(RTTI_SPECIAL, SPC_GPS);
-						Map.Column[1].Flag_To_Redraw();
-					}
+				if (this == PlayerPtr) {
+					Map.Add(RTTI_SPECIAL, SPC_GPS);
+					Map.Column[1].Flag_To_Redraw();
 				}
 			}
 		}
@@ -1550,16 +1533,9 @@ void HouseClass::Super_Weapon_Handler(void)
 			/*
 			**	Flag the sidebar to be redrawn if necessary.
 			*/
-			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_CHRONOSPHERE, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_CHRONOSPHERE);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_CHRONOSPHERE);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -1601,15 +1577,9 @@ void HouseClass::Super_Weapon_Handler(void)
 			**	Flag the sidebar to be redrawn if necessary.
 			*/
 			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_IRON_CURTAIN, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_IRON_CURTAIN);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_IRON_CURTAIN);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -1689,15 +1659,9 @@ void HouseClass::Super_Weapon_Handler(void)
 			**	Flag the sidebar to be redrawn if necessary.
 			*/
 			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -1721,15 +1685,9 @@ void HouseClass::Super_Weapon_Handler(void)
 		if ((ActiveBScan & STRUCTF_AIRSTRIP) != 0 && !Scen.IsNoSpyPlane && Control.TechLevel >= Rule.SpyPlaneTechLevel) {
 			SuperWeapon[SPC_SPY_MISSION].Enable(false, this == PlayerPtr, false);
 			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_SPY_MISSION, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_SPY_MISSION);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_SPY_MISSION);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -1749,15 +1707,9 @@ void HouseClass::Super_Weapon_Handler(void)
 		if ((ActiveBScan & STRUCTF_AIRSTRIP) != 0 && Control.TechLevel >= Rule.ParaBombTechLevel && Session.Type == GAME_NORMAL) {
 			SuperWeapon[SPC_PARA_BOMB].Enable(false, this == PlayerPtr, false);
 			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_PARA_BOMB, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -1776,16 +1728,9 @@ void HouseClass::Super_Weapon_Handler(void)
 	} else {
 		if ((ActiveBScan & STRUCTF_AIRSTRIP) != 0 && Control.TechLevel >= Rule.ParaInfantryTechLevel) {
 			SuperWeapon[SPC_PARA_INFANTRY].Enable(false, this == PlayerPtr, false);
-			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_PARA_INFANTRY, this);
-				}
-			} else {
-				if (this == PlayerPtr) {
-					Map.Add(RTTI_SPECIAL, SPC_PARA_INFANTRY);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (this == PlayerPtr) {
+				Map.Add(RTTI_SPECIAL, SPC_PARA_INFANTRY);
+				Map.Column[1].Flag_To_Redraw();
 			}
 		}
 	}
@@ -2456,15 +2401,10 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id)
 		**	can take place.
 		*/
 		// Handle Glyphx multiplayer sidebar. ST - 8/14/2019 1:26PM
-		if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-			if (IsHuman) {
-				Sidebar_Glyphx_Factory_Link(fptr->ID, type, id, this);
-			}
-		} else {		 
-			if (PlayerPtr == this) {
-				Map.Factory_Link(fptr->ID, type, id);
-			}
+		if (PlayerPtr == this) {
+			Map.Factory_Link(fptr->ID, type, id);
 		}
+		
 
 		return(PROD_OK);
 	}
@@ -2552,29 +2492,14 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type)
 	**	Tell the sidebar that it needs to be redrawn because of this.
 	*/
 	// Handle Glyphx multiplayer sidebar. ST - 8/7/2019 10:18AM
-	if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		if (IsHuman) {
-			Sidebar_Glyphx_Abandon_Production(type, fptr->ID, this);
-			
-			// Need to clear pending object here if legacy renderer enabled
+	if (PlayerPtr == this) {
+		Map.Abandon_Production(type, fptr->ID);
 
-			if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING && Map.PendingObjectPtr) {
-				Map.PendingObjectPtr = 0;
-				Map.PendingObject = 0;
-				Map.PendingHouse = HOUSE_NONE;
-				Map.Set_Cursor_Shape(0);
-			}
-		}
-	} else {
-		if (PlayerPtr == this) {
-			Map.Abandon_Production(type, fptr->ID);
-
-			if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
-				Map.PendingObjectPtr = 0;
-				Map.PendingObject = 0;
-				Map.PendingHouse = HOUSE_NONE;
-				Map.Set_Cursor_Shape(0);
-			}
+		if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
+			Map.PendingObjectPtr = 0;
+			Map.PendingObject = 0;
+			Map.PendingHouse = HOUSE_NONE;
+			Map.Set_Cursor_Shape(0);
 		}
 	}
 
@@ -3722,11 +3647,6 @@ void HouseClass::MPlayer_Defeated(void)
 				TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
 		}
 		Map.Flag_To_Redraw(false);
-		if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-			int timeout = Rule.MessageDelay * TICKS_PER_MINUTE;
-			On_Defeated_Message(txt, timeout * 60.0f / TICKS_PER_MINUTE);
-			Sound_Effect(VOC_INCOMING_MESSAGE);
-		}
 
 	} else {
 
@@ -3821,20 +3741,6 @@ void HouseClass::MPlayer_Defeated(void)
 		** Add up the scores
 		*/
 		Tally_Score();
-
-		/*
-		**	Destroy all the IPX connections, since we have to go through the rest
-		**	of the Main_Loop() before we detect that the game is over, and we'll
-		**	end up waiting for frame sync packets from the other machines.
-		*/
-		if (Session.Type == GAME_INTERNET) {
-			i = 0;
-			while (Ipx.Num_Connections() && (i++ < 1000) ) {
-				id = Ipx.Connection_ID(0);
-				Ipx.Delete_Connection(id);
-			}
-			Session.NumPlayers = 0;
-		}
 
 	}
 }
@@ -6561,9 +6467,6 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 			building = ((BuildingTypeClass const &)techno->Class_Of()).Type;
 			BQuantity[building]++;
 			BScan |= (1L << building);
-			if (Session.Type == GAME_INTERNET) {
-				BuildingTotals->Increment_Unit_Total(techno->Class_Of().ID);
-			}
 			break;
 
 		case RTTI_AIRCRAFT:
@@ -6571,9 +6474,6 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 			aircraft = ((AircraftTypeClass const &)techno->Class_Of()).Type;
 			AQuantity[aircraft]++;
 			AScan |= (1L << aircraft);
-			if (Session.Type == GAME_INTERNET) {
-				AircraftTotals->Increment_Unit_Total(techno->Class_Of().ID);
-			}
 			break;
 
 		case RTTI_INFANTRY:
@@ -6583,9 +6483,6 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 				quant = infantry;
 				if (quant >= INFANTRY_RA_COUNT) quant -= INFANTRY_RA_COUNT;
 				IQuantity[quant]++;
-				if (!((InfantryTypeClass const &)techno->Class_Of()).IsCivilian && Session.Type == GAME_INTERNET) {
-					InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
-				}
 				IScan |= (1L << infantry);
 			}
 			break;
@@ -6597,9 +6494,6 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 			if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
 			UQuantity[quant]++;
 			UScan |= (1L << unit);
-			if (Session.Type == GAME_INTERNET) {
-				UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
-			}
 			break;
 
 		case RTTI_VESSEL:
@@ -6609,9 +6503,6 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 			if (quant >= VESSEL_RA_COUNT) quant -= VESSEL_RA_COUNT;
 			VQuantity[quant]++;
 			VScan |= (1L << vessel);
-			if (Session.Type == GAME_INTERNET) {
-				VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);
-			}
 			break;
 
 		default:
@@ -7623,29 +7514,26 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const
  *=============================================================================================*/
 void HouseClass::Computer_Paranoid(void)
 {
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {		// Re-enable this for multiplayer if we support classic team/ally mode. ST - 10/29/2019
-	
-		/*
-		**	Loop through every computer controlled house and make allies with all other computer
-		**	controlled houses and then make enemies with all other human controlled houses.
-		*/
-		for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
-			HouseClass * hptr = HouseClass::As_Pointer(house);
-			if (hptr != NULL && hptr->IsActive && !hptr->IsDefeated && !hptr->IsHuman) {
-				hptr->IsParanoid = true;
+	/*
+	**	Loop through every computer controlled house and make allies with all other computer
+	**	controlled houses and then make enemies with all other human controlled houses.
+	*/
+	for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
+		HouseClass * hptr = HouseClass::As_Pointer(house);
+		if (hptr != NULL && hptr->IsActive && !hptr->IsDefeated && !hptr->IsHuman) {
+			hptr->IsParanoid = true;
 
-				/*
-				**	Break alliance with every human it is allied with and make friends with
-				**	any other computer players.
-				*/
-				for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
-					HouseClass * hptr2 = HouseClass::As_Pointer(house2);
-					if (hptr2 != NULL && hptr2->IsActive && !hptr2->IsDefeated) {
-						if (hptr2->IsHuman) {
-							hptr->Make_Enemy(house2);
-						} else {
-							hptr->Make_Ally(house2);
-						}
+			/*
+			**	Break alliance with every human it is allied with and make friends with
+			**	any other computer players.
+			*/
+			for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
+				HouseClass * hptr2 = HouseClass::As_Pointer(house2);
+				if (hptr2 != NULL && hptr2->IsActive && !hptr2->IsDefeated) {
+					if (hptr2->IsHuman) {
+						hptr->Make_Enemy(house2);
+					} else {
+						hptr->Make_Ally(house2);
 					}
 				}
 			}
@@ -7997,39 +7885,21 @@ void HouseClass::Check_Pertinent_Structures(void)
  *   4/23/2020 11:06PM ST : Created.                                                           *
  *=============================================================================================*/
 void HouseClass::Init_Unit_Trackers(void)
-{		
-	if (Session.Type == GAME_INTERNET || Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		AircraftTotals = new UnitTrackerClass( (int) AIRCRAFT_COUNT);
-		InfantryTotals = new UnitTrackerClass( (int) INFANTRY_COUNT);
-		UnitTotals = new UnitTrackerClass ( (int) UNIT_COUNT);
-		BuildingTotals = new UnitTrackerClass ( (int) STRUCT_COUNT);
-		VesselTotals = new UnitTrackerClass ( (int) VESSEL_COUNT);
+{
+	AircraftTotals = NULL;
+	InfantryTotals = NULL;
+	UnitTotals = NULL;
+	BuildingTotals = NULL;
+	VesselTotals = NULL;
 
-		DestroyedAircraft = new UnitTrackerClass ( (int) AIRCRAFT_COUNT);
-		DestroyedInfantry = new UnitTrackerClass( (int) INFANTRY_COUNT);
-		DestroyedUnits = new UnitTrackerClass ( (int) UNIT_COUNT);
-		DestroyedBuildings = new UnitTrackerClass ( (int) STRUCT_COUNT);
-		DestroyedVessels = new UnitTrackerClass ( (int) VESSEL_COUNT);
+	DestroyedAircraft = NULL;
+	DestroyedInfantry = NULL;
+	DestroyedUnits = NULL;
+	DestroyedBuildings = NULL;
+	DestroyedVessels = NULL;
 
-		CapturedBuildings = new UnitTrackerClass ( (int) STRUCT_COUNT);
-		TotalCrates = new UnitTrackerClass ( CRATE_COUNT );
-	} else {
-		
-		AircraftTotals = NULL;
-		InfantryTotals = NULL;
-		UnitTotals = NULL;
-		BuildingTotals = NULL;
-		VesselTotals = NULL;
-
-		DestroyedAircraft = NULL;
-		DestroyedInfantry = NULL;
-		DestroyedUnits = NULL;
-		DestroyedBuildings = NULL;
-		DestroyedVessels = NULL;
-
-		CapturedBuildings = NULL;
-		TotalCrates = NULL;
-	}	
+	CapturedBuildings = NULL;
+	TotalCrates = NULL;
 }
 
 

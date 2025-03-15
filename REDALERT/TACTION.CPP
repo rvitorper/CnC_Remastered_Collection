@@ -557,18 +557,9 @@ bool TActionClass::operator() (HousesType house, ObjectClass * object, int id, C
 		case TACTION_FULL_SPECIAL:
 			hptr->SuperWeapon[Data.Special].Enable(Action==TACTION_1_SPECIAL, false);
 //			hptr->SuperWeapon[Data.Special].Forced_Charge(PlayerPtr == hptr);
-
-			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-				if (hptr->IsHuman) {
-					Sidebar_Glyphx_Add(RTTI_SPECIAL, Data.Special, hptr);
-				}
-			}
-			else {
-				if (PlayerPtr == hptr) {
-					Map.Add(RTTI_SPECIAL, Data.Special);
-					Map.Column[1].Flag_To_Redraw();
-				}
+			if (PlayerPtr == hptr) {
+				Map.Add(RTTI_SPECIAL, Data.Special);
+				Map.Column[1].Flag_To_Redraw();
 			}
 			break;
 

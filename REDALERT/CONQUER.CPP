@@ -225,14 +225,8 @@ void Main_Game(int argc, char * argv[])
 			Show_Mouse();
 		}
 
-		if (Session.Type == GAME_INTERNET) {
-			Register_Game_Start_Time();
-			GameStatisticsPacketSent = false;
-			PacketLater = NULL;
-			ConnectionLost = false;
-		} else {
-			DDEServer.Disable();
-		}
+		
+		DDEServer.Disable();
 
 		/*
 		**	Non-editor version of main-loop processing
@@ -833,34 +827,6 @@ static void Message_Input(KeyNumType &input)
 	*/
 	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) && !Session.Messages.Is_Edit()) {
 		memset (txt, 0, 40);
-		
-		if (Session.Type == GAME_INTERNET && !Session.Messages.Is_Edit()) {
-		/*
-		**	For a network game:
-		**	F1-F7 = "To <name> (house):" (only allowed if we're not in ObiWan mode)
-		**	F8 = "To All:"
-		*/
-			if (input==(KN_F1 + Session.MaxPlayers - 1)) {
-
-				Session.MessageAddress = IPXAddressClass();		// set to broadcast
-				strcpy(txt, Text_String(TXT_TO_ALL));	// "To All:"
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-				
-			} else if ((input - KN_F1) < Ipx.Num_Connections() && !Session.ObiWan) {
-				id = Ipx.Connection_ID(input - KN_F1);
-				Session.MessageAddress = (*(Ipx.Connection_Address (id)));
-				sprintf(txt, Text_String(TXT_TO), Ipx.Connection_Name(id));
-
-				Session.Messages.Add_Edit(Session.ColorIdx,
-					TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 232 * RESFACTOR);
-
-				Map.Flag_To_Redraw(false);
-			}
-		}
 	}
 
 	/*

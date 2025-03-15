@@ -261,36 +261,27 @@ int IPXManagerClass::Init()
 {
 	int i;
 
-	if (Session.Type != GAME_INTERNET) {
+	//------------------------------------------------------------------------
+	//	Error if IPX not installed
+	//------------------------------------------------------------------------
+	if (!IPXStatus) {
+		return(0);
+	}
 
-		//------------------------------------------------------------------------
-		//	Error if IPX not installed
-		//------------------------------------------------------------------------
-		if (!IPXStatus) {
-			return(0);
-		}
+	//------------------------------------------------------------------------
+	//	Stop Listening
+	//------------------------------------------------------------------------
+	if (Listening) {
+		IPXConnClass::Stop_Listening();
+		Listening = 0;
+	}
 
-		//------------------------------------------------------------------------
-		//	Stop Listening
-		//------------------------------------------------------------------------
-		if (Listening) {
-			IPXConnClass::Stop_Listening();
-			Listening = 0;
-		}
-
-		//------------------------------------------------------------------------
-		//	Free Real-mode memory
-		//------------------------------------------------------------------------
-		if (RealMemAllocd) {
-			Free_RealMode_Mem();
-			RealMemAllocd = 0;
-		}
-
-	} else {
-		/*
-		** Pretend IPX is available for Internet games whether it is or not
-		*/
-		IPXStatus = 1;
+	//------------------------------------------------------------------------
+	//	Free Real-mode memory
+	//------------------------------------------------------------------------
+	if (RealMemAllocd) {
+		Free_RealMode_Mem();
+		RealMemAllocd = 0;
 	}
 
 	//------------------------------------------------------------------------
@@ -306,13 +297,11 @@ int IPXManagerClass::Init()
 	}
 	NumConnections = 0;
 
-	if (Session.Type != GAME_INTERNET) {
-		//------------------------------------------------------------------------
-		//	Allocate real-mode memory
-		//------------------------------------------------------------------------
-		if (!Alloc_RealMode_Mem()) return(0);
-		RealMemAllocd = 1;
-	}
+	//------------------------------------------------------------------------
+	//	Allocate real-mode memory
+	//------------------------------------------------------------------------
+	if (!Alloc_RealMode_Mem()) return(0);
+	RealMemAllocd = 1;
 
 	//------------------------------------------------------------------------
 	//	Allocate the Global Channel
@@ -336,9 +325,7 @@ int IPXManagerClass::Init()
 	//------------------------------------------------------------------------
 	//	Start Listening
 	//------------------------------------------------------------------------
-	if (Session.Type != GAME_INTERNET) {
-		if (!IPXConnClass::Start_Listening()) return(0);
-	}
+	if (!IPXConnClass::Start_Listening()) return(0);
 	Listening = 1;
 
 	return(1);

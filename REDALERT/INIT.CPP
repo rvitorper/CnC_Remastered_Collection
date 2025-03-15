@@ -313,14 +313,6 @@ bool Init_Game(int , char * [])
 	*/
 	Anim_Init();
 
-#ifndef FIXIT_VERSION_3			//	WChat eliminated.
-#ifdef WIN32
-	if (SpawnedFromWChat){
-		Special.IsFromWChat = true;
-	}
-#endif
-#endif
-
 	#ifdef MPEGMOVIE // Denzil 6/15/98
 	if( Using_DVD() )
 	{
@@ -609,22 +601,6 @@ bool Select_Game(bool fade)
 				Session.Play = false;
 		}
 
-#ifndef FIXIT_VERSION_3
-#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - Internet play
-		/*
-		** Handle case where we were spawned from Wchat
-		*/
-		if (SpawnedFromWChat) {
-			Special.IsFromInstall = false;	//Dont play intro if we were spawned from wchat
-			selection = SEL_INTERNET;
-			Theme.Queue_Song(THEME_QUIET);
-			Session.Type = GAME_INTERNET;
-			display = false;
-			Set_Logic_Page(SeenBuff);
-		}
-#endif	//WIN32
-#endif
-
 		while (process) {
 
 			/*
@@ -885,35 +861,6 @@ bool Select_Game(bool fade)
 					process = false;
 					break;
 
-#ifndef FIXIT_VERSION_3			//	Removed button from main menu.
-				#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - Internet play
-				/*
-				** Internet game is requested
-				*/
-				case SEL_INTERNET:
-					/*
-					** Only call up the internet menu code if we dont already have connect info from WChat
-					*/
-					if (!DDEServer.Get_MPlayer_Game_Info()) {
-						if (Do_The_Internet_Menu_Thang() && DDEServer.Get_MPlayer_Game_Info()) {
-							Check_From_WChat(NULL);
-							selection = SEL_MULTIPLAYER_GAME;
-							display = false;
-							Session.Type = GAME_INTERNET;
-						} else {
-							selection = SEL_NONE;
-							display = true;
-						}
-					} else {
-						Check_From_WChat(NULL);
-						display = false;
-						Session.Type = GAME_INTERNET;
-						selection = SEL_MULTIPLAYER_GAME;
-					}
-					break;
-				#endif	//WIN32
-#endif
-
 //				#if defined(MPEGMOVIE) // Denzil 6/25/98
 //				case SEL_MOVIESETTINGS:
 //					MpgSettings->Dialog();
@@ -964,111 +911,6 @@ bool Select_Game(bool fade)
 						/*
 						** Handle being spawned from WChat. Internet play based on IPX code.
 						*/
-						case GAME_INTERNET:						//	ajw		No longer hit.
-							if (Special.IsFromWChat) {
-								/*
-								** Give myself focus.
-								*/
-								SetForegroundWindow ( MainWindow );
-								ShowWindow ( MainWindow, ShowCommand );
-								WWDebugString ("RA95 - About to initialise Winsock.\n");
-								if (Winsock.Init()) {
-									WWDebugString ("RA95 - About to read multiplayer settings.\n");
-									Session.Read_MultiPlayer_Settings ();
-									Server = PlanetWestwoodIsHost;
-
-									WWDebugString ("RA95 - About to set addresses.\n");
-									Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
-
-									WWDebugString ("RA95 - About to call Start_Server or Start_Client.\n");
-									if (Server) {
-										Winsock.Start_Server();
-									} else {
-										Winsock.Start_Client();
-									}
-
-
-									/*
-									** Flush out any pending packets from a previous game.
-									*/
-									WWDebugString ("RA95 - About to flush packet queue.\n");
-									WWDebugString ("RA95 - Allocating scrap memory.\n");
-									char *temp_buffer = new char[1024];
-
-									WWDebugString ("RA95 - Creating timer class instance.\n");
-									CountDownTimerClass ptimer;
-
-									WWDebugString ("RA95 - Entering read loop.\n");
-									while (Winsock.Read(temp_buffer, 1024)) {
-
-										WWDebugString ("RA95 - Discarding a packet.\n");
-										ptimer.Set (30, true);
-										while (ptimer.Time()) {};
-										WWDebugString ("RA95 - Ready to check for more packets.\n");
-
-									}
-									WWDebugString ("RA95 - About to delete scrap memory.\n");
-									delete temp_buffer;
-
-
-
-								} else {
-									WWDebugString ("RA95 - Winsock failed to initialise.\n");
-									Session.Type = GAME_NORMAL;
-									selection = SEL_EXIT;
-									Special.IsFromWChat = false;
-									break;
-								}
-								WWDebugString ("RA95 - About to call Init_Network.\n");
-								Init_Network();
-
-								if (DDEServer.Get_MPlayer_Game_Info()) {
-									WWDebugString ("RA95 - About to call Read_Game_Options.\n");
-									Read_Game_Options( NULL );
-								} else {
-									Read_Game_Options( "C&CSPAWN.INI" );
-								}
-								if (PlanetWestwoodIsHost) {
-
-									WWDebugString ("RA95 - About to call Server_Remote_Connect.\n");
-									if (Server_Remote_Connect()) {
-										WWDebugString ("RA95 - Server_Remote_Connect returned success.\n");
-										break;
-									} else {
-										/*
-										** We failed to connect to the other player
-										*/
-										Winsock.Close();
-										Session.Type = GAME_NORMAL;
-										selection = SEL_NONE;
-										DDEServer.Delete_MPlayer_Game_Info();	// Make sure we dont go round in an infinite loop
-										break;
-									}
-								} else {
-									WWDebugString ("RA95 - About to call Client_Remote_Connect.\n");
-									if (Client_Remote_Connect()) {
-										WWDebugString ("RA95 - Client_Remote_Connect returned success.\n");
-										break;
-									} else {
-										/*
-										** We failed to connect to the other player
-										*/
-										Winsock.Close();
-										Session.Type = GAME_NORMAL;
-										selection = SEL_NONE;
-										DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont go round in an infinite loop
-										break;
-									}
-								}
-
-							} else {
-								Session.Type = Select_MPlayer_Game();
-								if (Session.Type == GAME_NORMAL) {		// 'Cancel'
-									display = true;
-									selection = SEL_NONE;
-								}
-							}
-							break;
 
 #endif	//WIN32
 #endif	//	!WOLAPI_INTEGRATION
@@ -1076,9 +918,6 @@ bool Select_Game(bool fade)
 					}
 //debugprint( "Session.Type = %i\n", Session.Type );
 					switch (Session.Type) {
-#ifndef WOLAPI_INTEGRATION
-						case GAME_INTERNET:
-#endif
 						case GAME_SKIRMISH:
 							Theme.Fade_Out();
 							process = false;
@@ -1177,13 +1016,6 @@ bool Select_Game(bool fade)
 			Session.Record = false;
 		}
 	}
-
-	switch(Session.Type) {
-		case GAME_INTERNET:
-			break;
-		default:
-			break;
-	}
 	/*
 	**	Load the scenario.  Specify variation 'A' for the editor; for the game,
 	**	don't specify a variation, to make 'Set_Scenario_Name()' pick a random one.
@@ -1250,9 +1082,7 @@ bool Select_Game(bool fade)
 	/*
 	** If this isnt an internet game that set the unit build rate to its default value
 	*/
-	if (Session.Type != GAME_INTERNET){
-		UnitBuildPenalty = 100;
-	}
+	UnitBuildPenalty = 100;
 
 	/*
 	**	Hide the SeenPage; force the map to render one frame.  The caller can
@@ -1593,15 +1423,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 			ScreenHeight = 480;
 			continue;
 		}
-
-		/*
-		** Check for spawn from WChat
-		*/
-#ifndef FIXIT_VERSION_3			//	WChat eliminated.
-		if (strstr(string,"-WCHAT")){
-			SpawnedFromWChat = true;
-		}
-#endif
 
 #endif
 

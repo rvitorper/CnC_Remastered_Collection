@@ -1126,22 +1126,7 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass * house/*KO, bool shadeit*/)
 {
 	unsigned short jam = 1 << house->Class->House;
 	(*this)[cell].Jammed |= jam;
-	
-	/*
-	** Updated for client/server multiplayer. ST - 8/12/2019 11:00AM
-	*/
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-		if (house != PlayerPtr) Shroud_Cell(cell, PlayerPtr/*KO, shadeit*/);
-	
-	} else {
-		
-		for (int i = 0; i < Session.Players.Count(); i++) {
-			HouseClass *player_house = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-			if (player_house->IsHuman && player_house != house && !house->Is_Ally(player_house)) {
-				Shroud_Cell(cell, player_house);
-			}
-		}
-	}	
+	if (house != PlayerPtr) Shroud_Cell(cell, PlayerPtr/*KO, shadeit*/);
 
 	Radar_Pixel(cell);
 	return(true);

@@ -133,8 +133,7 @@ void GameOptionsClass::Process(void)
 			continue;
 		}
 
-		if ( (Session.Type == GAME_SKIRMISH ||
-					Session.Type == GAME_INTERNET) && text == TXT_SAVE_MISSION) {
+		if ( (Session.Type == GAME_SKIRMISH) && text == TXT_SAVE_MISSION) {
 			continue;
 		}
 

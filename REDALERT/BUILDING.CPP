@@ -1637,10 +1637,6 @@ BuildingClass::BuildingClass(StructType type, HousesType house) :
 		IsAllowedToSell = false;
 	}
 
-//	if (Session.Type == GAME_INTERNET) {
-//		House->BuildingTotals->Increment_Unit_Total( (int) type);
-//	}
-
 }
 
 
@@ -2188,7 +2184,7 @@ void BuildingClass::Update_Buildables(void)
 	** Only do this for real human players. ST - 3/22/2019 1:38PM
 	*/
 	if (PlayerPtr != House) {
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER || House->IsHuman == false) {
+		if (House->IsHuman == false) {
 			return;
 		}
 	}
@@ -2206,11 +2202,7 @@ void BuildingClass::Update_Buildables(void)
 			case RTTI_VESSELTYPE:
 				for (v = VESSEL_FIRST; v < VESSEL_COUNT; v++) {
 					if (PlayerPtr->Can_Build(&VesselTypeClass::As_Reference((VesselType)v), ActLike)) {
-						if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-							Sidebar_Glyphx_Add(RTTI_VESSELTYPE, v, House, buildable_via_capture);
-						} else {
-							Map.Add(RTTI_VESSELTYPE, v, buildable_via_capture);
-						}
+						Map.Add(RTTI_VESSELTYPE, v, buildable_via_capture);
 					}
 				}
 				break;
@@ -2218,11 +2210,7 @@ void BuildingClass::Update_Buildables(void)
 			case RTTI_BUILDINGTYPE:
 				for (i = STRUCT_FIRST; i < STRUCT_COUNT; i++) {
 					if (PlayerPtr->Can_Build(&BuildingTypeClass::As_Reference((StructType)i), ActLike)) {
-						if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-							Sidebar_Glyphx_Add(RTTI_BUILDINGTYPE, i, House, buildable_via_capture);
-						} else {
-							Map.Add(RTTI_BUILDINGTYPE, i, buildable_via_capture);
-						}
+						Map.Add(RTTI_BUILDINGTYPE, i, buildable_via_capture);
 					}
 				}
 				break;
@@ -2230,11 +2218,7 @@ void BuildingClass::Update_Buildables(void)
 			case RTTI_UNITTYPE:
 				for (u = UNIT_FIRST; u < UNIT_COUNT; u++) {
 					if (PlayerPtr->Can_Build(&UnitTypeClass::As_Reference((UnitType)u), ActLike)) {
-						if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-							Sidebar_Glyphx_Add(RTTI_UNITTYPE, u, House, buildable_via_capture);
-						} else {
-							Map.Add(RTTI_UNITTYPE, u, buildable_via_capture);
-						}
+						Map.Add(RTTI_UNITTYPE, u, buildable_via_capture);
 					}
 				}
 				break;
@@ -2244,19 +2228,11 @@ void BuildingClass::Update_Buildables(void)
 					if (PlayerPtr->Can_Build(&InfantryTypeClass::As_Reference((InfantryType)f), ActLike)) {
 						if (InfantryTypeClass::As_Reference((InfantryType)f).IsDog) {
 							if (*this == STRUCT_KENNEL) {
-								if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-									Sidebar_Glyphx_Add(RTTI_INFANTRYTYPE, f, House, buildable_via_capture);
-								} else {
-									Map.Add(RTTI_INFANTRYTYPE, f, buildable_via_capture);
-								}
+								Map.Add(RTTI_INFANTRYTYPE, f, buildable_via_capture);
 							}
 						} else {
 							if (*this != STRUCT_KENNEL) {
-								if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-									Sidebar_Glyphx_Add(RTTI_INFANTRYTYPE, f, House, buildable_via_capture);
-								} else {
-									Map.Add(RTTI_INFANTRYTYPE, f, buildable_via_capture);
-								}
+								Map.Add(RTTI_INFANTRYTYPE, f, buildable_via_capture);
 							}
 						}
 					}
@@ -2266,11 +2242,7 @@ void BuildingClass::Update_Buildables(void)
 			case RTTI_AIRCRAFTTYPE:
 				for (a = AIRCRAFT_FIRST; a < AIRCRAFT_COUNT; a++) {
 					if (PlayerPtr->Can_Build(&AircraftTypeClass::As_Reference((AircraftType)a), ActLike)) {
-						if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-							Sidebar_Glyphx_Add(RTTI_AIRCRAFTTYPE, a, House, buildable_via_capture);
-						} else {
-							Map.Add(RTTI_AIRCRAFTTYPE, a, buildable_via_capture);
-						}
+						Map.Add(RTTI_AIRCRAFTTYPE, a, buildable_via_capture);
 					}
 				}
 				break;
@@ -3113,9 +3085,6 @@ bool BuildingClass::Captured(HouseClass * newowner)
 		/*
 		** Add this building to the list of buildings captured this game. For internet stats purposes.
 		*/
-		if (Session.Type == GAME_INTERNET) {
-			newowner->CapturedBuildings->Increment_Unit_Total (Class->Type);
-		}
 
 		House->Adjust_Power(-Power_Output());
 		LastStrength = 0;
@@ -3211,12 +3180,8 @@ bool BuildingClass::Captured(HouseClass * newowner)
 		**	Perform a look operation when captured if it was the player
 		**	that performed the capture.
 		*/
-		if (Session.Type == GAME_GLYPHX_MULTIPLAYER && House->IsHuman) {
+		if (House == PlayerPtr) {
 			Look(false);
-		} else {
-			if (House == PlayerPtr) {
-				Look(false);
-			}
 		}
 		/*
 		** If it was spied upon by the player who just captured it, clear the
@@ -5911,21 +5876,9 @@ void BuildingClass::Remove_Gap_Effect(void)
 	/*
 	** Updated for client/server multiplayer. ST - 8/12/2019 11:14AM
 	*/
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-		if (!House->IsPlayerControl && PlayerPtr->IsGPSActive) {
-			Map.Sight_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, PlayerPtr);
-		}
-	
-	} else {
-		
-		for (int i = 0; i < Session.Players.Count(); i++) {
-			HouseClass *player_house = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-			if (player_house->IsGPSActive && player_house != House) {
-				Map.Sight_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, player_house);
-			}
-		}
+	if (!House->IsPlayerControl && PlayerPtr->IsGPSActive) {
+		Map.Sight_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, PlayerPtr);
 	}
-
 
 	// and rejam any overlapping buildings' fields
 	for (int index = 0; index < Buildings.Count(); index++) {

@@ -4117,9 +4117,6 @@ void TechnoClass::Record_The_Kill(TechnoClass * source)
 					}
 
 					if (source != NULL) {
-						if (Session.Type == GAME_INTERNET) {
-							source->House->DestroyedBuildings->Increment_Unit_Total( ((BuildingClass*)this)->Class->Type );
-						}
 						source->House->BuildingsKilled[Owner()]++;
 					}
 
@@ -4135,28 +4132,12 @@ void TechnoClass::Record_The_Kill(TechnoClass * source)
 			break;
 
 		case RTTI_AIRCRAFT:
-			if (source != NULL && Session.Type == GAME_INTERNET) {
-				source->House->DestroyedAircraft->Increment_Unit_Total( ((AircraftClass*)this)->Class->Type );
-				total_recorded++;
-			}
 			//Fall through.....
 		case RTTI_INFANTRY:
-			if (source != NULL && !total_recorded && Session.Type == GAME_INTERNET) {
-				source->House->DestroyedInfantry->Increment_Unit_Total( ((InfantryClass*)this)->Class->Type );
-				total_recorded++;
-			}
 			//Fall through.....
 		case RTTI_UNIT:
-			if (source != NULL && !total_recorded && Session.Type == GAME_INTERNET) {
-				source->House->DestroyedUnits->Increment_Unit_Total( ((UnitClass*)this)->Class->Type );
-				total_recorded++;
-			}
 			//Fall through.....
 		case RTTI_VESSEL:
-			if (source != NULL && !total_recorded && Session.Type == GAME_INTERNET) {
-				source->House->DestroyedUnits->Increment_Unit_Total( ((VesselClass*)this)->Class->Type );
-			}
-
 			House->UnitsLost++;
 			if (source != NULL) source->House->UnitsKilled[Owner()]++;
 

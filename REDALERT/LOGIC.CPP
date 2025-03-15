@@ -283,16 +283,7 @@ void LogicClass::AI(void)
 		/*
 		** Do this for all players in Client/Server multiplayer. ST - 8/9/2019 10:23AM
 		*/
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-			Map.Encroach_Shadow(PlayerPtr);
-		} else {
-			for (int i=0 ; i<Session.Players.Count() ; i++) {
-				HouseClass *player_ptr = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-				if (player_ptr && player_ptr->IsHuman) {
-					Map.Encroach_Shadow(player_ptr);
-				}
-			}
-		}	
+		Map.Encroach_Shadow(PlayerPtr);
 	}
 
 	/*

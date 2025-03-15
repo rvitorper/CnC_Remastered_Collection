@@ -629,19 +629,8 @@ void CellClass::Occupy_Down(ObjectClass * object)
 	//if (IsMapped || Session.Type != GAME_NORMAL) {
 	//	object->Revealed(PlayerPtr);
 	//}
-	if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-		if (IsMapped || Session.Type != GAME_NORMAL) {
-			object->Revealed(PlayerPtr);
-		}
-	} else {
-		
-		for (int i = 0; i < Session.Players.Count(); i++) {
-			HousesType house_type = Session.Players[i]->Player.ID;
-			if (Is_Visible(house_type)) {
-				HouseClass *house = HouseClass::As_Pointer(house_type);
-				object->Revealed(house);
-			}
-		}
+	if (IsMapped || Session.Type != GAME_NORMAL) {
+		object->Revealed(PlayerPtr);
 	}
 	
 	/*
@@ -2263,13 +2252,6 @@ bool CellClass::Goodie_Check(FootClass * object)
 		}
 
 		/*
-		** Keep track of the number of each type of crate found
-		*/
-		if (Session.Type == GAME_INTERNET) {
-			object->House->TotalCrates->Increment_Unit_Total(powerup);
-		}
-
-		/*
 		**	Remove the crate from the map.
 		*/
 		Map.Remove_Crate(Cell_Number());
@@ -2429,17 +2411,10 @@ crate_money:
 			*/
 			case CRATE_PARA_BOMB:
 				if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true)) {
-					// Changes for client/server multiplayer. ST - 8/2/2019 2:56PM
-					if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-						if (object->House->IsHuman) {
-							Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_PARA_BOMB, object->House);
-						}
-					} else {
-						if (object->IsOwnedByPlayer) {
-							Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
-							Map.Column[1].Flag_To_Redraw();
-						}
-					}					
+					if (object->IsOwnedByPlayer) {
+						Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
+						Map.Column[1].Flag_To_Redraw();
+					}
 				}
 				break;
 
@@ -2449,16 +2424,10 @@ crate_money:
 			case CRATE_SONAR:
 				if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true)) {
 					// Changes for client/server multiplayer. ST - 8/2/2019 2:56PM
-					if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-						if (object->House->IsHuman) {
-							Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_SONAR_PULSE, object->House);
-						}
-					} else {
-						if (object->IsOwnedByPlayer) {
-							Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
-							Map.Column[1].Flag_To_Redraw();
-						}
-					}					
+					if (object->IsOwnedByPlayer) {
+						Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
+						Map.Column[1].Flag_To_Redraw();
+					}
 				}
 				break;
 
@@ -2525,15 +2494,9 @@ crate_money:
 			case CRATE_ICBM:
 				if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true)) {
 					// Changes for client/server multiplayer. ST - 8/2/2019 2:56PM
-					if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-						if (object->House->IsHuman) {
-							Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB, object->House);
-						}
-					} else {
-						if (object->IsOwnedByPlayer) {
-							Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
-							Map.Column[1].Flag_To_Redraw();
-						}
+					if (object->IsOwnedByPlayer) {
+						Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+						Map.Column[1].Flag_To_Redraw();
 					}
 				}
 				break;

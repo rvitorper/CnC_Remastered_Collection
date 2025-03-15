@@ -247,14 +247,6 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house) :
 	Strength = Class->MaxStrength;
 	NavCom = TARGET_NONE;
 
-	/*
-	** Keep count of the number of units created. Dont track cargo planes as they are created
-	** automatically, not bought.
-	*/
-//	if (/*classid != AIRCRAFT_CARGO && */ Session.Type == GAME_INTERNET) {
-//		House->AircraftTotals->Increment_Unit_Total((int)classid);
-//	}
-
 }
 
 
@@ -1524,25 +1516,9 @@ BulletClass * AircraftClass::Fire_At(TARGET target, int which)
 	**	ground instead of normal weapon fire.
 	*/
 	if (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsCamera) {
-		
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-
-			if (House->Is_Ally(PlayerPtr)) {
-				Map.Sight_From(Coord_Cell(Center_Coord()), 9, House, false);
-			}
-			
-		} else {
-		
-			for (int i = 0; i < Session.Players.Count(); i++) {
-				HousesType house_type = Session.Players[i]->Player.ID;
-				HouseClass *house = HouseClass::As_Pointer(house_type);
-
-				if (house == House || House->Is_Ally(house)) {
-					Map.Sight_From(Coord_Cell(Center_Coord()), 9, house, false);
-				}
-			}
+		if (House->Is_Ally(PlayerPtr)) {
+			Map.Sight_From(Coord_Cell(Center_Coord()), 9, House, false);
 		}
-		
 		Ammo = 0;
 		Arm = Rearm_Delay(IsSecondShot);
 		return(0);

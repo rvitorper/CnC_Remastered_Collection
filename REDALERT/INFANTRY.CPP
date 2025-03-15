@@ -703,32 +703,17 @@ void InfantryClass::Per_Cell_Process(PCPType why)
 								// If they're spying on a sub pen, give 'em a sonar pulse
 								if (build == STRUCT_SUB_PEN) {
 									House->SuperWeapon[SPC_SONAR_PULSE].Enable(false, true, false);
-									// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-									if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-										if (House->IsHuman) {
-											Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_SONAR_PULSE, House);
-										}
-									} else {
-										if (IsOwnedByPlayer) {
-											Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
-											Map.Column[1].Flag_To_Redraw();
-										}
+									if (IsOwnedByPlayer) {
+										Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
+										Map.Column[1].Flag_To_Redraw();
 									}
 								}
 								// If they're spying on an airfield, they get Parabombs
 								if (build == STRUCT_AIRSTRIP) {
 									House->SuperWeapon[SPC_PARA_BOMB].Enable(true, true, false);
-									// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-									if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-										if (House->IsHuman) {
-											Sidebar_Glyphx_Add(RTTI_SPECIAL, SPC_PARA_BOMB, House);
-										}
-									}
-									else {
-										if (IsOwnedByPlayer) {
-											Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
-											Map.Column[1].Flag_To_Redraw();
-										}
+									if (IsOwnedByPlayer) {
+										Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
+										Map.Column[1].Flag_To_Redraw();
 									}
 								}
 							}

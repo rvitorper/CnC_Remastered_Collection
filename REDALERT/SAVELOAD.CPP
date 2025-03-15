@@ -345,10 +345,6 @@ bool Save_Game(const char *file_name, const char *descr)
 
 	int save_net = 0;									// 1 = save network/modem game
 	
-	if (Session.Type  == GAME_GLYPHX_MULTIPLAYER) {
-		save_net = 1;
-	}
-	
 	unsigned scenario;
 	HousesType house;
 
@@ -987,14 +983,6 @@ bool Load_Game(const char *file_name)
 				GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
 				if (!Force_CD_Available(3)) {	// force Aftermath CD in drive.
 					Prog_End("Load_Game Force_CD_Available(3) failed", true);
-#ifndef FIXIT_VERSION_3			//	WChat eliminated.
-#ifdef WIN32
-if(Special.IsFromWChat || SpawnedFromWChat) {
-	char packet[10] = {"Hello"};
-	Send_Data_To_DDE_Server (packet, strlen(packet), DDEServerClass::DDE_CONNECTION_FAILED);
-}
-#endif
-#endif
 					Emergency_Exit(EXIT_FAILURE);
 		     	}
 			}
@@ -1018,10 +1006,6 @@ if(Special.IsFromWChat || SpawnedFromWChat) {
 		Theme.Queue_Song(THEME_FIRST);
 	} else {
 		Theme.Queue_Song(Scen.TransitTheme);
-	}
-	
-	if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
-		Rule.IsSmartDefense = true;
 	}
 	
 	return(true);

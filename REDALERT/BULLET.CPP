@@ -401,14 +401,8 @@ void BulletClass::AI(void)
 			if (Payback != NULL && Class->Type == BULLET_GPS_SATELLITE) {
 				
 				bool reveal = false;
-				if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-					if (Payback->House == PlayerPtr) {
-						reveal = true;
-					}
-				} else {
-					if (Payback->House->IsHuman) {
-						reveal = true;
-					}
+				if (Payback->House == PlayerPtr) {
+					reveal = true;
 				}
 				if (reveal) {
 					if (!Map.Is_Radar_Active()) {
@@ -1084,14 +1078,8 @@ void BulletClass::Bullet_Explodes(bool forced)
 	if (Payback && Class->Type == BULLET_GPS_SATELLITE) {
 		
 		bool reveal = false;
-		if (Session.Type != GAME_GLYPHX_MULTIPLAYER) {
-			if (Payback->House == PlayerPtr) {
-				reveal = true;
-			}
-		} else {
-			if (Payback->House->IsHuman) {
-				reveal = true;
-			}
+		if (Payback->House == PlayerPtr) {
+			reveal = true;
 		}
 		
 		if (reveal) {
