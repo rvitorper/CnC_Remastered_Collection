@@ -404,17 +404,6 @@ void GScreenClass::Render(void)
 		Draw_It(IsToRedraw);
 
 		if (Buttons) Buttons->Draw_All(false);
-
-#ifdef SCENARIO_EDITOR
-		/*
-		** Draw the Editor's buttons
-		*/
-		if (Debug_Map) {
-			if (Buttons) {
-				Buttons->Draw_All();
-			}
-		}
-#endif
 		/*
 		** Draw the multiplayer message system to the Hidpage at this point.
 		** This way, they'll Blit along with the rest of the map.

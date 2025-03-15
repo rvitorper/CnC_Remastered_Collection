@@ -3183,66 +3183,6 @@ StructType BuildingTypeClass::From_Name(char const * name)
 }
 
 
-#ifdef SCENARIO_EDITOR
-/***********************************************************************************************
- * BuildingTypeClass::Display -- Renders a generic view of building.                           *
- *                                                                                             *
- *    This routine is used to display a generic representation of the                          *
- *    building. Typical use of this occurs with the scenario editor.                           *
- *                                                                                             *
- * INPUT:   x,y      -- Coordinate to display the building (centered).                         *
- *                                                                                             *
- *          window   -- The window the building should be rendered                             *
- *                      relative to.                                                           *
- *                                                                                             *
- *          house    -- The house color to use for the building.                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/23/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void BuildingTypeClass::Display(int x, int y, WindowNumberType window, HousesType ) const
-{
-	void const * ptr = Get_Cameo_Data();
-	if (ptr == NULL) {
-		IsTheaterShape = IsTheater;
-		ptr = Get_Image_Data();
-	}
-	CC_Draw_Shape(ptr, 0, x, y, window, SHAPE_CENTER|SHAPE_WIN_REL);
-	IsTheaterShape = false;
-}
-
-
-/***********************************************************************************************
- * BuildingTypeClass::Prep_For_Add -- Prepares scenario editor for adding a                    *
- *                                                                                             *
- *    This routine is used to prepare the scenario editor for the addition                     *
- *    of a building object to the game.                                                        *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/23/1994 JLB : Created.                                                                 *
- *   06/04/1994 JLB : Uses map editing interface routines.                                     *
- *=============================================================================================*/
-void BuildingTypeClass::Prep_For_Add(void)
-{
-	for (StructType index = STRUCT_FIRST; index < STRUCT_COUNT; index++) {
-		if (As_Reference(index).Get_Image_Data()) {
-			Map.Add_To_List(&As_Reference(index));
-		}
-	}
-}
-#endif
-
-
 /***********************************************************************************************
  * BuildingTypeClass::Create_And_Place -- Creates and places a building object onto the map.   *
  *                                                                                             *

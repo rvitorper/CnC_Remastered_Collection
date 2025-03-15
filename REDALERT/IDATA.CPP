@@ -1286,67 +1286,6 @@ short const * InfantryTypeClass::Occupy_List(bool) const
 }
 
 
-#ifdef SCENARIO_EDITOR
-/***********************************************************************************************
- * InfantryTypeClass::Display -- Displays a generic infantry object.                           *
- *                                                                                             *
- *    This routine is used by the scenario editor to display a generic representation of the   *
- *    infantry object for the scenario editor. It simply draws a single (nice profile) view    *
- *    of the infantry type.                                                                    *
- *                                                                                             *
- * INPUT:   x,y      -- The display coordinates to render the infantry object at.              *
- *                                                                                             *
- *          window   -- The window that the display coordinates are relative to.               *
- *                                                                                             *
- *          house    -- The house colors to use when rendering this infantry object.           *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   09/24/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void InfantryTypeClass::Display(int x, int y, WindowNumberType window, HousesType house) const
-{
-	if (house != HOUSE_NONE) {
-
-		int shape = 0;
-		void const * ptr = Get_Cameo_Data();
-		if (ptr == NULL) {
-			ptr = Get_Image_Data();
-			shape = 2;
-		}
-
-		CC_Draw_Shape(ptr, shape, x, y, window, SHAPE_NORMAL|SHAPE_CENTER|SHAPE_WIN_REL);
-	}
-}
-
-
-/***********************************************************************************************
- * InfantryTypeClass::Prep_For_Add -- Prepares the scenario editor for adding of infantry object.*
- *                                                                                             *
- *    This routine will prepare the scenario editor so that the infantry objects appear on     *
- *    the object list.                                                                         *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   09/24/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void InfantryTypeClass::Prep_For_Add(void)
-{
-	for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-		Map.Add_To_List(&As_Reference(index));
-	}
-}
-#endif
-
-
 /***********************************************************************************************
  * InfantryTypeClass::From_Name -- Converts an ASCII name into an infantry type number.        *
  *                                                                                             *

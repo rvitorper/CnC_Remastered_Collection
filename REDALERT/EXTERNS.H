@@ -37,9 +37,6 @@
 
 #include	"cell.h"
 
-#ifdef SCENARIO_EDITOR
-#include	"mapedit.h"
-#endif
 #include	"techno.h"
 #include	"type.h"
 #include	"building.h"
@@ -180,11 +177,7 @@ extern bool							Brokeout;
 extern GameOptionsClass 		Options;
 
 extern LogicClass 				Logic;
-#ifdef SCENARIO_EDITOR
-extern MapEditClass 				Map;
-#else
 extern MouseClass 				Map;
-#endif
 extern ScoreClass 				Score;
 extern MonoClass 					MonoArray[DMONO_COUNT];
 extern MFCD *						TheaterData;
@@ -328,10 +321,6 @@ extern bool							Version107InMix;				// Is there a v1.07 in the game
 
 #ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 extern bool							bAutoSonarPulse;
-#endif
-
-#ifdef SCENARIO_EDITOR
-extern CELL 						CurrentCell;
 #endif
 
 extern SessionClass				Session;

@@ -107,18 +107,6 @@ char const * Missions[MISSION_COUNT] = {
 /***************************************************************************
 **	Special weapon names.
 */
-#ifdef SCENARIO_EDITOR
-char const * const SpecialWeaponName[SPC_COUNT] = {
-	"Sonar Pulse",
-	"Nuclear Missile",
-	"Chronosphere",
-	"Parachute Bomb",
-	"Paratroopers",
-	"Recon Plane",
-	"Iron Curtain",
-	"GPS Satellite"
-};
-#endif
 int const SpecialWeaponHelp[SPC_COUNT] = {
 	TXT_SONAR_PULSE,
 	TXT_NUCLEAR_BOMB,

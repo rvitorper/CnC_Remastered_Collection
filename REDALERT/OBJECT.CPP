@@ -1336,19 +1336,6 @@ bool ObjectClass::Render(bool forced) const
 			*/
 			Draw_It(x, y, WINDOW_TACTICAL);
 
-#ifdef SCENARIO_EDITOR
-			/*
-			**	Draw the trigger attached to the object. Draw_It is window-
-			**	relative, so add the window's x-coord to 'x'.
-			*/
-			if (Debug_Map && Trigger.Is_Valid()) {
-				Fancy_Text_Print(Trigger->Class->IniName,
-					x + (WinX), y,
-					&ColorRemaps[PCOLOR_RED], TBLACK,
-					TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
-			}
-#endif
-
 			return(true);
 		}
 	}

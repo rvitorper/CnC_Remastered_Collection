@@ -141,9 +141,6 @@
 **	If the scenario editor to to be active in this build then uncomment
 **	the following #define line.
 */
-#ifdef INTERNAL_VERSION
-#define SCENARIO_EDITOR
-#endif
 
 
 /**********************************************************************

@@ -418,44 +418,6 @@ BuildingClass * VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal, Hou
  * HISTORY:                                                                                    *
  *   03/20/1996 JLB : Created.                                                                 *
  *=============================================================================================*/
-#ifdef SCENARIO_EDITOR
-void VesselTypeClass::Display(int x, int y, WindowNumberType window, HousesType ) const
-{
-	int shape = 0;
-	void const * ptr = Get_Cameo_Data();
-	if (ptr == NULL) {
-		ptr = Get_Image_Data();
-		shape = Rotation/6;
-	}
-	CC_Draw_Shape(ptr, shape, x, y, window, SHAPE_CENTER|SHAPE_WIN_REL);
-}
-
-
-/***********************************************************************************************
- * VesselTypeClass::Prep_For_Add -- Adds vessel types to the scenario editor object list.      *
- *                                                                                             *
- *    This routine is called when the scenario editor needs to obtain a list of the            *
- *    vessel object that can be placed down. It will submit all the vessel types that can      *
- *    be placed down.                                                                          *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/20/1996 JLB : Created.                                                                 *
- *=============================================================================================*/
-void VesselTypeClass::Prep_For_Add(void)
-{
-	for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-		if (As_Reference(index).Get_Image_Data() != NULL) {
-			Map.Add_To_List(&As_Reference(index));
-		}
-	}
-}
-#endif	//SCENARIO_EDITOR
 
 
 /***********************************************************************************************

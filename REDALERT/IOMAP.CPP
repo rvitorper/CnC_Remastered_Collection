@@ -264,11 +264,7 @@ LastTheater = THEATER_NONE;
 	** in editor mode, none of the map editor object is read in.
 	*/
 	file.Get(this, sizeof(*this));
-#ifdef SCENARIO_EDITOR
-	new(this) MapEditClass(NoInitClass());
-#else
 	new(this) MouseClass(NoInitClass());
-#endif
 
 	/*
 	** Reallocate the cell array

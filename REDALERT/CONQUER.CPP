@@ -234,64 +234,6 @@ void Main_Game(int argc, char * argv[])
 			DDEServer.Disable();
 		}
 
-#ifdef SCENARIO_EDITOR
-		/*
-		**	Scenario-editor version of main-loop processing
-		*/
-		for (;;) {
-			/*
-			**	Non-scenario-editor-mode: call the game's main loop
-			*/
-			if (!Debug_Map) {
-				TimeQuake = PendingTimeQuake;
-				PendingTimeQuake = false;
-				if (Main_Loop()) {
-					break;
-				}
-
-				if (SpecialDialog != SDLG_NONE) {
-					switch (SpecialDialog) {
-						case SDLG_SPECIAL:
-							Map.Help_Text(TXT_NONE);
-							Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-							Special_Dialog();
-							Map.Revert_Mouse_Shape();
-							SpecialDialog = SDLG_NONE;
-							break;
-
-						case SDLG_OPTIONS:
-							Map.Help_Text(TXT_NONE);
-							Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-							Options.Process();
-							Map.Revert_Mouse_Shape();
-							SpecialDialog = SDLG_NONE;
-							break;
-
-						case SDLG_SURRENDER:
-							Map.Help_Text(TXT_NONE);
-							Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-							if (Surrender_Dialog(TXT_SURRENDER)) {
-								PlayerPtr->Flag_To_Lose();
-							}
-							SpecialDialog = SDLG_NONE;
-							Map.Revert_Mouse_Shape();
-							break;
-
-						default:
-							break;
-					}
-				}
-			} else {
-
-				/*
-				**	Scenario-editor-mode: call the editor's main loop
-				*/
-				if (Map_Edit_Loop()) {
-					break;
-				}
-			}
-		}
-#else
 		/*
 		**	Non-editor version of main-loop processing
 		*/
@@ -337,35 +279,11 @@ void Main_Game(int argc, char * argv[])
 						SpecialDialog = SDLG_NONE;
 						Map.Revert_Mouse_Shape();
 						break;
-
-/*ifdef FIXIT_VERSION_3		//	Stalemate games.
-					case SDLG_PROPOSE_DRAW:
-						Map.Help_Text(TXT_NONE);
-						Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-						if (Surrender_Dialog(TXT_WOL_PROPOSE_DRAW)) {
-							OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
-						}
-						SpecialDialog = SDLG_NONE;
-						Map.Revert_Mouse_Shape();
-						break;
-
-					case SDLG_ACCEPT_DRAW:
-						Map.Help_Text(TXT_NONE);
-						Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
-						if (Surrender_Dialog(TXT_WOL_ACCEPT_DRAW)) {
-							OutList.Add(EventClass(EventClass::ACCEPT_DRAW));
-						}
-						SpecialDialog = SDLG_NONE;
-						Map.Revert_Mouse_Shape();
-						break;
-#endif
-*/
 					default:
 						break;
 				}
 			}
 		}
-#endif
 
 
 #ifdef WIN32
@@ -1552,133 +1470,6 @@ bool Main_Loop()
 	Sync_Delay();
 	return(!GameActive);
 }
-
-
-#ifdef SCENARIO_EDITOR
-/***************************************************************************
- * Map_Edit_Loop -- a mini-main loop for map edit mode only                *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   10/19/1994 BR : Created.                                              *
- *=========================================================================*/
-bool Map_Edit_Loop(void)
-{
-	/*
-	**	Redraw the map.
-	*/
-	Map.Render();
-
-	/*
-	**	Get user input (keys, mouse clicks).
-	*/
-	KeyNumType input;
-
-#ifdef WIN32
-	WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
-
-	int x;
-	int y;
-	Map.Input(input, x, y);
-
-	/*
-	**	Process keypress.
-	*/
-	if (input) {
-		Keyboard_Process(input);
-	}
-
-	Call_Back();								// maintains Theme.AI() for music
-	Color_Cycle();
-
-	return(!GameActive);
-}
-
-
-/***************************************************************************
- * Go_Editor -- Enables/disables the map editor										*
- *                                                                         *
- * INPUT:                                                                  *
- *		flag		true = go into editor mode; false = go into game mode			*
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.																						*
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.																						*
- *                                                                         *
- * HISTORY:                                                                *
- *   10/19/1994 BR : Created.                                              *
- *=========================================================================*/
-void Go_Editor(bool flag)
-{
-	/*
-	**	Go into Scenario Editor mode
-	*/
-	if (flag) {
-		Debug_Map = true;
-		Debug_Unshroud = true;
-
-		/*
-		** Un-select any selected objects
-		*/
-		Unselect_All();
-
-		/*
-		** Turn off the sidebar if it's on
-		*/
-		Map.Activate(0);
-
-		/*
-		** Reset the map's Button list for the new mode
-		*/
-		Map.Init_IO();
-
-		/*
-		** Force a complete redraw of the screen
-		*/
-#ifdef WIN32
-		HiddenPage.Clear();
-#else
-		HidPage.Clear();
-#endif
-		Map.Flag_To_Redraw(true);
-		Map.Render();
-
-	} else {
-
-		/*
-		**	Go into normal game mode
-		*/
-		Debug_Map = false;
-		Debug_Unshroud = false;
-
-		/*
-		** Un-select any selected objects
-		*/
-		Unselect_All();
-
-		/*
-		** Reset the map's Button list for the new mode
-		*/
-		Map.Init_IO();
-
-		/*
-		** Force a complete redraw of the screen
-		*/
-		HidPage.Clear();
-		Map.Flag_To_Redraw(true);
-		Map.Render();
-	}
-}
-
-#endif
 
 void Rebuild_Interpolated_Palette(unsigned char * interpal)
 {

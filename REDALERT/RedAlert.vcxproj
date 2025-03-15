@@ -242,11 +242,6 @@
     <ClCompile Include="LZWPIPE.CPP" />
     <ClCompile Include="LZWSTRAW.CPP" />
     <ClCompile Include="MAP.CPP" />
-    <ClCompile Include="MAPEDDLG.CPP" />
-    <ClCompile Include="MAPEDIT.CPP" />
-    <ClCompile Include="MAPEDPLC.CPP" />
-    <ClCompile Include="MAPEDSEL.CPP" />
-    <ClCompile Include="MAPEDTM.CPP" />
     <ClCompile Include="MAPSEL.CPP" />
     <ClCompile Include="MCI.CPP" />
     <ClCompile Include="MCIMOVIE.CPP" />

@@ -397,11 +397,7 @@ ThemeClass Theme;
 /***************************************************************************
 **	This is the main control class for the map.
 */
-#ifdef SCENARIO_EDITOR
-MapEditClass Map;
-#else
 MouseClass Map;
-#endif
 
 
 /**************************************************************************
@@ -465,14 +461,6 @@ bool GameActive;
 **	specifically for the default reference value. As such, it is not stable.
 */
 long LParam;
-
-
-#ifdef SCENARIO_EDITOR
-/***************************************************************************
-** The currently-selected cell for the Scenario Editor
-*/
-CELL CurrentCell = 0;
-#endif
 
 
 /***************************************************************************

@@ -301,10 +301,6 @@ class ObjectTypeClass : public AbstractTypeClass
 		void const * Get_Image_Data(void) const {return ImageData;};
 		void const * Get_Radar_Data(void) const {return RadarIcon;};
 
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int, int, WindowNumberType, HousesType) const {};
-		#endif
-
 		static void const * SelectShapes;
 		static void const * PipShapes;
 };
@@ -803,10 +799,6 @@ class BuildingTypeClass : public TechnoTypeClass {
 		virtual int Raw_Cost(void) const;
 		bool Bib_And_Offset(SmudgeType & bib, CELL & cell) const;
 
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house) const;
-		#endif
-
 		/*
 		**	Special overlay for the weapons factory.
 		*/
@@ -995,10 +987,6 @@ class UnitTypeClass : public TechnoTypeClass
 
 		void Turret_Adjust(DirType dir, int & x, int & y) const;
 
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house) const;
-		#endif
-
 		/*
 		**	The animation stage list for harvester dumping into the refinery.
 		*/
@@ -1098,10 +1086,6 @@ class VesselTypeClass : public TechnoTypeClass
 		virtual short const * Overlap_List(void) const;
 
 		void Turret_Adjust(DirType dir, int & x, int & y) const;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house) const;
-		#endif
 };
 
 
@@ -1249,10 +1233,6 @@ class InfantryTypeClass : public TechnoTypeClass
 		virtual ObjectClass * Create_One_Of(HouseClass * house) const;
 		virtual short const * Occupy_List(bool placement=false) const;
 		virtual int Full_Name(void) const;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house) const;
-		#endif
 };
 
 
@@ -1349,10 +1329,6 @@ class AircraftTypeClass : public TechnoTypeClass
 		virtual short const * Occupy_List(bool placement=false) const;
 		virtual short const * Overlap_List(void) const;
 		virtual int Max_Pips(void) const;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house) const;
-		#endif
 
 		static void const * LRotorData;
 		static void const * RRotorData;
@@ -1588,10 +1564,6 @@ class TerrainTypeClass : public ObjectTypeClass
 		virtual short const * Occupy_List(bool placement=false) const;
 		virtual short const * Overlap_List(void) const;
 
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house=HOUSE_NONE) const;
-		#endif
-
 	private:
 		short const * Occupy;
 		short const * Overlap;
@@ -1648,10 +1620,6 @@ class TemplateTypeClass: public ObjectTypeClass
 		virtual ObjectClass * Create_One_Of(HouseClass *) const;
 		virtual short const * Occupy_List(bool placement=false) const;
 		LandType Land_Type(int icon) const;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house=HOUSE_NONE) const;
-		#endif
 };
 
 
@@ -1978,10 +1946,6 @@ class OverlayTypeClass: public ObjectTypeClass
 		virtual short const * Occupy_List(bool placement=false) const;
 		virtual void Draw_It(int x, int y, int data) const;
 		virtual unsigned char * Radar_Icon(int data) const;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house=HOUSE_NONE) const;
-		#endif
 };
 
 
@@ -2047,10 +2011,6 @@ class SmudgeTypeClass : public ObjectTypeClass
 		virtual short const * Occupy_List(bool placement=false) const;
 		virtual short const * Overlap_List(void) const {return Occupy_List();};
 		virtual void Draw_It(int x, int y, int data) const ;
-
-		#ifdef SCENARIO_EDITOR
-		virtual void Display(int x, int y, WindowNumberType window, HousesType house=HOUSE_NONE) const;
-		#endif
 };
 
 #endif
