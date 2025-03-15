@@ -370,11 +370,9 @@ Theme.Stop();
 	/*
 	** If there's no briefing movie, restate the mission at the beginning.
 	*/
-#if 1 // 12/04/2019 - LLL
 	if (Session.Type == GAME_NORMAL && Scen.BriefMovie == VQ_NONE) {
 		Display_Briefing_Text_GlyphX();
 	}
-#else
 	char buffer[25];
 	if (Scen.BriefMovie != VQ_NONE) {
 		sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);

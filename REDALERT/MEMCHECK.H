@@ -2296,7 +2296,6 @@ _RTLDECL(_fstrcpy,  char far * _MCFARGLUE,  (char far *,const void far *));
     a `Run' instead of a `Step' when _SETLOC macro is used...
 */
 #if !defined (_CC_BORLAND_)
-#if 1   /* Change this to '0' to omit this section */
 
 #define printf              _SETLOC(printf)
 
@@ -2317,7 +2316,6 @@ _RTLDECL(_fstrcpy,  char far * _MCFARGLUE,  (char far *,const void far *));
 #define spawnve             _SETLOC(spawnve)
 #define spawnvpe            _SETLOC(spawnvpe)
 
-#endif  /* end location transmission section */
 #endif  /* not Borland C++ */
 #endif  /* not def _lint */
 

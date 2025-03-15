@@ -1017,7 +1017,6 @@ void InfantryClass::Per_Cell_Process(PCPType why)
 			Look(true);
 		}
 
-#if 1
 /*
 **	If after all is said and done, the unit finishes its move on an impassable cell, then
 **	it must presume that it is in the case of a unit driving onto a bridge that blows up
@@ -1030,7 +1029,6 @@ if (!IsDriving && !Class->IsBomber && (land == LAND_ROCK || land == LAND_WATER |
 	Take_Damage(damage, 0, WARHEAD_AP, NULL, true);
 	return;
 }
-#endif
 
 	}
 

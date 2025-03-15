@@ -3773,7 +3773,6 @@ int BuildingClass::Mission_Deconstruction(void)
 				}
 
 				// MBL 05.06.2020 - "Structure Sold" was being heard when selecting/moving a redepolyable Con Yard to turn back into an MCV (RA only) above, so moved here
-				#if 1
 				if (!mcv_redeployed) 
 				{
 					if (IsOwnedByPlayer) {
@@ -3782,7 +3781,6 @@ int BuildingClass::Mission_Deconstruction(void)
 						}
 					}
 				}
-				#endif
 			}
 			break;
 

@@ -2768,7 +2768,6 @@ int UnitClass::Mission_Unload(void)
 				Set_Rate(Rule.OreDumpRate*2);
 				IsDumping = true;
 
-#if 1
 				InfantryClass *crew = new InfantryClass(INFANTRY_C1, House->Class->House);
 				if (crew != NULL) crew->IsTechnician = true;
 
@@ -2788,7 +2787,6 @@ int UnitClass::Mission_Unload(void)
 						}
 					}
 				}
-#endif
 			}
 
 			if ( (Arm && !Gold) || IronCurtainCountDown) {

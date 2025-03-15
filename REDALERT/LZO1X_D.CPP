@@ -49,11 +49,7 @@
 #  define LZO1X
 #endif
 
-#if 1
 #  define TEST_IP				1
-#else
-#  define TEST_IP				(ip < ip_end)
-#endif
 
 
 /***********************************************************************

@@ -428,7 +428,6 @@ void On_Sound_Effect(int sound_index, int variation, COORDINATE coord, int house
 
 	// Borrowed from RedAlert\AUDIO.CPP Sound_Effect()
 	//
-	#if 1
 		/*
 		**	Fetch a pointer to the sound effect data. Modify the sound as appropriate and desired.
 		*/
@@ -481,7 +480,6 @@ void On_Sound_Effect(int sound_index, int variation, COORDINATE coord, int house
 				}
 			}
 		}
-	#endif
 	// END MBL 
 
 	DLLExportClass::On_Sound_Effect(PlayerPtr, sound_index, ext, variation, coord);
