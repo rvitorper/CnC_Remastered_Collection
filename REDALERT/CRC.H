@@ -43,13 +43,6 @@
 **	November of '94. Until the compiler supports this, use the following
 **	definition.
 */
-#ifndef __BORLANDC__
-#ifndef TRUE_FALSE_DEFINED
-#define TRUE_FALSE_DEFINED
-enum {false=0,true=1};
-typedef int bool;
-#endif
-#endif
 
 /*
 **	This is a CRC engine class. It will process submitted data and generate a CRC from it.

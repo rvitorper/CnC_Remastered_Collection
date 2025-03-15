@@ -420,7 +420,6 @@ extern void Fatal(char const *message, ...);
 **  where we can see it.
 **
 */
-#ifndef __BORLANDC__
 #ifdef assert
 #undef assert
 #endif	//assert
@@ -432,7 +431,6 @@ void Assert_Failure (char *expression, int line, char *file);
  #define assert(expr)   ((expr)?(void)0:Assert_Failure(#expr,__LINE__,__FILE__))
 #endif	//NDEBUG
 
-#endif	//__BORLANDC__
 
 
 extern void Free_Interpolated_Palettes(void);
