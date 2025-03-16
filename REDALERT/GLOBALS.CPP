@@ -565,12 +565,7 @@ int NewMaxAheadFrame1;
 int NewMaxAheadFrame2;
 #endif
 
-#ifdef FIXIT_VERSION_3
 bool	bAftermathMultiplayer;		//	Is multiplayer game being played with Aftermath rules?
-#else
-unsigned long 	PlayingAgainstVersion;		// Negotiated version number
-bool				Version107InMix;				// Is there a v1.07 in the game
-#endif
 
 /***************************************************************************
 **	This is the null modem manager class.  Declaring this class doesn't
@@ -727,9 +722,7 @@ MCIMovie* MciMovie = NULL;
 MPGSettings* MpgSettings = NULL;
 #endif
 
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 bool bAutoSonarPulse = false;
-#endif
 
 bool MMXAvailable = false;
 

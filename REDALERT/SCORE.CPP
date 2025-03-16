@@ -44,9 +44,6 @@
  *   ScoreClass::Pulse_Bar_Graph -- Pulses the bargraph color.                                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef WIN32
-extern short StreamLowImpact;
-#endif
 
 #include	"function.h"
 
@@ -68,9 +65,6 @@ extern short StreamLowImpact;
 #define NUMFAMENAMES				7
 #define MAX_FAMENAME_LENGTH	11
 
-#ifndef WIN32
-extern short StreamLowImpact;
-#endif  //WIN32
 
 GraphicBufferClass *PseudoSeenBuff;
 
@@ -288,13 +282,6 @@ void ScoreScaleClass::Update(void)
 	*/
 	if (!Timer) {
 		Timer = 1;
-#ifndef WIN32
-		if (Stage != 5) {
-			int destx = _destx[Stage+1]*RESFACTOR;
-			int destw = _destw[Stage+1]*RESFACTOR;
-			HidPage.Blit(SeenPage, destx, YPos, destx, YPos, (destx + destw) <= 320 * RESFACTOR ? destw : (320 * RESFACTOR) - destx, (YPos + destw) <= 200 * RESFACTOR ? destw : (200 * RESFACTOR) - YPos);
-		}
-#endif
 		if (Stage) {
 			Set_Font_Palette(Palette);
 			HidPage.Fill_Rect(0, 0, 7*RESFACTOR, 7*RESFACTOR, TBLACK);

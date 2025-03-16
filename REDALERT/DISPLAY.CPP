@@ -388,10 +388,6 @@ void DisplayClass::Init_Theater(TheaterType theater)
 	*/
 	sprintf(fullname, "%s.MIX", Theaters[theater].Root);
 
-#ifndef WIN32
-LastTheater = THEATER_NONE;
-#endif
-
 	if (Scen.Theater != LastTheater) {
 		if (TheaterData != NULL) {
 			delete TheaterData;
@@ -2072,15 +2068,6 @@ ObjectClass * DisplayClass::Cell_Object(CELL cell, int x, int y) const
 
 			HidPage.Unlock();
 		}
-
-#ifndef WIN32
-		/*
-		**	Once the icons are drawn, duplicate the bottom line of the screen into the phantom
-		**	area one line below the screen. This causes the predator effect to work on any
-		**	shape drawn at the bottom of the screen.
-		*/
-		HidPage.Blit(HidPage, 0, HidPage.Get_Height()-1, 0, HidPage.Get_Height(), HidPage.Get_Width(), 1, false);
-#endif
 
 		if (HidPage.Lock()) {
 

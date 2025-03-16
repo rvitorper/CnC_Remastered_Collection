@@ -39,18 +39,10 @@
 // Win 95 includes
 //
 
-#ifndef WIN32
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
-#define _WIN32
-#endif // _WIN32
-#define WIN32 1
-#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <windowsx.h>
-#else
-#include <windows.h>
-#include <windowsx.h>
-#endif
+
 
 // Note: SKB 4/11/94
 // Before this library is done, this needs to be able to be set to TRUE.

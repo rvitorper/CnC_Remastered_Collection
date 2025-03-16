@@ -188,9 +188,6 @@ void TabClass::AI(KeyNumType &input, int x, int y)
 			if (input == KN_LMOUSE) {
 				int sel = -1;
 				if (x < EVA_WIDTH * RESFACTOR) sel = 0;
-#ifndef WIN32	// No Sidebar tab in hires - sidebar is always active.
-				if (x > (320-80) * RESFACTOR) sel = 1;
-#endif	//WIN32
 				if (sel >= 0) {
 					Set_Active(sel);
 					input = KN_NONE;

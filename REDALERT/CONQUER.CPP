@@ -100,10 +100,7 @@ void Enable_Secret_Units(void);
 
 extern bool Is_Mission_Aftermath (char *file_name);
 extern bool Is_Mission_Counterstrike (char *file_name);
-
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 extern void Do_Draw(void);
-#endif
 
 #ifdef CHEAT_KEYS
 bool	bNoMovies = false;
@@ -3474,7 +3471,6 @@ void Enable_Secret_Units(void)
 {
 }
 
-#ifdef FIXIT_VERSION_3
 bool Force_Scenario_Available( const char* szName )
 {
 	//	Calls Force_CD_Available based on type of scenario. szName is assumed to be an official scenario here.
@@ -3490,4 +3486,3 @@ bool Force_Scenario_Available( const char* szName )
 	}
 	return true;
 }
-#endif

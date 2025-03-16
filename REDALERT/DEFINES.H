@@ -122,8 +122,6 @@
 #define FIXIT_PHONELIST_CRASH // Fixes crash when clicking on an empty phonelist
 #endif
 
-//	Denotes changes made for version 3 - reunification of all existing versions and undoing of Aftermath divergence. - ajw
-#define FIXIT_VERSION_3
 #define DVD
 
 // Define DVD to turn on RADVD additions/changes - Denzil

@@ -6387,14 +6387,8 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 	if (!hptr || !hptr->IsActive) {
 		return time;
 	}
-
-#ifdef FIXIT_VERSION_3
+	
 	if (Session.Type == GAME_NORMAL) {
-#else
-	if (Session.Type == GAME_NORMAL ||
-		PlayingAgainstVersion == VERSION_RED_ALERT_104 ||
-		PlayingAgainstVersion == VERSION_RED_ALERT_107) {
-#endif
 		time *= hptr->BuildSpeedBias;
 	}
 	else {

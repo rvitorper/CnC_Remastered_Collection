@@ -134,13 +134,8 @@ class VersionClass {
 		// version.  Change these values to change the game's version #!
 		//.....................................................................
 		enum VersionEnum {
-#ifdef FIXIT_VERSION_3
 			MAJOR_VERSION = 0x0003,
 			MINOR_VERSION = 0x0000
-#else
-			MAJOR_VERSION = 0x0001,
-			MINOR_VERSION = 0x2000
-#endif
 		};
 
 		//.....................................................................
@@ -150,14 +145,9 @@ class VersionClass {
 		// values aren't used.
 		//.....................................................................
 		enum VersionRangeEnum {
-#ifdef FIXIT_VERSION_3
 			//	ajw - We can only play against same version.
 			MIN_VERSION = VERSION_RA_300,
 			MAX_VERSION = VERSION_RA_300
-#else
-			MIN_VERSION = VERSION_RED_ALERT_104, //0x00010000,	// Version: 1.0
-			MAX_VERSION = VERSION_AFTERMATH		 //0x00012000	// Version: 1.2
-#endif
 		};
 
 		//.....................................................................

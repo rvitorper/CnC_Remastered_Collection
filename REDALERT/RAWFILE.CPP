@@ -59,13 +59,6 @@
 
 #include	"rawfile.h"
 
-#ifndef WIN32
-#include	<fcntl.h>
-#include	<io.h>
-#include	<dos.h>
-extern short Hard_Error_Occured;
-#endif
-
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message.                             *
@@ -238,9 +231,6 @@ int RawFileClass::Open(int rights)
 		/*
 		**	Try to open the file according to the access rights specified.
 		*/
-		#ifndef WIN32
-			Hard_Error_Occured = 0;
-		#endif
 		switch (rights) {
 
 			/*
@@ -340,9 +330,6 @@ int RawFileClass::Open(int rights)
  *=============================================================================================*/
 int RawFileClass::Is_Available(int forced)
 {
-#ifndef WIN32
-	bool open_failed;
-#endif
 
 	if (Filename == NULL) return(false);
 

@@ -38,9 +38,7 @@
 #include "gadget.h"
 
 
-#ifdef FIXIT_VERSION_3
 bool cancel_current_msgbox = false;
-#endif
 
 /***********************************************************************************************
  * WWMessageBox::Process -- pops up a message with yes/no, etc                                 *
@@ -84,10 +82,6 @@ int WWMessageBox::Process(const char * msg, const char * b1txt, const char * b2t
 	void * back;
 	BOOL display;									// display level
 	int  realval[5];
-
-#ifndef WIN32
-	int	preservex,preservey,preservew,preserveh;
-#endif
 
 	#ifdef WIN32
 	GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(), VisiblePage.Get_Height(), (void*)NULL);
@@ -218,17 +212,8 @@ int WWMessageBox::Process(const char * msg, const char * b1txt, const char * b2t
 	*/
 	Hide_Mouse();
 	if (preserve) {
-#ifndef WIN32
-	preservex = max(0, x-4);
-	preservey = max(0, y-4);
-	preservew = min(width+8, 320-preservex);
-	preserveh = min(height+8, 200-preservey);
-	back = new char[preservew * preserveh];
-	SeenBuff.To_Buffer(preservex, preservey, preservew, preserveh, back, preservew * preserveh);
-#else
 		back = new char[width * height];
 		SeenBuff.To_Buffer(x, y, width, height, back, width * height);
-#endif
 	}
 	Dialog_Box(x, y, width, height);
 	Draw_Caption(Caption, x, y, width);
@@ -296,14 +281,12 @@ int WWMessageBox::Process(const char * msg, const char * b1txt, const char * b2t
 			**	Fetch and process input.
 			*/
 			KeyNumType input = buttonlist->Input();
-#ifdef FIXIT_VERSION_3
 			//	I really hate to do this, but...      ajw
 			if( cancel_current_msgbox )
 			{
 				cancel_current_msgbox = false;
 				input = KN_ESC;
 			}
-#endif
 			switch (input) {
 				case (KN_ESC):
 					selection = realval[numbuttons-1];

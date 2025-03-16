@@ -312,16 +312,8 @@ extern PaletteClass				ScorePalette;
 extern int							BuildLevel;
 extern unsigned long				ScenarioCRC;
 
-#ifdef FIXIT_VERSION_3
 extern bool							bAftermathMultiplayer;		//	Is multiplayer game being played with Aftermath rules?
-#else
-extern unsigned long 				PlayingAgainstVersion;		// Negotiated version number
-extern bool							Version107InMix;				// Is there a v1.07 in the game
-#endif
-
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 extern bool							bAutoSonarPulse;
-#endif
 
 extern SessionClass				Session;
 //extern NullModemClass 			NullModem;

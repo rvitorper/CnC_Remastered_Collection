@@ -1148,7 +1148,6 @@ void HouseClass::AI(void)
 		Super_Weapon_Handler();
 	}
 
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 	if( (Session.Type != GAME_NORMAL || !IsHuman) && Scen.AutoSonarTimer == 0 )
 	{
 		//	If house has nothing but subs left, do an automatic sonar pulse to reveal them.
@@ -1205,7 +1204,6 @@ void HouseClass::AI(void)
 			}
 		}
 	}
-#endif
 
 	if (Session.Type != GAME_NORMAL) {
 		Check_Pertinent_Structures();
@@ -7454,19 +7452,10 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const
 		return(false);
 	}
 
-#ifdef FIXIT_VERSION_3
 	// Fix to prevent ally with computer.
 	if ( !HouseClass::As_Pointer(house)->IsHuman) {
 		return(false);
 	}
-#else	//	FIXIT_VERSION_3
-#ifdef FIXIT_NO_COMP_ALLY
-	// Fix to prevent ally with computer.
-	if (PlayingAgainstVersion > VERSION_RED_ALERT_104 && !HouseClass::As_Pointer(house)->IsHuman) {
-		return(false);
-	}
-#endif
-#endif	//	FIXIT_VERSION_3
 
 	/*
 	**	Count the number of active houses in the game as well as the

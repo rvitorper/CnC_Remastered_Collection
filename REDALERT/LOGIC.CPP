@@ -364,7 +364,6 @@ void LogicClass::AI(void)
 	/*
 	**	House processing is performed.
 	*/
-#ifdef FIXIT_VERSION_3
 	if( Session.Type != GAME_NORMAL )
 	{
 		for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
@@ -383,16 +382,7 @@ void LogicClass::AI(void)
 			}
 		}
 	}
-#else	//	AI() is called redundantly 12 times in multiplayer games here. ajw
-	for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-		HouseClass * hptr = HouseClass::As_Pointer(house);
-		if (hptr && hptr->IsActive) {
-			hptr->AI();
-		}
-	}
-#endif
 
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 	if( Session.Type != GAME_NORMAL && Scen.AutoSonarTimer == 0 )
 	{
 		if( bAutoSonarPulse )
@@ -404,7 +394,6 @@ void LogicClass::AI(void)
 #define AUTOSONAR_PERIOD	TICKS_PER_SECOND * 40;
 		Scen.AutoSonarTimer = AUTOSONAR_PERIOD;
 	}
-#endif
 }
 
 

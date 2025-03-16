@@ -45,13 +45,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#ifdef WIN32
 #include "ccdde.h"
-#endif	//WIN32
-
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 #include "WolStrng.h"
-#endif
 
 /***************************************************************************
 ** Table of what data is really used in the EventClass struct for different
@@ -89,10 +84,8 @@ unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
 	size_of(EventClass, Data.Variable.Size),		// ADDPLAYER
 	size_of(EventClass, Data.Timing ),				// TIMING
 	size_of(EventClass, Data.ProcessTime ),		// PROCESS_TIME
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 	0,												//	PROPOSE_DRAW
 	0,												//	RETRACT_DRAW
-#endif
 };
 
 char * EventClass::EventNames[EventClass::LAST_EVENT] = {
@@ -127,10 +120,8 @@ char * EventClass::EventNames[EventClass::LAST_EVENT] = {
 	"ADDPLAYER",
 	"TIMING",
 	"PROCESS_TIME",
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 	"PROPOSE_DRAW",
 	"RETRACT_DRAW",
-#endif
 };
 
 
@@ -1000,7 +991,6 @@ void EventClass::Execute(void)
 			}
 			break;
 
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 		case PROPOSE_DRAW:
 			if( ID == PlayerPtr->ID )
 			{
@@ -1058,7 +1048,6 @@ void EventClass::Execute(void)
 			}
 			Sound_Effect( VOC_INCOMING_MESSAGE );
 			break;
-#endif
 
 		/*
 		**	Default: do nothing.

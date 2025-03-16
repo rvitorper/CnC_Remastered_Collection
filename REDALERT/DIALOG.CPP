@@ -72,12 +72,6 @@ void Dialog_Box(int x, int y, int w, int h)
 {
 // Try to expand the box a little taller and a little wider to make room for
 // the dialog box graphics in the DOS version.
-#ifndef WIN32
-	x = max(0, x-4);
-	y = max(0, y-4);
-	w = min(w+8, 320-x);
-	h = min(h+8, 200-y);
-#endif
 
 	WindowList[WINDOW_PARTIAL][WINDOWX] = x;
 	WindowList[WINDOW_PARTIAL][WINDOWY] = y;
@@ -125,9 +119,6 @@ void Dialog_Box(int x, int y, int w, int h)
 
 	shapedata = MFCD::Retrieve("DD-RIGHT.SHP");
 	int rightx = w - (7*RESFACTOR);
-#ifndef WIN32
-	rightx--;
-#endif
 	CC_Draw_Shape(shapedata, 0, rightx, cy-100*RESFACTOR, WINDOW_PARTIAL, SHAPE_WIN_REL);
 	CC_Draw_Shape(shapedata, 0, rightx, cy,					WINDOW_PARTIAL, SHAPE_WIN_REL);
 

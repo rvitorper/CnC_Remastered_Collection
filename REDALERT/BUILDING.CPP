@@ -4259,7 +4259,6 @@ int BuildingClass::Mission_Missile(void)
 			*/
 			case DOOR_OPENING:
 				{
-#ifdef FIXIT_VERSION_3
 					COORDINATE door = Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
 					AnimClass * sput = new AnimClass(ANIM_SPUTDOOR, door);
 					if (sput) {
@@ -4267,14 +4266,6 @@ int BuildingClass::Mission_Missile(void)
 						Status = LAUNCH_UP;
 						AnimToTrack = sput->As_Target();
 					}
-#else
-					IsReadyToCommence = false;
-					COORDINATE door = Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
-					AnimClass * sput = new AnimClass(ANIM_SPUTDOOR, door);
-					Status = LAUNCH_UP;
-					AnimToTrack = sput->As_Target();
-					return(1);
-#endif
 				}
 
 			/*

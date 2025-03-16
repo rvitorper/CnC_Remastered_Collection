@@ -91,11 +91,8 @@ class EventClass
 
 			TIMING,				// new timing values for all systems to use
 			PROCESS_TIME,		// a system's average processing time, in ticks per frame
-
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 			PROPOSE_DRAW,		//	Players proposes that 2-player game be called a stalemate.
 			RETRACT_DRAW,		//	Player retracts proposed draw offer.
-#endif
 
 			LAST_EVENT,			// one past the last event
 		} EventType;

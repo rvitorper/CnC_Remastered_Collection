@@ -208,11 +208,6 @@ int main(int argc, char * argv[])
 //	if (Ram_Free(MEM_NORMAL) < 3500000) {
 #endif
 		printf (TEXT_NO_RAM);
-
-#ifndef WIN32
-		printf (TEXT_USE_START_MENU);
-		getch();
-#endif
 		return(EXIT_FAILURE);
 	}
 
@@ -310,10 +305,6 @@ int main(int argc, char * argv[])
 		//RawFileClass cfile(CONFIG_FILE_NAME);
 		// end of change - 7/18/2019 JAS
 		////////////////////////////////////////
-
-#ifndef WIN32
-		Install_Keyboard_Interrupt(Get_RM_Keyboard_Address(), Get_RM_Keyboard_Size());
-#endif	//WIN32
 
 #ifdef NEVER
 		Keyboard->IsLibrary = true;
@@ -652,10 +643,6 @@ int main(int argc, char * argv[])
 	/*
 	**	Restore the current drive and directory.
 	*/
-#ifndef WIN32
-	_dos_setdrive(olddrive, &drivecount);
-	chdir(oldpath);
-#endif	//WIN32
 	return(EXIT_SUCCESS);
 }
 

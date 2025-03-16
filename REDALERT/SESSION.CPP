@@ -781,18 +781,8 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			char const * fname = ini.Get_Entry("Missions", index);
 			char buffer[128];
 			ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_VERSION_3
 			Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
 									Is_Mission_Counterstrike ((char*)fname)));
-#else	//	FIXIT_VERSION_3
-			bool official = Is_Mission_126x126( (char *)fname);
-			if (!official) {
-				official = !Is_Mission_Aftermath((char *)fname);
-			}
-
-			Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-									Is_Mission_Counterstrike ((char*)fname)));
-#endif	//	FIXIT_VERSION_3
 		}
 /*		//	ajw Copy file for viewing.
 		CCFileClass fileCopy( "msns_pkt.txt" );
@@ -829,17 +819,8 @@ void SessionClass::Read_Scenario_Descriptions (void)
 				char buffer[128];
 				ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
-#ifdef FIXIT_VERSION_3
 			Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
 									Is_Mission_Counterstrike ((char*)fname)));
-#else	//	FIXIT_VERSION_3
-				bool official = Is_Mission_126x126( (char *)fname);
-				if (!official) {
-					official = !Is_Mission_Aftermath((char *)fname);
-				}
-				Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-									Is_Mission_Counterstrike ((char*)fname)));
-#endif	//	FIXIT_VERSION_3
 			}
 		}
 
@@ -855,10 +836,8 @@ void SessionClass::Read_Scenario_Descriptions (void)
 	** are available as a guest, but not as a host, which fixes a multitude
 	** of problems without obviously giving the maps away to non-CS owners.
 	*/
-#ifdef FIXIT_VERSION_3
 	if( Is_Counterstrike_Installed() )
 	{
-#endif
 		CCFileClass file2("CSTRIKE.PKT");
 		if (file2.Is_Available()) {
 			INIClass ini;
@@ -869,17 +848,8 @@ void SessionClass::Read_Scenario_Descriptions (void)
 				char const * fname = ini.Get_Entry("Missions", index);
 				char buffer[128];
 				ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_VERSION_3
 				Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
 										Is_Mission_Counterstrike ((char*)fname)));
-#else
-				bool official = Is_Mission_126x126( (char *)fname);
-				if (!official) {
-					official = !Is_Mission_Aftermath((char *)fname);
-				}
-				Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-										Is_Mission_Counterstrike ((char*)fname)));
-#endif
 			}
 /*			//	ajw Copy file for viewing.
 			CCFileClass fileCopy( "cs_pkt.txt" );
@@ -890,11 +860,8 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			fileCopy.Write( pData, lSize );
 			fileCopy.Close();
 */		}
-#ifdef FIXIT_VERSION_3
 	}
-#endif
 
-#ifdef FIXIT_VERSION_3		//	Aftermath scenarios are now in their own pkt file.
 	if( Is_Aftermath_Installed() )
 	{
 		CCFileClass file2("AFTMATH.PKT");
@@ -912,7 +879,6 @@ void SessionClass::Read_Scenario_Descriptions (void)
 			}
 		}
 	}
-#endif
 
 	/*
 	** Scan the current directory for any loose .MPR files and build the appropriate entries

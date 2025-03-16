@@ -435,16 +435,5 @@ void PaletteClass::Set(int time, void (* callback)(void)) const
 	**	Ensure that the final palette exactly matches the requested
 	**	palette before exiting the fading routine.
 	*/
-#ifndef WIN32
-	Vsync();
-	RGBClass const * rgbptr = &Palette[0];
-	RGBClass::Raw_Color_Prep(0);
-	for (int index = 0; index < COLOR_COUNT; index++) {
-		rgbptr->Raw_Set();
-		rgbptr++;
-	}
-	((PaletteClass &)CurrentPalette) = *this;
-#else	//WIN32
 	Set_Palette((void*)&Palette[0]);
-#endif
 }

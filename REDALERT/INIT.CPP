@@ -63,9 +63,6 @@
 #endif
 #include	<conio.h>
 #include	<dos.h>
-#ifndef WIN32
-#include	<sys\timeb.h>
-#endif
 #include  "ccdde.h"
 
 #include <time.h>
@@ -109,9 +106,6 @@ extern int UnitBuildPenalty;
 extern "C" {
 extern long RandNumb;
 }
-#ifndef WIN32
-static int UsePageFaultHandler = 1;				// 1 = install PFH
-#endif	//WIN32
 
 //extern int SimRandIndex;
 void Init_Random(void);
@@ -121,9 +115,7 @@ void Init_Random(void);
 bool Load_Recording_Values(CCFileClass & file);
 bool Save_Recording_Values(CCFileClass & file);
 
-#ifdef FIXIT_VERSION_3
 bool Expansion_Dialog( bool bCounterstrike );
-#endif
 
 extern bool Is_Mission_Counterstrike (char *file_name);
 
@@ -438,7 +430,6 @@ bool Init_Game(int , char * [])
 bool Select_Game(bool fade)
 {
 	//	Enums in Select_Game() must match order of buttons in Main_Menu().
-#ifdef FIXIT_VERSION_3
 	enum {
 		SEL_TIMEOUT = -1,				// main menu timeout--go into attract mode
 		SEL_NEW_SCENARIO_CS,				// Expansion scenario to play.
@@ -451,25 +442,6 @@ bool Select_Game(bool fade)
 		SEL_FAME,						// view the hall o' fame
 		SEL_NONE,						// placeholder default value
 	};
-#else	//	FIXIT_VERSION_3
-	enum {
-		SEL_TIMEOUT = -1,				// main menu timeout--go into attract mode
-		SEL_NEW_SCENARIO,				// Expansion scenario to play.
-		SEL_START_NEW_GAME,			// start a new game
-#if defined(WIN32) && !defined(INTERNET_OFF) // Denzil 5/1/98 - Internet play
-		SEL_INTERNET,
-#endif	//WIN32
-//#if defined(MPEGMOVIE) // Denzil 6/25/98
-//		SEL_MOVIESETTINGS,
-//#endif
-		SEL_LOAD_MISSION,				// load a saved game
-		SEL_MULTIPLAYER_GAME,		// play modem/null-modem/network game
-		SEL_INTRO,						// couch-potato mode
-		SEL_EXIT,						// exit to DOS
-		SEL_FAME,						// view the hall o' fame
-		SEL_NONE,						// placeholder default value
-	};
-#endif	//	FIXIT_VERSION_3
 
 	bool gameloaded=false;			// Has the game been loaded from the menu?
 	int selection;						// the default selection
@@ -682,17 +654,12 @@ bool Select_Game(bool fade)
 				/*
 				**	Pick an expansion scenario.
 				*/
-#ifdef FIXIT_VERSION_3
 				case SEL_NEW_SCENARIO_CS:
 				case SEL_NEW_SCENARIO_AM:
-#else	//	FIXIT_VERSION_3
-				case SEL_NEW_SCENARIO:
-#endif	//	FIXIT_VERSION_3
 					Scen.CarryOverMoney = 0;
 					IsTanyaDead = false;
 					SaveTanya = false;
 
-#ifdef FIXIT_VERSION_3
 					if( selection == SEL_NEW_SCENARIO_CS )
 					{
 						if(!Force_CD_Available(2)) {
@@ -715,25 +682,6 @@ bool Select_Game(bool fade)
 						   break;
 						}
 					}
-#else	//	FIXIT_VERSION_3
-					if (cs) {
-						cdcheck = 2;
-					}
-					if (Is_Aftermath_Installed()) {
-						if (!cdcheck) {
-							cdcheck = 3;
-						} else {
-							cdcheck = 4;	// special case: means check for 3 or 4
-						}
-					}
-					if(!Force_CD_Available(cdcheck)) {
-					   return(false);
-					}
-					if(!Expansion_Dialog()){
-					   selection = SEL_NONE;
-					   break;
-					}
-#endif	//	FIXIT_VERSION_3
 
 #ifdef FIXIT_DIFFICULTY
 					switch (Fetch_Difficulty(cdcheck >= 3)) {
@@ -816,7 +764,6 @@ bool Select_Game(bool fade)
 							Scen.Set_Scenario_Name("SCA01EA.INI");
 						} else {
 #endif
-#ifdef FIXIT_VERSION_3
 							switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_CANCEL, TXT_SOVIET)) {
 								case 2:
 									Scen.Set_Scenario_Name("SCU01EA.INI");
@@ -824,13 +771,6 @@ bool Select_Game(bool fade)
 								default:
 									selection = SEL_NONE;
 									continue;
-#else
-							switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
-								case 1:
-									Scen.Set_Scenario_Name("SCU01EA.INI");
-									break;
-								default:
-#endif
 								case 0:
 									Scen.Set_Scenario_Name("SCG01EA.INI");
 									break;
@@ -921,11 +861,7 @@ bool Select_Game(bool fade)
 						case GAME_SKIRMISH:
 							Theme.Fade_Out();
 							process = false;
-#ifdef FIXIT_VERSION_3
 							Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-							Options.ScoreVolume = 0;
-#endif
 							break;
 
 					}
@@ -1434,16 +1370,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 			CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
 			continue;
 		}
-
-#ifndef WIN32
-		/*
-		**	Don't install Page Fault Handler (MUST use this for debugger)
-		*/
-		if (stricmp(string, "-NOPFS") == 0) {
-			UsePageFaultHandler = 0;
-			continue;
-		}
-#endif
 
 #endif
 
@@ -2268,14 +2194,12 @@ static void Init_CDROM_Access(void)
 	VisiblePage.Clear();
 	HidPage.Clear();
 
-#ifdef FIXIT_VERSION_3
 	//	Determine if we're going to be running from a DVD.
 	//	The entire session will either require a DVD, or the regular CDs. Never both.
 	//	Call Using_DVD() to determine which case it is.
 	//	Here we set the value that Using_DVD() returns.
 	Determine_If_Using_DVD();
 	//	Force_CD_Available() is modified when Using_DVD() is true so that all requests become requests for the DVD.
-#endif
 
 	/*
 	**	Always try to look at the CD-ROM for data files.
@@ -2501,20 +2425,6 @@ static void Bootstrap(void)
 	**	Initialize the resident font pointers.
 	*/
 	Init_Fonts();
-
-#ifndef WIN32
-	/*
-	**	Install the hard error handler.
-	*/
-	_harderr(harderr_handler);		// BG: Install hard error handler
-
-	/*
-	** Install a Page Fault handler
-	*/
-	if (UsePageFaultHandler) {
-		Install_Page_Fault_Handle();
-	}
-#endif
 
 	/*
 	**	Setup the keyboard processor in preparation for the game.
@@ -2909,7 +2819,6 @@ void Extract(char* filename, char* outname)
 #endif
 
 
-#ifdef FIXIT_VERSION_3
 
 bool bUsingDVD = false;
 
@@ -2964,7 +2873,6 @@ bool Using_DVD()
 	return bUsingDVD;
 }
 
-#endif
 
 
 

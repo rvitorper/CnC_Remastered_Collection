@@ -186,10 +186,6 @@ struct NoInitClass {
 #define FILE_H
 #define WWMEM_H
 
-#ifndef WIN32
-#define TIMER_H
-#endif
-
 #ifdef WIN32
 #include	"key.h"
 #endif
@@ -711,11 +707,9 @@ void Clear_Listbox(ListClass *list);
 void Clear_Vector(DynamicVectorClass <NodeNameType *> *vector);
 void Computer_Message(void);
 int Surrender_Dialog(int text);
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 int Surrender_Dialog(const char* text);
 bool Determine_If_Using_DVD();
 bool Using_DVD();
-#endif
 int Abort_Dialog(void);
 
 /*

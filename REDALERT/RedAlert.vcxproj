@@ -441,7 +441,6 @@
     <ClInclude Include="FACE.H" />
     <ClInclude Include="FACING.H" />
     <ClInclude Include="FACTORY.H" />
-    <ClInclude Include="FAKESOCK.H" />
     <ClInclude Include="FIELD.H" />
     <ClInclude Include="FILEPCX.H" />
     <ClInclude Include="FIXED.H" />

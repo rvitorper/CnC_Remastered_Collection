@@ -75,9 +75,7 @@ extern bool UseGlyphXStartLocations;		//ST - 3/31/2020 9:54AM
 
 //#include "WolDebug.h"
 
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 #include "WolStrng.h"
-#endif
 
 static void Remove_AI_Players(void);
 static void Create_Units(bool official);
@@ -164,10 +162,8 @@ ScenarioClass::ScenarioClass(void) :
 	IsNoMapSel(false),
 	IsTruckCrate(false),
 	IsMoneyTiberium(false),
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 #define AUTOSONAR_PERIOD	TICKS_PER_SECOND * 40
 	AutoSonarTimer( AUTOSONAR_PERIOD ),
-#endif
 	FadeTimer(0)
 {
 	for (int index = 0; index < ARRAY_SIZE(Waypoint); index++) {
@@ -475,14 +471,10 @@ bool Read_Scenario(char * name)
 				readini = false;
 				break;
 			case GAME_SKIRMISH:
-#ifdef FIXIT_VERSION_3
 				readini = bAftermathMultiplayer;
-#endif
 				break;
 			default:
-#ifdef FIXIT_VERSION_3
 				readini = bAftermathMultiplayer;
-#else
 				if (PlayingAgainstVersion >= VERSION_AFTERMATH_CS) {
 					readini = true;
 				}
@@ -493,12 +485,8 @@ bool Read_Scenario(char * name)
 			/*
 			** Find out if the CD in the current drive is the Aftermath disc.
 		  	*/
-#ifdef FIXIT_VERSION_3
 			int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60);
 			if( !( Using_DVD() && cd_index == 5 ) && cd_index != 3 ) {
-#else
-			if(Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60) != 3) {
-#endif
 				GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
 				RequiredCD = 3;
 				if (!Force_CD_Available(RequiredCD)) {	// force Aftermath CD in drive.
@@ -828,14 +816,10 @@ void Clear_Scenario(void)
 		Scen.Waypoint[index] = -1;
 	}
 
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
 	bAutoSonarPulse = false;
-#endif
 
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 	Scen.bLocalProposesDraw = false;
 	Scen.bOtherProposesDraw = false;
-#endif
 
 }
 
@@ -1205,7 +1189,6 @@ void Do_Lose(void)
 	Show_Mouse();
 }
 
-#ifdef FIXIT_VERSION_3		//	Stalemate games.
 /***********************************************************************************************
  * Do_Draw -- Parallels Do_Win and Do_Lose, for multiplayer games that end in a draw.
  *=============================================================================================*/
@@ -1255,7 +1238,6 @@ void Do_Draw(void)
 	GameActive = 0;
 	Show_Mouse();
 }
-#endif
 
 /***********************************************************************************************
  * Do_Restart -- Handle the restart mission process.                                           *
@@ -2031,11 +2013,7 @@ bool Read_Scenario_INI(char * fname, bool )
 	** scenario is stored locally on the hard drive. In this case, we
 	** have already verified its existance. ST 3/1/97 4:52PM.
 	*/
-#ifdef FIXIT_VERSION_3		//	Avoid CD check if official scenario was downloaded.
 	if( ( Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial ) && _stricmp( Scen.ScenarioName, "download.tmp" ) ){
-#else
-	if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial){
-#endif
 
 		/*
 		** If this is scenario 1 then it should be on all CDs unless its an ant scenario
@@ -2100,12 +2078,8 @@ bool Read_Scenario_INI(char * fname, bool )
 // to avoid a black screen.  If this is a normal RA game, and the CD being
 // requested is an RA CD, then don't set the palette, leave the map screen up.
 
-#ifdef FIXIT_VERSION_3
 		int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60);
 		if( !( Using_DVD() && cd_index == 5 ) && cd_index != RequiredCD ) {
-#else
-		if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60) != RequiredCD) {
-#endif
 			if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
 				SeenPage.Clear();
 			}

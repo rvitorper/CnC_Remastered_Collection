@@ -69,30 +69,13 @@ struct KeyboardClass
 	**	takes precedence.
 	*/
 	unsigned IsLibrary;
-
-#ifndef WIN32
-	int &MouseQX;
-	int &MouseQY;
-
-	KeyboardClass() :
-		IsLibrary(true),
-		MouseQX(::MouseQX),
-		MouseQY(::MouseQY)
-	{}
-	KeyNumType Get(void) {return (IsLibrary ? (KeyNumType)Get_Key_Num() : (KeyNumType)getch());};
-	KeyNumType Check(void) {return (IsLibrary ? (KeyNumType)Check_Key_Num() : (KeyNumType)kbhit());};
-	KeyASCIIType To_ASCII(KeyNumType key) {return((KeyASCIIType)KN_To_KA(key));};
-	void Clear(void) {if (IsLibrary) Clear_KeyBuffer();};
-	int Down(KeyNumType key) {return(Key_Down(key));};
-#else
+	
 	KeyboardClass() : IsLibrary(true) {}
 	KeyNumType Get(void) {return ((KeyNumType)WWKeyboardClass::Get());};
 	KeyNumType Check(void) {return ((KeyNumType)WWKeyboardClass::Check());};
 	KeyASCIIType To_ASCII(KeyNumType key) {return((KeyASCIIType)WWKeyboardClass::To_ASCII(key));};
 	void Clear(void) {WWKeyboardClass::Clear();};
 	int Down(KeyNumType key) {return(WWKeyboardClass::Down(key));};
-#endif
-
 	int Mouse_X(void) {return(Get_Mouse_X());};
 	int Mouse_Y(void) {return(Get_Mouse_Y());};
 };
@@ -137,28 +120,6 @@ template<class T> inline T operator ~(T t1)
 {
 	return((T)(~(int)t1));
 }
-
-#ifndef WIN32
-template<class T> inline T min(T value1, T value2)
-{
-	if (value1 < value2) {
-		return(value1);
-	}
-	return(value2);
-}
-int min(int, int);
-long min(long, long);
-
-template<class T> inline T max(T value1, T value2)
-{
-	if (value1 > value2) {
-		return(value1);
-	}
-	return(value2);
-}
-int max(int, int);
-long max(long, long);
-#endif
 
 template<class T> inline void swap(T &value1, T &value2)
 {
@@ -223,17 +184,7 @@ class FrameTimerClass
 };
 
 
-#ifndef WIN32
-extern bool TimerSystemOn;
-extern "C" {
-	long Get_System_Tick_Count(void);
-	long Get_User_Tick_Count(void);
-}
-//bool Init_Timer_System(unsigned int freq, int partial=false);
-bool Remove_Timer_System(void);
-#else
 extern WinTimerClass	*		WindowsTimer;
-#endif
 
 #ifndef SYSTEM_TIMER_CLASS
 #define SYSTEM_TIMER_CLASS

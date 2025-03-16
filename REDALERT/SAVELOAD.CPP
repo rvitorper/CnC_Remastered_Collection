@@ -966,13 +966,7 @@ bool Load_Game(const char *file_name)
 				readini = Is_Aftermath_Installed();
 				break;
 			default:
-#ifdef FIXIT_VERSION_3
 				readini = bAftermathMultiplayer;
-#else
-				if (PlayingAgainstVersion >= VERSION_AFTERMATH_CS) {
-					readini = true;
-				}
-#endif
 				break;
 		}
 		if(readini) {
