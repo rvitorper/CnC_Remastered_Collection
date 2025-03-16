@@ -39,31 +39,6 @@
 #include	"function.h"
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.                *
- *                                                                                             *
- *    This routine is used to dump the current cargo value to the monochrome monitor.          *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void CargoClass::Debug_Dump(MonoClass * mono) const
-{
-	if (How_Many()) {
-		mono->Set_Cursor(63, 3);
-		mono->Printf("(%d)%04X", How_Many(), Attached_Object());
-	}
-}
-#endif
-
-
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold.                                               *
  *                                                                                             *

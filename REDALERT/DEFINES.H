@@ -145,9 +145,6 @@
 **	This define enables the full set of cheat keys and special
 **	command line options.
 */
-#if defined(INTERNAL_VERSION) || defined(PLAYTEST_VERSION)
-#define CHEAT_KEYS
-#endif
 
 
 /**********************************************************************
@@ -155,9 +152,6 @@
 **	are enabled. This allows the "cheat" parameter and then only
 **	allows the ALT-W to win the mission.
 */
-#ifdef PLAYTEST_VERSION
-#define VIRGIN_CHEAT_KEYS
-#endif
 
 
 /**********************************************************************
@@ -171,9 +165,6 @@
 **	If this is defined, the DoList is "mirrored", for memory trasher
 ** detection.
 */
-#ifdef CHEAT_KEYS
-//#define MIRROR_QUEUE
-#endif
 
 
 /**********************************************************************
@@ -212,18 +203,10 @@
 /*
 **	Enable the set of limited cheat key options.
 */
-#ifdef VIRGIN_CHEAT_KEYS
-#define	PARM_PLAYTEST		0xF7DDC227		// "PLAYTEST"
-#endif
 
 /*
 **	Enable the full set of cheat key options.
 */
-#ifdef CHEAT_KEYS
-#ifndef PARM_PLAYTEST
-#define	PARM_PLAYTEST		0xF7DDC227		// "PLAYTEST"
-#endif
-#endif
 
 
 #define	PARM_INSTALL		0xD95C68A2		//	"FROMINSTALL"
@@ -2758,13 +2741,8 @@ typedef enum BenchType : unsigned char {
 } BenchType;
 
 
-#ifdef CHEAT_KEYS
-#define	BStart(a)	if (Benches != NULL) Benches[a].Begin()
-#define	BEnd(a)		if (Benches != NULL) Benches[a].End()
-#else
 #define	BStart(a)
 #define	BEnd(a)
-#endif
 
 
 /**********************************************************************

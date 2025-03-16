@@ -474,32 +474,6 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house) :
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * DriveClass::Debug_Dump -- Displays status information to monochrome screen.                 *
- *                                                                                             *
- *    This debug utility function will display the status of the drive class to the mono       *
- *    screen. It is through this information that bugs can be tracked down.                    *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/31/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void DriveClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(IsActive);
-
-	mono->Fill_Attrib(66, 14, 12, 1, IsMoebius ? MonoClass::INVERSE : MonoClass::NORMAL);
-	FootClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth turn logic.          *
  *                                                                                             *

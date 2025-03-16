@@ -330,13 +330,6 @@ class FootClass :	public TechnoClass
 		virtual int Mission_Guard_Area(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	Movement and animation.
 		*/
 		void Handle_Navigation_List(void);

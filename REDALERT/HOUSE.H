@@ -692,9 +692,6 @@ class HouseClass {
 		bool Is_Ally(HouseClass const * house) const;
 		bool Is_Ally(ObjectClass const * object) const;
 		unsigned int Get_Allies(void) const {return Allies;}
-		#ifdef CHEAT_KEYS
-		void Debug_Dump(MonoClass *mono) const;
-		#endif
 		void AI(void);
 		bool Can_Build(RTTIType rtti, int type, HousesType house) const;
 

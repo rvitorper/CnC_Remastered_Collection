@@ -122,42 +122,6 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
 };
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.                *
- *                                                                                             *
- *    This routine is used by the debug version to display pertinent information about the     *
- *    infantry unit.                                                                           *
- *                                                                                             *
- * INPUT:   mono  -- The monochrome screen to display the debug information to.                *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   09/01/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void InfantryClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(Infantry.ID(this) == ID);
-	assert(IsActive);
-
-	mono->Set_Cursor(0, 0);
-
-	mono->Print(Text_String(TXT_DEBUG_INFANTRY));
-	mono->Set_Cursor(1, 11);mono->Printf("%3d", Doing);
-	mono->Set_Cursor(8, 11);mono->Printf("%3d", Fear);
-
-	mono->Fill_Attrib(66, 13, 12, 1, IsTechnician ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 14, 12, 1, IsStoked ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 15, 12, 1, IsProne ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	FootClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects.                       *
  *                                                                                             *

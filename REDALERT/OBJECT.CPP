@@ -1343,48 +1343,6 @@ bool ObjectClass::Render(bool forced) const
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * ObjectClass::Debug_Dump -- Displays status of the object class to the mono monitor.         *
- *                                                                                             *
- *    This routine is used to display the current status of the object class to the mono       *
- *    monitor.                                                                                 *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void ObjectClass::Debug_Dump(MonoClass * mono) const
-{
-	mono->Set_Cursor(1, 1);mono->Printf("%-18.18s", Text_String(Full_Name()));
-	if (Next != NULL) {
-		mono->Set_Cursor(20, 5);mono->Printf("%08X", Next->As_Target());
-	}
-	if (Trigger.Is_Valid()) {
-		mono->Text_Print(Trigger->Class->IniName, 11, 3);
-	}
-	mono->Set_Cursor(34, 1);mono->Printf("%3d", Strength);
-
-	mono->Fill_Attrib(1, 13, 12, 1, IsDown ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(1, 14, 12, 1, IsToDamage ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(1, 15, 12, 1, IsToDisplay ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(1, 16, 12, 1, IsInLimbo ? MonoClass::INVERSE : MonoClass::NORMAL);
-	// Updated to function for multiplayer - 6/26/2019 JAS
-	mono->Fill_Attrib(1, 17, 12, 1, Is_Selected_By_Player() ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(14, 13, 12, 1, IsAnimAttached ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Set_Cursor(23, 14);mono->Printf("%d", Riser);
-	mono->Fill_Attrib(14, 12, 14, 1, IsFalling ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	AbstractClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * ObjectClass::Mark_For_Redraw -- Marks object and system for redraw.                         *
  *                                                                                             *

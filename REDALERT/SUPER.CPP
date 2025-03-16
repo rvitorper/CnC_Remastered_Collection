@@ -203,12 +203,6 @@ bool SuperClass::Recharge(bool player)
 		Control.Start();
 		Control = RechargeTime;
 
-#ifdef CHEAT_KEYS
-		if (Special.IsSpeedBuild) {
-			Control = 1;
-		}
-#endif
-
 		if (player) {
 			Speak(VoxCharging);
 		}

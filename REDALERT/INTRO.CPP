@@ -191,10 +191,7 @@ void Choose_Side(void)		//	ajw - In RA, all this did was play a movie. Denzil is
 			VQA_Free(nodbrief);
 		}
 		if (gdibrief) {
-#ifdef CHEAT_KEYS
-#else
 			VQA_Play(gdibrief, VQAMODE_RUN);
-#endif
 			VQA_Close(gdibrief);
 			VQA_Free(gdibrief);
 		}
@@ -204,10 +201,7 @@ void Choose_Side(void)		//	ajw - In RA, all this did was play a movie. Denzil is
 			VQA_Free(gdibrief);
 		}
 		if (nodbrief) {
-#ifdef CHEAT_KEYS
-#else
 			VQA_Play(nodbrief, VQAMODE_RUN);
-#endif
 			VQA_Close(nodbrief);
 			VQA_Free(nodbrief);
 		}

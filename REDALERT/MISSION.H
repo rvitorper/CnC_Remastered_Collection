@@ -72,9 +72,6 @@ class MissionClass : public ObjectClass
 		/*---------------------------------------------------------------------
 		**	Member function prototypes.
 		*/
-		#ifdef CHEAT_KEYS
-		void  Debug_Dump(MonoClass *mono) const;
-		#endif
 
 		void Shorten_Mission_Timer(void) {Timer = 0;}
 		virtual MissionType Get_Mission(void) const;

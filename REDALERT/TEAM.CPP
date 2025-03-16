@@ -160,47 +160,6 @@ static inline bool _Is_It_Playing(FootClass const * object)
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * TeamClass::Debug_Dump -- Displays debug information about the team.                         *
- *                                                                                             *
- *    This routine will display information about the team. This is useful for debugging       *
- *    purposes.                                                                                *
- *                                                                                             *
- * INPUT:   mono  -- Pointer to the monochrome screen that the debugging information will      *
- *                   be displayed on.                                                          *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/11/1996 JLB : Created.                                                                 *
- *=============================================================================================*/
-void TeamClass::Debug_Dump(MonoClass * mono) const
-{
-	mono->Set_Cursor(1, 20);mono->Printf("%8.8s", Class->IniName);
-	mono->Set_Cursor(10, 20);mono->Printf("%3d", Total);
-	mono->Set_Cursor(17, 20);mono->Printf("%3d", Quantity[Class->ID]);
-	if (CurrentMission != -1) {
-		mono->Set_Cursor(1, 22);
-		mono->Printf("%-29s", Class->MissionList[CurrentMission].Description(CurrentMission));
-	}
-	mono->Set_Cursor(40, 20);mono->Printf("%-10s", FormationName[Formation]);
-	mono->Set_Cursor(22, 20);mono->Printf("%08X", Zone);
-	mono->Set_Cursor(31, 20);mono->Printf("%08X", Target);
-
-	mono->Fill_Attrib(53, 20, 12, 1, IsUnderStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 21, 12, 1, IsFullStrength ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 22, 12, 1, IsHasBeen ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	mono->Fill_Attrib(66, 20, 12, 1, IsMoving ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 21, 12, 1, IsForcedActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 22, 12, 1, IsReforming ? MonoClass::INVERSE : MonoClass::NORMAL);
-}
-#endif
-
-
 /***********************************************************************************************
  * TeamClass::Init -- Initializes the team objects for scenario preparation.                   *
  *                                                                                             *

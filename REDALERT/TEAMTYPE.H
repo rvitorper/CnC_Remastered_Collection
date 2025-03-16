@@ -75,10 +75,6 @@ class TechnoTypeClass;
 class TeamMissionClass
 {
 	public:
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-		char const * Description(int index) const;
-		operator const char * () const {return(Description(0));};
-#endif
 		void Draw_It(int index, int x, int y, int width, int height, bool selected, TextPrintType flags);
 
 		TeamMissionType Mission;		// Mission type.
@@ -164,11 +160,6 @@ class TeamTypeClass : public AbstractTypeClass
 		static TeamTypeClass const * Suggested_New_Team(HouseClass * house, long atypes, long utypes, long itypes, long vtypes, bool alerted);
 		static TeamTypeClass * From_Name(char const * name);
 		bool Edit(void);
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-		char const * Member_Description(void) const;
-		char const * Description(void) const;
-		operator const char * (void) const {return(Description());};
-#endif
 
 		/*
 		**	If this teamtype object is active, then this flag will be true.

@@ -229,13 +229,6 @@ class UnitClass :	public DriveClass
 		bool Edge_Of_World_AI(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	Movement and animation.
 		*/
 		virtual void Assign_Destination(TARGET target);

@@ -390,47 +390,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass * from, RadioMessageT
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * BuildingClass::Debug_Dump -- Displays building status to the monochrome screen.             *
- *                                                                                             *
- *    This utility function will output the current status of the building class to the        *
- *    monochrome screen. It is through this data that bugs may be fixed or detected.           *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/31/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void BuildingClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(Buildings.ID(this) == ID);
-	assert(IsActive);
-
-	mono->Set_Cursor(0, 0);
-	mono->Print(Text_String(TXT_DEBUG_BUILDING));
-	mono->Fill_Attrib(66, 13, 12, 1, IsRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 14, 12, 1, IsToRebuild ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 15, 12, 1, IsAllowedToSell ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 16, 12, 1, IsCharging ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 17, 12, 1, IsCharged ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 18, 12, 1, IsJamming ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(66, 19, 12, 1, IsJammed ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	mono->Set_Cursor(1, 11);
-	if (Factory) {
-		mono->Printf("%s %d%%", Factory->Get_Object()->Class_Of().IniName, (100*Factory->Completion())/FactoryClass::STEP_COUNT);
-	}
-
-	TechnoClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * BuildingClass::Draw_It -- Displays the building at the location specified.                  *
  *                                                                                             *

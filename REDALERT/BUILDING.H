@@ -331,13 +331,6 @@ class BuildingClass : public TechnoClass
 		void Remove_Gap_Effect(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	File I/O.
 		*/
 		static void Read_INI(CCINIClass & ini);

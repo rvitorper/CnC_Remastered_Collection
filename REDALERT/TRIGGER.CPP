@@ -47,66 +47,6 @@
 #include "function.h"
 
 
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-/***********************************************************************************************
- * TriggerClass::Description -- Fetch a one line ASCII description of the trigger.             *
- *                                                                                             *
- *    In the rare (possibly never?) case of requiring a description for this trigger, then     *
- *    just have the model class generate a description and return that.                        *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  Returns with an ASCII description of this trigger.                                 *
- *                                                                                             *
- * WARNINGS:   see TriggerTypeClass::Description()                                             *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/09/1996 JLB : Created.                                                                 *
- *=============================================================================================*/
-char const * TriggerClass::Description(void) const
-{
-	return(Class->Description());
-}
-
-
-/***********************************************************************************************
- * TriggerClass::Draw_It -- Draws this trigger as if it were part of a list box.               *
- *                                                                                             *
- *    This routine is called when the trigger has been assigned to a list box. It will         *
- *    display a description of the trigger.                                                    *
- *                                                                                             *
- * INPUT:   see below...                                                                       *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/09/1996 JLB : Created.                                                                 *
- *=============================================================================================*/
-void TriggerClass::Draw_It(int , int x, int y, int width, int height, bool selected, TextPrintType flags) const
-{
-	RemapControlType * scheme = GadgetClass::Get_Color_Scheme();
-	static int _tabs[] = {13,40};
-	if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
-
-		if (selected) {
-			flags = flags | TPF_BRIGHT_COLOR;
-			LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-		} else {
-			if (!(flags & TPF_USE_GRAD_PAL)) {
-				flags = flags | TPF_MEDIUM_COLOR;
-			}
-		}
-
-		Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width, _tabs);
-	} else {
-		Conquer_Clip_Text_Print(Description(), x, y, (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY]), TBLACK, flags, width, _tabs);
-	}
-}
-#endif
-
-
 /***********************************************************************************************
  * TriggerClass::TriggerClass -- constructor                                                   *
  *                                                                                             *
@@ -326,14 +266,6 @@ bool TriggerClass::Spring(TEventType event, ObjectClass * obj, CELL cell, bool f
 		**	necessary.
 		*/
 		if (ok) {
-			#ifdef CHEAT_KEYS
-			MonoArray[DMONO_STRESS].Sub_Window(61, 1, 17, 11);
-			MonoArray[DMONO_STRESS].Scroll();
-			MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
-			MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
-			MonoArray[DMONO_STRESS].Printf("%02d:%02d:%02d-%s", Scen.Timer / TICKS_PER_HOUR, (Scen.Timer % TICKS_PER_HOUR)/TICKS_PER_MINUTE, (Scen.Timer % TICKS_PER_MINUTE)/TICKS_PER_SECOND, Class->IniName);
-			MonoArray[DMONO_STRESS].Sub_Window();
-			#endif
 
 			if (Class->IsPersistant == TriggerTypeClass::VOLATILE || (Class->IsPersistant == TriggerTypeClass::SEMIPERSISTANT && AttachCount <= 1)) {
 				Detach_This_From_All(As_Target(), true);

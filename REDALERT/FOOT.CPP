@@ -135,68 +135,6 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house) :
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * FootClass::Debug_Dump -- Displays the status of the FootClass to the mono monitor.          *
- *                                                                                             *
- *    This routine is used to output the current status of the foot class to the mono          *
- *    monitor. Through this display bugs may be tracked down or eliminated.                    *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *   07/04/1995 JLB : Handles aircraft special case.                                           *
- *=============================================================================================*/
-void FootClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(IsActive);
-
-	mono->Fill_Attrib(53, 13, 12, 1, IsInitiated ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(1, 18, 12, 1, IsPlanningToLook ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 14, 12, 1, IsDeploying ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 15, 12, 1, IsFiring ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 16, 12, 1, IsRotating ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 17, 12, 1, IsDriving ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(53, 18, 12, 1, IsUnloading ? MonoClass::INVERSE : MonoClass::NORMAL);
-	mono->Fill_Attrib(27, 18, 12, 1, IsFormationMove ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	mono->Set_Cursor(45, 1);mono->Printf("%02X", Speed);
-	if (NavCom) {
-		mono->Set_Cursor(29, 5);
-		mono->Printf("%08X", NavCom);
-	}
-	if (SuspendedNavCom) {
-		mono->Set_Cursor(38, 5);
-		mono->Printf("%08X", SuspendedNavCom);
-	}
-
-	if (Team) Team->Debug_Dump(mono);
-	if (Group != 255) {
-		mono->Set_Cursor(59, 1);mono->Printf("%d", Group);
-	}
-
-	static char	const * _p2c[9] = {"-","0","1","2","3","4","5","6","7"};
-	for (int index = 0; index < min(12, ARRAY_SIZE(Path)); index++) {
-		mono->Set_Cursor(54+index, 3);
-		mono->Printf("%s", _p2c[((ABS((int)Path[index]+1)) % ARRAY_SIZE(_p2c))]);
-	}
-	mono->Set_Cursor(54, 5);mono->Printf("%2d", PathThreshhold);
-	mono->Set_Cursor(72, 3);mono->Printf("%4d", (long)PathDelay);
-	mono->Set_Cursor(67, 3);mono->Printf("%3d", TryTryAgain);
-	if (HeadToCoord) {
-		mono->Set_Cursor(60, 5);mono->Printf("%08X", HeadToCoord);
-	}
-
-	TechnoClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * FootClass::Set_Speed -- Initiate unit movement physics.                                     *
  *                                                                                             *

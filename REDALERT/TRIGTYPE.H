@@ -138,10 +138,6 @@ class TriggerTypeClass : public AbstractTypeClass
 		TARGET As_Target(void) const;
 		static TriggerTypeClass * From_Name(char const * name);
 		bool Edit(void);
-#if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-		char const * Description(void) const;
-		operator const char * (void) const {return(Description());};
-#endif
 		void Draw_It(int index, int x, int y, int width, int height, bool selected, TextPrintType flags) const;
 };
 

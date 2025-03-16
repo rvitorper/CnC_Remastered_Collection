@@ -258,13 +258,6 @@ class ObjectClass : public AbstractClass
 		*/
 		virtual void Code_Pointers(void);
 		virtual void Decode_Pointers(void);
-
-		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
 		virtual void Move(FacingType);
 
 		enum {FLIGHT_LEVEL=256};

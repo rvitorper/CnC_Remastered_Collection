@@ -56,20 +56,6 @@
  * HISTORY:                                                                                    *
  *   07/10/1996 JLB : Created.                                                                 *
  *=============================================================================================*/
-#ifdef CHEAT_KEYS
-void AbstractClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(IsActive);
-
-	mono->Set_Cursor(11, 5);mono->Printf("%08X", As_Target());
-	mono->Set_Cursor(20, 1);mono->Printf("%08X", Coord);
-	mono->Set_Cursor(29, 1);mono->Printf("%3d", Height);
-	if (Owner() != HOUSE_NONE) {
-		mono->Set_Cursor(1, 3);
-		mono->Printf("%-18s", Text_String(HouseTypeClass::As_Reference(Owner()).FullName));
-	}
-}
-#endif
 
 
 /***********************************************************************************************

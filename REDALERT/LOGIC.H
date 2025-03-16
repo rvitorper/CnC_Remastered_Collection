@@ -46,9 +46,6 @@ class LogicClass : public LayerClass
 	public:
 		void AI(void);
 		void Detach(TARGET target, bool all=true);
-		#ifdef CHEAT_KEYS
-		void Debug_Dump(MonoClass *mono) const;
-		#endif
 		
 		/*
 		** Added. ST - 8/19/2019 5:46PM

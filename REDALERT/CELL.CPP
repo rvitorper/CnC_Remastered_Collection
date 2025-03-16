@@ -1028,23 +1028,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const
 			icon = Clear_Icon();
 		}
 
-	#ifdef CHEAT_KEYS
-		/*
-		**	Draw the stamp of the template.
-		*/
-		if (Debug_Icon) {
-			LogicPage->Fill_Rect(Map.TacPixelX+x, Map.TacPixelY+y, Map.TacPixelX+x+ICON_PIXEL_W-1, Map.TacPixelY+y+ICON_PIXEL_H-1, Sim_Random_Pick(1, 254));
-			FontXSpacing -= 2;
-			Fancy_Text_Print("%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX+x+(ICON_PIXEL_W>>1), Map.TacPixelY+y, &GreyScheme, TBLACK, TPF_EFNT|TPF_CENTER|TPF_BRIGHT_COLOR|TPF_FULLSHADOW,
-				Cell_Y(cell), Cell_X(cell),
-				//(CurrentObject.Count() && CurrentObject[0]->Is_Techno()) ? ((TechnoClass *)CurrentObject[0])->House->Which_Zone(cell) : -1,
-				Zones[MZONE_NORMAL],Zones[MZONE_CRUSHER],Zones[MZONE_DESTROYER],
-				Overlay, OverlayData
-				);
-			FontXSpacing += 2;
-		} else {
-	#endif
-
 			/*
 			**	This is the underlying terrain icon.
 			*/
@@ -1099,10 +1082,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const
 					LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, NULL, WINDOW_TACTICAL);
 				}
 			}
-
-	#ifdef CHEAT_KEYS
-		}
-	#endif
 		BEnd(BENCH_CELL);
 	}
 

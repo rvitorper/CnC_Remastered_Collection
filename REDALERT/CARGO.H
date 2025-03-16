@@ -53,10 +53,6 @@ class CargoClass {
 		/*---------------------------------------------------------------------
 		**	Member function prototypes.
 		*/
-
-		#ifdef CHEAT_KEYS
-		void Debug_Dump(MonoClass *mono) const;
-		#endif
 		void AI(void) {};
 
 		int How_Many(void) const {return Quantity;};

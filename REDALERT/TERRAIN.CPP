@@ -511,32 +511,6 @@ void TerrainClass::AI(void)
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * TerrainClass::Debug_Dump -- Displays the status of the terrain object.                      *
- *                                                                                             *
- *    This debugging support routine is used to display the status of the terrain object to    *
- *    the debug screen.                                                                        *
- *                                                                                             *
- * INPUT:   mono  -- The mono screen to display the status to.                                 *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   09/27/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void TerrainClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(Terrains.ID(this) == ID);
-	assert(IsActive);
-
-	ObjectClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * TerrainClass::Unlimbo -- Unlimbo terrain object onto the map.                               *
  *                                                                                             *

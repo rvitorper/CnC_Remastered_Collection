@@ -336,41 +336,6 @@ UnitClass::UnitClass(UnitType classid, HousesType house) :
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * UnitClass::Debug_Dump -- Displays the status of the unit to the mono monitor.               *
- *                                                                                             *
- *    This displays the current status of the unit class to the mono monitor. By this display  *
- *    bugs may be tracked down or prevented.                                                   *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void UnitClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(Units.ID(this) == ID);
-	assert(IsActive);
-
-	mono->Set_Cursor(0, 0);
-	mono->Print(Text_String(TXT_DEBUG_VEHICLE));
-	mono->Set_Cursor(47, 5);mono->Printf("%02X:%02X", SecondaryFacing.Current(), SecondaryFacing.Desired());
-
-	mono->Set_Cursor(1, 11);mono->Printf("%03", Gems);
-	mono->Set_Cursor(7, 11);mono->Printf("%03", Gold);
-
-	mono->Fill_Attrib(66, 13, 12, 1, IsDumping ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-	DriveClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * UnitClass::Sort_Y -- Give Y coordinate sort value for unit.                                 *
  *                                                                                             *

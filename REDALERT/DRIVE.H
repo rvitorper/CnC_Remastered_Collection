@@ -107,9 +107,6 @@ class DriveClass : public FootClass
 		virtual void Per_Cell_Process(PCPType why);
 		virtual bool Ok_To_Move(DirType ) const;
 		virtual void AI(void);
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
 		void Force_Track(int track, COORDINATE coord);
 		virtual bool Stop_Driver(void);
 

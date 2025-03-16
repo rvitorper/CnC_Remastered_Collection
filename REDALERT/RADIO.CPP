@@ -81,36 +81,6 @@ char const * RadioClass::Messages[RADIO_COUNT] = {
 };
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * RadioClass::Debug_Dump -- Displays the current status of the radio to the mono monitor.     *
- *                                                                                             *
- *    This displays the radio connection value to the monochrome monitor.                      *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void RadioClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(IsActive);
-
-	mono->Set_Cursor(29, 7);mono->Printf("0-%-47s", Messages[Old[0]]);
-	mono->Set_Cursor(29, 8);mono->Printf("1-%-47s", Messages[Old[1]]);
-	mono->Set_Cursor(29, 9);mono->Printf("2-%-47s", Messages[Old[2]]);
-	if (Radio) {
-		mono->Set_Cursor(20, 7);mono->Printf("%08X", Radio->As_Target());
-	}
-	MissionClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * RadioClass::Receive_Message -- Handles receipt of a radio message.                          *
  *                                                                                             *

@@ -77,10 +77,6 @@ RemapControlType SidebarScheme;
 
 //#include "WolDebug.h"
 
-#ifdef CHEAT_KEYS
-extern bool bNoMovies;
-#endif
-
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
@@ -164,15 +160,6 @@ static void Load_Prolog_Page(void)
 //#include    <locale.h>
 bool Init_Game(int , char * [])
 {
-	/*
-	**	Allocate the benchmark tracking objects only if the machine and
-	**	compile flags indicate.
-	*/
-	#ifdef CHEAT_KEYS
-	if (Processor() >= 2) {
-		Benches = new Benchmark [BENCH_COUNT];
-	}
-	#endif
 
 	/*
 	**	Initialize the encryption keys.
@@ -1165,12 +1152,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 
 		switch (ob) {
 
-#ifdef VIRGIN_CHEAT_KEYS
-			case PARM_PLAYTEST:
-				Debug_Playtest = true;
-				break;
-#endif
-
 			/*
 			** Special flag - is C&C being run from the install program?
 			*/
@@ -1185,18 +1166,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 				break;
 		}
 		if (processed) continue;
-
-
-#ifdef CHEAT_KEYS
-		/*
-		**	Scenario Editor Mode
-		*/
-		if (stricmp(string, "-CHECKMAP") == 0) {
-			Debug_Check_Map = true;
-			continue;
-		}
-
-#endif
 
 		/*
 		**	File search path override.
@@ -1289,17 +1258,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 			continue;
 		}
 
-#ifdef CHEAT_KEYS
-		/*
-		**	Specify the random number seed (for debugging)
-		*/
-		if (strstr(string, "-SEED")) {
-			CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
-			continue;
-		}
-
-#endif
-
 
 #ifdef NEVER
 		/*
@@ -1321,12 +1279,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 		}
 #endif
 
-#ifdef CHEAT_KEYS
-		if (strstr(string,"-NOMOVIES")){
-			bNoMovies = true;
-		}
-#endif
-
 		/*
 		**	Special command line control parsing.
 		*/
@@ -1335,50 +1287,6 @@ bool Parse_Command_Line(int argc, char * argv[])
 			while (*string) {
 				char code = *string++;
 				switch (toupper(code)) {
-
-#ifdef  CHEAT_KEYS
-					/*
-					**	Monochrome debug screen enable.
-					*/
-					case 'M':
-						MonoClass::Enable();
-						break;
-
-					/*
-					**	Inert weapons -- no units take damage.
-					*/
-					case 'I':
-						Special.IsInert = true;
-						break;
-
-					/*
-					**	Hussled recharge timer.
-					*/
-					case 'H':
-						Special.IsSpeedBuild = true;
-						break;
-
-					/*
-					**	"Record" a multi-player game
-					*/
-					case 'X':
-						Session.Record = 1;
-						break;
-
-					/*
-					**	"Play Back" a multi-player game
-					*/
-					case 'Y':
-						Session.Play = 1;
-						break;
-
-					/*
-					**	Print lots of debug stuff about events & packets
-					*/
-					case 'P':
-						Debug_Print_Events = true;
-						break;
-#endif
 
 					/*
 					**	Quiet mode override control.

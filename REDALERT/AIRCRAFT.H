@@ -159,13 +159,6 @@ class AircraftClass : public FootClass, public FlyClass
 		virtual void Scatter(COORDINATE threat, bool forced=false, bool nokidding=false);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	File I/O.
 		*/
 		static void Read_INI(CCINIClass & ini);

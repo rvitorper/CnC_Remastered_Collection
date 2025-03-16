@@ -131,13 +131,6 @@ class VesselClass : public DriveClass
 		bool Load(Straw & file);
 		bool Save(Pipe & file) const;
 
-		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
 	protected:
 		/*
 		**	This is the facing of the turret. It can be, and usually is,

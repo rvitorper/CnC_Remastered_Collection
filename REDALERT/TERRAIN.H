@@ -117,13 +117,6 @@ class TerrainClass : public ObjectClass, public StageClass
 		virtual void AI(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	File I/O.
 		*/
 		static void Read_INI(CCINIClass & ini);

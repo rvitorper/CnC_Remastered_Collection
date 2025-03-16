@@ -160,36 +160,6 @@ MissionType MissionClass::Get_Mission(void) const
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * MissionClass::Debug_Dump -- Dumps status values to mono screen.                             *
- *                                                                                             *
- *    This is a debugging function that dumps this class' status to the monochrome screen      *
- *    for review.                                                                              *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/28/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void MissionClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(IsActive);
-
-	mono->Set_Cursor(1, 9);mono->Printf("%-14s", MissionClass::Mission_Name(Mission));
-	mono->Set_Cursor(16, 9);mono->Printf("%-12s", MissionClass::Mission_Name(MissionQueue));
-	mono->Set_Cursor(1, 7);mono->Printf("%3d", (long)Timer);
-	mono->Set_Cursor(6, 7);mono->Printf("%2d", Status);
-
-	ObjectClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * MissionClass::AI -- Processes order script.                                                 *
  *                                                                                             *

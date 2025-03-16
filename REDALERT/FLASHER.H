@@ -68,10 +68,6 @@ class FlasherClass {
 
 		FlasherClass(NoInitClass const & ) {};
 		~FlasherClass(void) {};
-
-		#ifdef CHEAT_KEYS
-		void Debug_Dump(MonoClass *mono) const;
-		#endif
 		bool Process(void);
 };
 

@@ -193,13 +193,6 @@ class InfantryClass : public FootClass
 		void Movement_AI(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	File I/O.
 		*/
 		static void Read_INI(CCINIClass & ini);

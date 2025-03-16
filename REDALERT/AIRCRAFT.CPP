@@ -2122,36 +2122,6 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest)
 }
 
 
-#ifdef CHEAT_KEYS
-/***********************************************************************************************
- * AircraftClass::Debug_Dump -- Displays the status of the aircraft to the mono monitor.       *
- *                                                                                             *
- *    This displays the current status of the aircraft class to the mono monitor. By this      *
- *    display bugs may be tracked down or prevented.                                           *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   06/02/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-void AircraftClass::Debug_Dump(MonoClass * mono) const
-{
-	assert(Aircraft.ID(this) == ID);
-	assert(IsActive);
-
-	mono->Set_Cursor(0, 0);
-	mono->Print(Text_String(TXT_DEBUG_AIRCRAFT));
-	mono->Set_Cursor(1, 11);mono->Printf("%3d", AttacksRemaining);
-
-	FootClass::Debug_Dump(mono);
-}
-#endif
-
-
 /***********************************************************************************************
  * AircraftClass::Active_Click_With -- Handles clicking over specified object.                 *
  *                                                                                             *

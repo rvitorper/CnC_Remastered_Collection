@@ -97,10 +97,6 @@ extern bool Is_Mission_Aftermath (char *file_name);
 extern bool Is_Mission_Counterstrike (char *file_name);
 extern void Do_Draw(void);
 
-#ifdef CHEAT_KEYS
-bool	bNoMovies = false;
-#endif
-
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
@@ -114,10 +110,6 @@ extern "C" {
 	bool UseOldShapeDraw = false;
 }
 
-#ifdef CHEAT_KEYS
-void Dump_Heap_Pointers( void );
-void Error_In_Heap_Pointers( char * string );
-#endif
 static void Do_Record_Playback(void);
 
 void Toggle_Formation(void);
@@ -656,12 +648,6 @@ void Keyboard_Process(KeyNumType & input)
 		Handle_View(3, action);
 		input = KN_NONE;
 	}
-
-#ifdef CHEAT_KEYS
-	if (input != 0 && Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
-		Debug_Key(input);
-	}
-#endif
 }
 
 
@@ -1363,11 +1349,7 @@ bool PlayMpegMovie(const char* name)
 	char path[MAX_PATH];
 	CCFileClass file;
 	const char* filename;
-
-#ifdef CHEAT_KEYS
-	if( bNoMovies )
-		return true;
-#endif
+	
 
 	sprintf(path, "movies\\%.8s.%.3s", name, "mpg");
 	filename = file.Set_Name(path);

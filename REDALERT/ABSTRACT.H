@@ -99,13 +99,6 @@ class AbstractClass
 		RTTIType What_Am_I(void) const {return(RTTI);};
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass * mono) const;
-		#endif
-
-		/*
 		**	Coordinate query support functions.
 		*/
 		virtual COORDINATE Center_Coord(void) const {return Coord;};

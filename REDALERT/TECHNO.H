@@ -353,13 +353,6 @@ class TechnoClass :	public RadioClass,
 		void Cloaking_AI(void);
 
 		/*
-		**	Scenario and debug support.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-
-		/*
 		**	File I/O.
 		*/
 		virtual void Code_Pointers(void);

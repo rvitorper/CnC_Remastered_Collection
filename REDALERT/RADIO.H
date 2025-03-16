@@ -89,9 +89,6 @@ class RadioClass : public MissionClass {
 		virtual RadioMessageType Receive_Message(RadioClass * from, RadioMessageType message, long & param);
 		virtual RadioMessageType Transmit_Message(RadioMessageType message, long & param=LParam, RadioClass * to=NULL);
 		virtual RadioMessageType Transmit_Message(RadioMessageType message, RadioClass * to);
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
 		virtual bool Limbo(void);
 
 		/*
