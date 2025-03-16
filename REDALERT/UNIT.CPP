@@ -2222,26 +2222,24 @@ int UnitClass::Tiberium_Check(CELL & center, int x, int y)
 
 	center = XY_Cell(Cell_X(center)+x, Cell_Y(center)+y);
 
-	if ((Session.Type != GAME_NORMAL || (!IsOwnedByPlayer || Map[center].Is_Mapped(PlayerPtr)))) {
-		if (Map[Coord].Zones[Class->MZone] != Map[center].Zones[Class->MZone]) return(0);
-		if (!Map[center].Cell_Techno() && Map[center].Land_Type() == LAND_TIBERIUM) {
-			int value = 0;
-			switch (Map[center].Overlay) {
-				case OVERLAY_GOLD1:
-				case OVERLAY_GOLD2:
-				case OVERLAY_GOLD3:
-				case OVERLAY_GOLD4:
-					value = Rule.GoldValue;
-					break;
-				case OVERLAY_GEMS1:
-				case OVERLAY_GEMS2:
-				case OVERLAY_GEMS3:
-				case OVERLAY_GEMS4:
-					value = Rule.GemValue*4;
-					break;
-			}
-			return((Map[center].OverlayData+1)*value);
+	if (Map[Coord].Zones[Class->MZone] != Map[center].Zones[Class->MZone]) return(0);
+	if (!Map[center].Cell_Techno() && Map[center].Land_Type() == LAND_TIBERIUM) {
+		int value = 0;
+		switch (Map[center].Overlay) {
+			case OVERLAY_GOLD1:
+			case OVERLAY_GOLD2:
+			case OVERLAY_GOLD3:
+			case OVERLAY_GOLD4:
+				value = Rule.GoldValue;
+				break;
+			case OVERLAY_GEMS1:
+			case OVERLAY_GEMS2:
+			case OVERLAY_GEMS3:
+			case OVERLAY_GEMS4:
+				value = Rule.GemValue*4;
+				break;
 		}
+		return((Map[center].OverlayData+1)*value);
 	}
 	return(0);
 }
@@ -2656,7 +2654,7 @@ int UnitClass::Mission_Unload(void)
 							if (IsDeploying) {
 								Status = 2;
 							} else {
-								if (!House->IsHuman && Session.Type != GAME_NORMAL) {
+								if (!House->IsHuman) {
 									Assign_Mission(MISSION_HUNT);
 								} else {
 									Assign_Mission(MISSION_GUARD);
@@ -3195,10 +3193,6 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType ) const
 	if (cellptr->Overlay != OVERLAY_NONE) {
 		OverlayTypeClass const * optr = &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
-		if (optr->IsCrate && !((Session.Type == GAME_NORMAL) ? House->IsPlayerControl : House->IsHuman) && Session.Type == GAME_NORMAL) {
-			return(MOVE_NO);
-		}
-
 		if (optr->IsWall) {
 
 			/*
@@ -3573,9 +3567,7 @@ ActionType UnitClass::What_Action(ObjectClass const * object) const
 	/*
 	**	Special return to friendly refinery action.
 	*/
-	bool is_player_controlled = (Session.Type == GAME_NORMAL)
-		? (House->IsPlayerControl && object->Owner() != HOUSE_NONE && HouseClass::As_Pointer(object->Owner())->IsPlayerControl)
-		: (Is_Owned_By_Player() && House->Class->House == object->Owner());
+	bool is_player_controlled = (Is_Owned_By_Player() && House->Class->House == object->Owner());
 	if (is_player_controlled && object->What_Am_I() == RTTI_BUILDING && ((UnitClass *)this)->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) == RADIO_ROGER) {
 		action = ACTION_ENTER;
 	}
@@ -4849,7 +4841,7 @@ void UnitClass::Read_INI(CCINIClass & ini)
 						if (unit->Unlimbo(coord, dir)) {
 							unit->Strength = (int)unit->Class->MaxStrength * fixed(strength, 256);
 							if (unit->Strength > unit->Class->MaxStrength-3) unit->Strength = unit->Class->MaxStrength;
-							if (Session.Type == GAME_NORMAL || unit->House->IsHuman) {
+							if (unit->House->IsHuman) {
 								unit->Assign_Mission(mission);
 								unit->Commence();
 							} else {
@@ -5243,12 +5235,7 @@ int UnitClass::Mission_Guard_Area(void)
 	**	Check to see if this is an APC that is largely empty and not otherwise doing anything.
 	**	Such an APC should load up with infantry.
 	*/
-	if (Session.Type != GAME_NORMAL &&
-#ifdef FIXIT_PHASETRANSPORT	//	checked - ajw 9/28/98
-			(*this == UNIT_APC || *this == UNIT_PHASE ) &&
-#else
-			*this == UNIT_APC &&
-#endif
+	if ((*this == UNIT_APC || *this == UNIT_PHASE ) &&
 			!Target_Legal(TarCom) &&
 			!In_Radio_Contact() &&
 			House->Which_Zone(this) != ZONE_NONE &&

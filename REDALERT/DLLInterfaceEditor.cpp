@@ -375,7 +375,6 @@ int LoadScenario()
 
 	if (result == 2) 
 	{
-		//		if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
 					/*
 					**	Make a special exception so that multiplayer maps from 1 through
 					**	24 will not care if the message digest is in error. All other

@@ -208,7 +208,6 @@
     <ClCompile Include="INFANTRY.CPP" />
     <ClCompile Include="INI.CPP" />
     <ClCompile Include="INIBIN.CPP" />
-    <ClCompile Include="INICODE.CPP" />
     <ClCompile Include="INIT.CPP" />
     <ClCompile Include="INT.CPP" />
     <ClCompile Include="INTERNET.CPP" />

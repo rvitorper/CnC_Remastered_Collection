@@ -115,7 +115,6 @@ class CellClass;
 // Types of games; used to tell which protocol we're using
 //...........................................................................
 typedef enum GameEnum {
-	GAME_NORMAL,									// not multiplayer
 	GAME_SKIRMISH,									// 1 plr vs. AI's
 } GameType;
 

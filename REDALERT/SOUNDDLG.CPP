@@ -260,13 +260,7 @@ void SoundControlsClass::Process(void)
 		/*
 		**	Invoke game callback.
 		*/
-		if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-			Call_Back();
-		} else {
-			if (Main_Loop()) {
-				process = false;
-			}
-		}
+		Call_Back();
 
 		/*
 		** If we have just received input focus again after running in the background then
@@ -328,8 +322,7 @@ void SoundControlsClass::Process(void)
 			*/
 			case SLIDER_MUSIC|KN_BUTTON:
 				Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
-				if( Session.Type != GAME_NORMAL )
-					Options.MultiScoreVolume = Options.ScoreVolume;
+				Options.MultiScoreVolume = Options.ScoreVolume;
 				break;
 
 			/*

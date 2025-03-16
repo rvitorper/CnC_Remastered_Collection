@@ -648,11 +648,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house) :
 	//IsOwnedByPlayer = (PlayerPtr == House);
 	// Added for multiplayer changes. ST - 4/24/2019 10:40AM
 	IsDiscoveredByPlayerMask = 0;
-	if (Session.Type == GAME_NORMAL) {
-		IsOwnedByPlayer = (PlayerPtr == House);
-	} else {
-		IsOwnedByPlayer = House->IsHuman;
-	}
+	IsOwnedByPlayer = House->IsHuman;
 }
 
 
@@ -745,57 +741,12 @@ bool TechnoClass::Revealed(HouseClass * house)
 		if (!house->IsHuman && Mission == MISSION_AMBUSH) {
 			Assign_Mission(MISSION_HUNT);
 		}
-
-		if (Session.Type == GAME_NORMAL) {
-			if (house == PlayerPtr) {
-				IsDiscoveredByPlayer = true;
-
-				if (!IsOwnedByPlayer) {
-
-					/*
-					**	If there is a trigger event associated with this object, then process
-					**	it for discovery purposes.
-					*/
-					if (!ScenarioInit && Trigger.Is_Valid()) {
-						Trigger->Spring(TEVENT_DISCOVERED, this);
-					}
-
-					/*
-					**	Alert the enemy house to presence of the friendly side.
-					*/
-					House->IsDiscovered = true;
-
-					if (house->IsHuman) {
-						Set_Discovered_By_Player(house);
-					} else {
-						IsDiscoveredByComputer = true;
-					}
-
-				} else {
-
-					if (house->IsHuman) {
-						Set_Discovered_By_Player(house);
-					} else {
-						IsDiscoveredByComputer = true;
-					}
-
-					/*
-					**	A newly revealed object will always perform a look operation.
-					*/
-					Look();
-				}
-			} else {
-				IsDiscoveredByComputer = true;
-			}
-		
-		} else {
 			
-			if (house->IsHuman) {
-				Set_Discovered_By_Player(house);
-			}
-
-			Look();
+		if (house->IsHuman) {
+			Set_Discovered_By_Player(house);
 		}
+
+		Look();
 			
 		return(true);
 	}
@@ -995,9 +946,6 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass * from, RadioMessageTyp
 				**	Special case: in single-player campaigns, also try to use the repair pad house's money.
 				*/
 				HouseClass* house = House;
-				if (Session.Type == GAME_NORMAL && house->Available_Money() < cost) {
-					house = HouseClass::As_Pointer(from->Owner());
-				}
 				if (house != NULL && house->Available_Money() >= cost) {
 					house->Spend_Money(cost);
 					Strength += step;
@@ -1585,15 +1533,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range, Techno
 	}
 
 	/*
-	**	If the object is not visible, then bail. Human controlled units
-	**	are always considered to be visible.
-	*/
-	if (!object->IsOwnedByPlayer && !object->IsDiscoveredByPlayer && Session.Type == GAME_NORMAL && object->What_Am_I() != RTTI_AIRCRAFT) {
-		BEnd(BENCH_EVAL_OBJECT);
-		return(false);
-	}
-
-	/*
 	**	Quickly eliminate all unit types that are not allowed according to the mask
 	**	value.
 	*/
@@ -1670,7 +1609,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range, Techno
 	**	is allowed to pick any target it so chooses.
 	*/
 	if ((!Is_Foot() || !((FootClass *)this)->Team.Is_Valid()) &&
-			(House->IsHuman || (House->IsPlayerControl && Session.Type == GAME_NORMAL)) &&
+			(House->IsHuman) &&
 			otype == RTTI_BUILDING && tclass->PrimaryWeapon == NULL) {
 #ifdef OBSOLETE
 	if ((!Is_Foot() || ((FootClass *)this)->Team.Is_Valid()) && House->IsHuman && otype == RTTI_BUILDING && tclass->PrimaryWeapon == NULL) {
@@ -1682,7 +1621,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range, Techno
 	/*
 	** Player-controlled demo trucks never automatically target.
 	*/
-	if ((House->IsHuman || (House->IsPlayerControl && Session.Type == GAME_NORMAL)) && What_Am_I() == RTTI_UNIT && *(UnitClass *)this == UNIT_DEMOTRUCK) {
+	if ((House->IsHuman) && What_Am_I() == RTTI_UNIT && *(UnitClass *)this == UNIT_DEMOTRUCK) {
 		BEnd(BENCH_EVAL_OBJECT);
 		return(false);
 	}
@@ -1701,7 +1640,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range, Techno
 				break;
 
 			case RTTI_BUILDING:
-				if (!((BuildingTypeClass const *)tclass)->Capacity && Session.Type != GAME_NORMAL) {
+				if (!((BuildingTypeClass const *)tclass)->Capacity) {
 					BEnd(BENCH_EVAL_OBJECT);
 					return(false);
 				}
@@ -4023,20 +3962,6 @@ ResultType TechnoClass::Take_Damage(int & damage, int distance, WarheadType warh
 					Map.AI(input, 0, 0);
 				}
 			}
-
-			/*
-			** May trigger an achievement. ST - 11/14/2019 1:56PM
-			*/
-			if (Session.Type == GAME_NORMAL && !House->IsHuman && source && source->House && source->House->IsHuman) {
-				TechnoTypeClass const *object_type = Techno_Type_Class();
-				if (object_type) {
-					
-					RTTIType what = What_Am_I();
-					if (what == RTTI_AIRCRAFT || what == RTTI_INFANTRY || what == RTTI_UNIT || what == RTTI_VESSEL) {
-						On_Achievement_Event(source->House, "UNIT_DESTROYED", object_type->IniName);
-					}
-				}			
-			}
 			break;
 
 		/*
@@ -4315,8 +4240,7 @@ VisualType TechnoClass::Visual_Character(bool raw) const
 	assert(IsActive);
 
 	if (Techno_Type_Class()->IsInvisible) {
-		if ((Session.Type != GAME_NORMAL) || Is_Owned_By_Player()) return(VISUAL_NORMAL);
-		if (!Debug_Map) return(VISUAL_HIDDEN);
+		return(VISUAL_NORMAL);
 	}
 
 	/*
@@ -4955,11 +4879,6 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const * enemy)
 	}
 
 	/*
-	**	Don't overreact if this building can defend itself.
-	*/
-	if (Session.Type == GAME_NORMAL && Techno_Type_Class()->PrimaryWeapon != NULL) return;
-
-	/*
 	** If the enemy is not an infantry or a unit there is not much we can
 	** do about it.
 	*/
@@ -5000,9 +4919,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const * enemy)
 			/*
 			**	Never recruit sticky guard units to defend a base.
 			*/
-			if (!infantry->Is_Weapon_Equipped() ||
-					(!MissionControl[infantry->Mission].IsRecruitable && Session.Type == GAME_NORMAL)) continue;
-//					(Mission != MISSION_GUARD_AREA || Session.Type == GAME_NORMAL)) continue;
+			if (!infantry->Is_Weapon_Equipped()) continue;
 
 			/*
 			**	Don't allow a response if it doesn't have a weapon that will affect the
@@ -5085,8 +5002,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const * enemy)
 			/*
 			**	Never recruit sticky guard units to defend a base.
 			*/
-			if (!unit->Is_Weapon_Equipped() ||
-				(!MissionControl[unit->Mission].IsRecruitable && Session.Type == GAME_NORMAL)) continue;
+			if (!unit->Is_Weapon_Equipped()) continue;
 
 			/*
 			**	Don't allow a response if it doesn't have a weapon that will affect the
@@ -5273,7 +5189,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(TechnoClass const * source) const
 	**	is, unless it is owned by the computer. Normally, Tanya can't do anything substantial to a building
 	**	except to blow it up.
 	*/
-	if ((House->IsHuman || (Session.Type == GAME_NORMAL && House->IsPlayerControl))
+	if ((House->IsHuman)
 			&& source->What_Am_I() == RTTI_BUILDING && What_Am_I() == RTTI_INFANTRY && ((InfantryTypeClass const *)ttype)->IsBomber) {
 		return(false);
 	}
@@ -6349,7 +6265,7 @@ int TechnoTypeClass::Raw_Cost(void) const
  *=============================================================================================*/
 int TechnoTypeClass::Get_Ownable(void) const
 {
-	if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
+	if (IsDoubleOwned) {
 		return(Ownable | HOUSEF_SOVIET | HOUSEF_ALLIES);
 	}
 	return(Ownable);
@@ -6388,16 +6304,11 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		return time;
 	}
 	
-	if (Session.Type == GAME_NORMAL) {
+	if (What_Am_I() == RTTI_BUILDINGTYPE || What_Am_I() == RTTI_INFANTRYTYPE) {
 		time *= hptr->BuildSpeedBias;
 	}
 	else {
-		if (What_Am_I() == RTTI_BUILDINGTYPE || What_Am_I() == RTTI_INFANTRYTYPE) {
-			time *= hptr->BuildSpeedBias;
-		}
-		else {
-			time *= hptr->BuildSpeedBias * fixed(UnitBuildPenalty, 100);	//UNIT_BUILD_BIAS;
-		}
+		time *= hptr->BuildSpeedBias * fixed(UnitBuildPenalty, 100);	//UNIT_BUILD_BIAS;
 	}
 
 	/*
@@ -6786,10 +6697,6 @@ void TechnoClass::Set_Discovered_By_Player(HouseClass *player)
 		shift = (int)PlayerPtr->Class->House;
 	}	
 	IsDiscoveredByPlayerMask |= (1 << shift);
-
-	if (Session.Type == GAME_NORMAL && player == PlayerPtr) {
-		IsDiscoveredByPlayer = true;
-	}
 }
 
 

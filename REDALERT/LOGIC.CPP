@@ -364,26 +364,14 @@ void LogicClass::AI(void)
 	/*
 	**	House processing is performed.
 	*/
-	if( Session.Type != GAME_NORMAL )
-	{
-		for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
-			HouseClass * hptr = HouseClass::As_Pointer(house);
-			if (hptr && hptr->IsActive) {
-				hptr->AI();
-			}
-		}
-	}
-	else
-	{
-		for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-			HouseClass * hptr = HouseClass::As_Pointer(house);
-			if (hptr && hptr->IsActive) {
-				hptr->AI();
-			}
+	for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
+		HouseClass * hptr = HouseClass::As_Pointer(house);
+		if (hptr && hptr->IsActive) {
+			hptr->AI();
 		}
 	}
 
-	if( Session.Type != GAME_NORMAL && Scen.AutoSonarTimer == 0 )
+	if( Scen.AutoSonarTimer == 0 )
 	{
 		if( bAutoSonarPulse )
 		{

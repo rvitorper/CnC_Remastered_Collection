@@ -291,20 +291,13 @@ bool RadarClass::Radar_Activate(int control)
 			return(old);
 
 		case 2:
-			if (Session.Type==GAME_NORMAL) {
-				SidebarClass::Zoom.Disable();
-			} else {
-				SidebarClass::Zoom.Enable();
-			}
+			SidebarClass::Zoom.Enable();
 			IsRadarActive = false;
 			IsRadarActivating = false;
 			IsRadarDeactivating = false;
 			break;
 
 		case 3:
-			if (Session.Type == GAME_NORMAL && Is_Zoomable()) {
-				SidebarClass::Zoom.Enable();
-			}
 			IsRadarActive = true;
 			IsRadarActivating = false;
 			IsRadarDeactivating = false;
@@ -1893,14 +1886,8 @@ bool RadarClass::Spy_Next_House(void)
 	HousesType maxhouse;
 	HousesType firsthouse;
 	HousesType house;
-
-	if (Session.Type == GAME_NORMAL) {
-		firsthouse = HOUSE_SPAIN;
-		maxhouse = HOUSE_GOOD;
-	} else {
-		firsthouse = HOUSE_MULTI1;
-		maxhouse = HOUSE_COUNT;
-	}
+	firsthouse = HOUSE_MULTI1;
+	maxhouse = HOUSE_COUNT;
 
 	if (IsHouseSpy) {
 	 	house = (HousesType)(SpyingOn+1);

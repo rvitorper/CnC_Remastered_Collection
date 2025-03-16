@@ -992,7 +992,7 @@ void MapClass::Logic(void)
 	/*
 	**	Crate regeneration is handled here.
 	*/
-	if (Session.Type != GAME_NORMAL && Session.Options.Goodies) {
+	if (Session.Options.Goodies) {
 
 		/*
 		**	Find any crate that has expired and then regenerate it at a new
@@ -1204,28 +1204,18 @@ bool MapClass::Place_Random_Crate(void)
  *=============================================================================================*/
 bool MapClass::Remove_Crate(CELL cell)
 {
-	if (Session.Type != GAME_NORMAL) {
-		for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
-			if (Crates[index].Is_Here(cell)) {
-				return(Crates[index].Remove_It());
-			}
+	for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
+		if (Crates[index].Is_Here(cell)) {
+			return(Crates[index].Remove_It());
 		}
 	}
 
-//	if (Session.Type == GAME_NORMAL) {
-		CellClass * cellptr = &(*this)[cell];
-		if (cellptr->Overlay != OVERLAY_NONE && OverlayTypeClass::As_Reference(cellptr->Overlay).IsCrate) {
-			cellptr->Overlay = OVERLAY_NONE;
-			cellptr->OverlayData = 0;
-			return(true);
-		}
-//	} else {
-//		for (int index = 0; index < ARRAY_SIZE(Crates); index++) {
-//			if (Crates[index].Is_Here(cell)) {
-//				return(Crates[index].Remove_It());
-//			}
-//		}
-//	}
+	CellClass * cellptr = &(*this)[cell];
+	if (cellptr->Overlay != OVERLAY_NONE && OverlayTypeClass::As_Reference(cellptr->Overlay).IsCrate) {
+		cellptr->Overlay = OVERLAY_NONE;
+		cellptr->OverlayData = 0;
+		return(true);
+	}
 	return(false);
 }
 

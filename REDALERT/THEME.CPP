@@ -491,12 +491,6 @@ bool ThemeClass::Is_Allowed(ThemeType index) const
 	if (PlayerPtr != NULL && ((1 << PlayerPtr->ActLike) & _themes[index].Owner) == 0) return(false);
 
 	/*
-	**	If the scenario doesn't allow this theme yet, then return the failure flag. The
-	**	scenario check only makes sense for solo play.
-	*/
-	if (Session.Type == GAME_NORMAL && Scen.Scenario < _themes[index].Scenario) return(false);
-
-	/*
 	**	Since all tests passed, return with the "is allowed" flag.
 	*/
 	return(true);

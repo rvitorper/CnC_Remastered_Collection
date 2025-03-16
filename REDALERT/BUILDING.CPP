@@ -514,7 +514,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const
 	/*
 	** If this is a factory that we're spying on, show what it's producing
 	*/
-	if ((Spied_By() & (1<<(PlayerPtr->Class->House)) && Is_Selected_By_Player()) || ((window == WINDOW_VIRTUAL) && (Session.Type != GAME_NORMAL))) {
+	if ((Spied_By() & (1<<(PlayerPtr->Class->House)) && Is_Selected_By_Player()) || (window == WINDOW_VIRTUAL)) {
 
 		/*
 		**	Fetch the factory that is associate with this building. For computer controlled buildings, the
@@ -1151,12 +1151,9 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir)
 		LastStrength = 0;
 
 		// Changes to support client/server multiplayer. ST - 8/2/2019 2:36PM
-		//if ((!IsDiscoveredByPlayer && Map[coord].IsVisible) || Session.Type != GAME_NORMAL) {
-		if ((!Is_Discovered_By_Player(House) && Map[coord].Is_Visible(House)) || Session.Type != GAME_NORMAL) {
-			if (House->IsHuman) {
-				//Revealed(PlayerPtr);
-				Revealed(House);
-			}
+		if (House->IsHuman) {
+			//Revealed(PlayerPtr);
+			Revealed(House);
 		}
 		if (!House->IsHuman) {
 			Revealed(House);
@@ -3153,11 +3150,7 @@ bool BuildingClass::Captured(HouseClass * newowner)
 				delete smudge;
 			}
 #ifdef FIXIT_CAPTURE_BIB
-			if (Session.Type == GAME_NORMAL) {
-				new SmudgeClass(bib, Cell_Coord(cell), Class->IsBase ? House->Class->House : HOUSE_NONE);
-			} else {
-				new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
-			}
+			new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
 #else
 			new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
 #endif
@@ -3285,10 +3278,6 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const
 		return(Map[cell].Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO);
 	}
 
-	if (!Debug_Map && ScenarioInit == 0 && Session.Type == GAME_NORMAL && House->IsPlayerControl && !Map[cell].IsMapped) {
-		return(MOVE_NO);
-	}
-
 	return(Class->Legal_Placement(cell) ? MOVE_OK : MOVE_NO);
 }
 
@@ -3336,10 +3325,8 @@ bool BuildingClass::Can_Capture(void) const
 	bool can_capture = Class->IsCaptureable && Mission != MISSION_DECONSTRUCTION;
 
 	// Only allow capturing of multiplayer-owned structures
-	if (Session.Type != GAME_NORMAL) {
-		if (*this == STRUCT_V01) {		// Check to fix exploit in specific map 'Tournament Ore Rift'
-			can_capture = false;
-		}
+	if (*this == STRUCT_V01) {		// Check to fix exploit in specific map 'Tournament Ore Rift'
+		can_capture = false;
 	}
 
 	return(can_capture);
@@ -5616,7 +5603,7 @@ void BuildingClass::Repair_AI(void)
 		if (Can_Repair()) {
 			if (House->Available_Money() >= Rule.RepairThreshhold) {
 				if (!House->DidRepair) {
-					if (!IsRepairing && (IsCaptured || IsToRepair || House->IsHuman || Session.Type != GAME_NORMAL)) {
+					if (!IsRepairing) {
 						House->DidRepair = true;	// flag that this house did its repair allocation for this frame
 						Repair(1);
 
@@ -5626,7 +5613,7 @@ void BuildingClass::Repair_AI(void)
 					}
 				}
 			} else {
-				if ((Session.Type != GAME_NORMAL || IsAllowedToSell) && IsTickedOff && House->Control.TechLevel >= Rule.IQSellBack && Random_Pick(0, 50) < House->Control.TechLevel && !Trigger.Is_Valid() && *this != STRUCT_CONST && Health_Ratio() < Rule.ConditionRed) {
+				if (IsTickedOff && House->Control.TechLevel >= Rule.IQSellBack && Random_Pick(0, 50) < House->Control.TechLevel && !Trigger.Is_Valid() && *this != STRUCT_CONST && Health_Ratio() < Rule.ConditionRed) {
 					Sell_Back(1);
 				}
 			}

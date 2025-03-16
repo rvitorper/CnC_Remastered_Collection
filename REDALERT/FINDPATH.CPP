@@ -1276,16 +1276,6 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat, MoveType th
 
 	if (move > threshhold) return(0);
 
-	if (Session.Type == GAME_NORMAL) {
-		if (threat != -1) {
-			if (::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) > (THREAT_THRESHOLD * CELL_LEPTON_W)) {
-//			if (Map.Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
-				if (Map.Cell_Threat(cell, Owner()) > threat)
-					return(0);
-			}
-		}
-	}
-
 	static int _value[MOVE_COUNT] = {
 		1,			//	MOVE_OK
 		1,			//	MOVE_CLOAK

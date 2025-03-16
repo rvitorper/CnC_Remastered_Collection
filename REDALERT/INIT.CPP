@@ -533,12 +533,7 @@ bool Select_Game(bool fade)
 	**	If the last game we played was a multiplayer game, jump right to that
 	**	menu by pre-setting 'selection'.
 	*/
-	if (Session.Type == GAME_NORMAL) {
-		selection = SEL_NONE;
-	} else {
-		selection = SEL_MULTIPLAYER_GAME;
-	}
-
+	selection = SEL_MULTIPLAYER_GAME;
 	/*
 	**	Main menu processing; only do this if we're not in editor mode.
 	*/
@@ -700,7 +695,7 @@ bool Select_Game(bool fade)
 #endif
 					Theme.Fade_Out();
 					Theme.Queue_Song(THEME_FIRST);
-					Session.Type = GAME_NORMAL;
+					Session.Type = GAME_SKIRMISH;
 					process = false;
 					break;
 
@@ -784,7 +779,7 @@ bool Select_Game(bool fade)
 						}
 					}
 
-					Session.Type = GAME_NORMAL;
+					Session.Type = GAME_SKIRMISH;
 					process = false;
 					break;
 
@@ -816,23 +811,8 @@ bool Select_Game(bool fade)
 				*/
 				case SEL_MULTIPLAYER_GAME:
 					switch (Session.Type) {
-
-						/*
-						**	If 'Session.Type' isn't already set up for a multiplayer game,
-						**	we must prompt the user for which type of multiplayer game
-						**	they want.
-						*/
-						case GAME_NORMAL:
-							Session.Type = Select_MPlayer_Game();
-							if (Session.Type == GAME_NORMAL) {		// 'Cancel'
-								display = true;
-								selection = SEL_NONE;
-							}
-							break;
-
 						case GAME_SKIRMISH:
 							break;
-
 					}
 //debugprint( "Session.Type = %i\n", Session.Type );
 					switch (Session.Type) {
@@ -977,11 +957,6 @@ bool Select_Game(bool fade)
 		20,          							// min,
 		MAX_MESSAGE_LENGTH - 14,			//    max for trimming overflow
 		Lepton_To_Pixel(Map.TacLeptonWidth));	// Width in pixels of buffer
-
-	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-		!Session.Play) {
-		Session.Create_Connections();
-	}
 
 
 	/*
@@ -1719,8 +1694,7 @@ void Init_Random(void)
 	** in the connection dialogs.  For single-player games, AND if we're not playing
 	** back a recording, init the Seed to a random value.
 	*/
-	if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH &&
-		!Session.Play) {
+	if (!Session.Play) {
 
 		/*
 		** Set the optional user-specified seed

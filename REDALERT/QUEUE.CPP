@@ -344,16 +344,8 @@ void Queue_AI(void)
 	if (Session.Play) {
 		Queue_Playback();
 	}
-
 	else {
-
-		switch (Session.Type) {
-
-			case GAME_SKIRMISH:
-			case GAME_NORMAL:
-				Queue_AI_Normal();
-				break;
-		}
+		Queue_AI_Normal();
 	}
 
 }	/* end of Queue_AI */
@@ -2639,7 +2631,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 				// (Hack: disable this check for solo or skirmish mode.)
 				//...............................................................
 				if ((unsigned)Frame > DoList[j].Frame && DoList[j].Type !=
-					EventClass::FRAMEINFO && Session.Type != GAME_NORMAL &&
+					EventClass::FRAMEINFO &&
 					Session.Type != GAME_SKIRMISH) {
 
 					Dump_Packet_Too_Late_Stuff(&DoList[j], net, their_frame,
@@ -2929,7 +2921,7 @@ static void Queue_Playback(void)
 	//	routine didn't write anything the first time through); do this after the
 	//	CRC is computed, since we'll still need a CRC for Frame 0.
 	//------------------------------------------------------------------------
-	if (Frame==0 && Session.Type!=GAME_NORMAL) {
+	if (Frame==0) {
 		return;
 	}
 
@@ -2938,7 +2930,7 @@ static void Queue_Playback(void)
 	//------------------------------------------------------------------------
 	testframe = ((Frame + (Session.FrameSendRate - 1)) /
 		Session.FrameSendRate) * Session.FrameSendRate;
-	if ( (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) &&
+	if ( (Session.Type != GAME_SKIRMISH) &&
 		Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
 		if (Frame != testframe) {
 			return;
@@ -2979,14 +2971,8 @@ static void Queue_Playback(void)
 	//------------------------------------------------------------------------
 	// Execute the DoList; if an error occurs, bail out.
 	//------------------------------------------------------------------------
-	if (Session.Type == GAME_NORMAL) {
-		max_houses = 1;
-		base_house = PlayerPtr->Class->House;
-	}
-	else {
-		max_houses = Session.MaxPlayers;
-		base_house = HOUSE_MULTI1;
-	}
+	max_houses = Session.MaxPlayers;
+	base_house = HOUSE_MULTI1;
 	if (!Execute_DoList(max_houses, base_house, NULL, NULL, NULL, NULL, NULL)) {
 		GameActive = 0;
 		return;

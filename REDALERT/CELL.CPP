@@ -626,12 +626,7 @@ void CellClass::Occupy_Down(ObjectClass * object)
 	**	techno object as being revealed to the player.
 	*/
 	// Changes for client/server multiplayer. ST - 8/2/2019 2:51PM
-	//if (IsMapped || Session.Type != GAME_NORMAL) {
-	//	object->Revealed(PlayerPtr);
-	//}
-	if (IsMapped || Session.Type != GAME_NORMAL) {
-		object->Revealed(PlayerPtr);
-	}
+	object->Revealed(PlayerPtr);
 	
 	/*
 	**	Special occupy bit set.
@@ -2069,185 +2064,159 @@ bool CellClass::Goodie_Check(FootClass * object)
 		**	In solo play, the bonus item is dependant upon the rules control.
 		*/
 		CrateType powerup;
-		if (Session.Type == GAME_NORMAL) {
+		int pick = Random_Pick(1, total_shares);
 
-			/*
-			**	Solo play has money amount determined by rules.ini file.
-			*/
-			force_money = Rule.SoloCrateMoney;
+		int share_count = 0;
+		for (powerup = CRATE_FIRST; powerup < CRATE_COUNT; powerup++) {
+			share_count += CrateShares[powerup];
+			if (pick <= share_count) break;
+		}
+		assert(powerup != CRATE_COUNT);
 
-			if (Overlay == OVERLAY_STEEL_CRATE) {
-				powerup = Rule.SilverCrate;
-			}
+		/*
+		**	Depending on what was picked, there might be an alternate goodie if the selected
+		**	goodie would have no effect.
+		*/
+		switch (powerup) {
+			case CRATE_UNIT:
+				if (object->House->CurUnits > 50) powerup = CRATE_MONEY;
+				break;
 
-			if (Overlay == OVERLAY_WOOD_CRATE) {
-				powerup = Rule.WoodCrate;
-			}
+			case CRATE_SQUAD:
+				if (object->House->CurInfantry > 100) powerup = CRATE_MONEY;
+				break;
 
-			if (Overlay == OVERLAY_WATER_CRATE) {
-//Mono_Printf("%d-%s.\n", __LINE__, __FILE__);
-				powerup = Rule.WaterCrate;
-			}
+			case CRATE_DARKNESS:
+				if (object->House->IsGPSActive) powerup = CRATE_MONEY;
+				break;
 
-		} else {
-			int pick = Random_Pick(1, total_shares);
+			case CRATE_ARMOR:
+				if (object->ArmorBias != 1) powerup = CRATE_MONEY;
+				break;
 
-			int share_count = 0;
-			for (powerup = CRATE_FIRST; powerup < CRATE_COUNT; powerup++) {
-				share_count += CrateShares[powerup];
-				if (pick <= share_count) break;
-			}
-			assert(powerup != CRATE_COUNT);
+			case CRATE_SPEED:
+				if (object->SpeedBias != 1 || object->What_Am_I() == RTTI_AIRCRAFT) powerup = CRATE_MONEY;
+				break;
 
-			/*
-			**	Depending on what was picked, there might be an alternate goodie if the selected
-			**	goodie would have no effect.
-			*/
-			switch (powerup) {
-				case CRATE_UNIT:
-					if (object->House->CurUnits > 50) powerup = CRATE_MONEY;
-					break;
+			case CRATE_FIREPOWER:
+				if (object->FirepowerBias != 1 || !object->Is_Weapon_Equipped()) powerup = CRATE_MONEY;
+				break;
 
-				case CRATE_SQUAD:
-					if (object->House->CurInfantry > 100) powerup = CRATE_MONEY;
-					break;
-
-				case CRATE_DARKNESS:
-					if (object->House->IsGPSActive) powerup = CRATE_MONEY;
-					break;
-
-				case CRATE_ARMOR:
-					if (object->ArmorBias != 1) powerup = CRATE_MONEY;
-					break;
-
-				case CRATE_SPEED:
-					if (object->SpeedBias != 1 || object->What_Am_I() == RTTI_AIRCRAFT) powerup = CRATE_MONEY;
-					break;
-
-				case CRATE_FIREPOWER:
-					if (object->FirepowerBias != 1 || !object->Is_Weapon_Equipped()) powerup = CRATE_MONEY;
-					break;
-
-				case CRATE_REVEAL:
-					if (object->House->IsVisionary) {
-						if (object->House->IsGPSActive) {
-							powerup = CRATE_MONEY;
-						} else {
-							powerup = CRATE_DARKNESS;
-						}
+			case CRATE_REVEAL:
+				if (object->House->IsVisionary) {
+					if (object->House->IsGPSActive) {
+						powerup = CRATE_MONEY;
+					} else {
+						powerup = CRATE_DARKNESS;
 					}
-					break;
+				}
+				break;
 
-				case CRATE_CLOAK:
-					if (object->IsCloakable) powerup = CRATE_MONEY;
-					break;
+			case CRATE_CLOAK:
+				if (object->IsCloakable) powerup = CRATE_MONEY;
+				break;
 
 //				case CRATE_HEAL_BASE:
 //					if (object->House->BScan == 0) powerup = CRATE_UNIT;
 
-				case CRATE_MONEY:
-					break;
+			case CRATE_MONEY:
+				break;
 
-				case CRATE_ICBM:
-				case CRATE_PARA_BOMB:
-				case CRATE_SONAR:
-					if (Session.Type != GAME_NORMAL) {
-						if (MPSuperWeaponDisable) {
-							powerup = CRATE_MONEY;
-						}
-					}
-					break;
-
-				case CRATE_TIMEQUAKE:
-					/*
-					** For the time quake crate, scan through and count up all the
-					** units (and infantry and ships and aircraft) and if either
-					** side has very few, allow the time quake.  Otherwise,
-					** change the crate to money or something.  Only do this for
-					** multiplay - for solo play, they get what they get.  First,
-					** check for time - the chance for getting a time quake crate
-					** should be very very low when they first start the mission,
-					** but as time goes on the chance goes up.
-					*/
-					if (Session.Type != GAME_NORMAL) {
-						int i,ucount;
-						int minunits = 1000;
-						bool found = false;
-						unsigned long minutes = (Score.ElapsedTime / TIMER_MINUTE);
-						if (minutes > 100) minutes = 100;
-						if (Random_Pick(0,100-(int)minutes) == 0) {
-							for (i=0; i < (Session.Players.Count() + Session.Options.AIPlayers); i++) {
-								ucount = 0;
-								HouseClass * hptr = Houses.Ptr(i + HOUSE_MULTI1);
-								if (hptr != NULL && !hptr->IsDefeated) {
-									int j;
-									for( j=0; j < UNIT_COUNT; j++) {
-										ucount += hptr->QuantityU(j);
-									}
-									for( j=0; j < INFANTRY_COUNT; j++) {
-										ucount += hptr->QuantityI(j);
-									}
-									for( j=0; j < AIRCRAFT_COUNT; j++) {
-										ucount += hptr->QuantityA(j);
-									}
-									for( j=0; j < VESSEL_COUNT; j++) {
-										ucount += hptr->QuantityV(j);
-									}
-									int bcount = 0;
-									for( j=0; j < STRUCT_COUNT; j++) {
-										bcount += hptr->QuantityB(j);
-									}
-									ucount += bcount/2;	// weight buildings less
-									minunits = min(minunits, ucount);
-								}
-							}
-							if (Random_Pick(0, minunits) == minunits) {
-								found = true;
-							}
-						}
-
-						if (!found) {
-							powerup = CRATE_MONEY;
-						}
-					}
-					break;
-			}
-			/*
-			**	Possibly force it to be an MCV if there is
-			**	sufficient money and no buildings left.
-			*/
-			if (	object->House->BScan == 0 &&
-					object->House->Available_Money() > ( (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost + BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) * object->House->CostBias) &&
-					Session.Options.Bases &&
-					!(object->House->UScan & UNITF_MCV)) {
-				powerup = CRATE_UNIT;
-				force_mcv = true;
-			}
-
-			/*
-			**	If the powerup is money but there is insufficient money to build a refinery but there is a construction
-			**	yard available, then force the money to be enough to rebuild the refinery.
-			*/
-			if (powerup == CRATE_MONEY && (object->House->BScan & (STRUCTF_CONST|STRUCTF_REFINERY)) == STRUCTF_CONST &&
-						object->House->Available_Money() < BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost * object->House->CostBias) {
-
-				force_money = BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost * object->House->CostBias;
-			}
-
-			/*
-			**	Special override for water crates so that illegal goodies items
-			**	won't appear.
-			*/
-			if (Overlay == OVERLAY_WATER_CRATE) {
-				switch (powerup) {
-					case CRATE_UNIT:
-					case CRATE_SQUAD:
-						powerup = CRATE_MONEY;
-						break;
-
-					default:
-						break;
+			case CRATE_ICBM:
+			case CRATE_PARA_BOMB:
+			case CRATE_SONAR:
+				if (MPSuperWeaponDisable) {
+					powerup = CRATE_MONEY;
 				}
+				break;
+
+			case CRATE_TIMEQUAKE:
+				/*
+				** For the time quake crate, scan through and count up all the
+				** units (and infantry and ships and aircraft) and if either
+				** side has very few, allow the time quake.  Otherwise,
+				** change the crate to money or something.  Only do this for
+				** multiplay - for solo play, they get what they get.  First,
+				** check for time - the chance for getting a time quake crate
+				** should be very very low when they first start the mission,
+				** but as time goes on the chance goes up.
+				*/
+				int i,ucount;
+				int minunits = 1000;
+				bool found = false;
+				unsigned long minutes = (Score.ElapsedTime / TIMER_MINUTE);
+				if (minutes > 100) minutes = 100;
+				if (Random_Pick(0,100-(int)minutes) == 0) {
+					for (i=0; i < (Session.Players.Count() + Session.Options.AIPlayers); i++) {
+						ucount = 0;
+						HouseClass * hptr = Houses.Ptr(i + HOUSE_MULTI1);
+						if (hptr != NULL && !hptr->IsDefeated) {
+							int j;
+							for( j=0; j < UNIT_COUNT; j++) {
+								ucount += hptr->QuantityU(j);
+							}
+							for( j=0; j < INFANTRY_COUNT; j++) {
+								ucount += hptr->QuantityI(j);
+							}
+							for( j=0; j < AIRCRAFT_COUNT; j++) {
+								ucount += hptr->QuantityA(j);
+							}
+							for( j=0; j < VESSEL_COUNT; j++) {
+								ucount += hptr->QuantityV(j);
+							}
+							int bcount = 0;
+							for( j=0; j < STRUCT_COUNT; j++) {
+								bcount += hptr->QuantityB(j);
+							}
+							ucount += bcount/2;	// weight buildings less
+							minunits = min(minunits, ucount);
+						}
+					}
+					if (Random_Pick(0, minunits) == minunits) {
+						found = true;
+					}
+				}
+
+				if (!found) {
+					powerup = CRATE_MONEY;
+				}
+				break;
+		}
+		/*
+		**	Possibly force it to be an MCV if there is
+		**	sufficient money and no buildings left.
+		*/
+		if (	object->House->BScan == 0 &&
+				object->House->Available_Money() > ( (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost + BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) * object->House->CostBias) &&
+				Session.Options.Bases &&
+				!(object->House->UScan & UNITF_MCV)) {
+			powerup = CRATE_UNIT;
+			force_mcv = true;
+		}
+
+		/*
+		**	If the powerup is money but there is insufficient money to build a refinery but there is a construction
+		**	yard available, then force the money to be enough to rebuild the refinery.
+		*/
+		if (powerup == CRATE_MONEY && (object->House->BScan & (STRUCTF_CONST|STRUCTF_REFINERY)) == STRUCTF_CONST &&
+					object->House->Available_Money() < BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost * object->House->CostBias) {
+
+			force_money = BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost * object->House->CostBias;
+		}
+
+		/*
+		**	Special override for water crates so that illegal goodies items
+		**	won't appear.
+		*/
+		if (Overlay == OVERLAY_WATER_CRATE) {
+			switch (powerup) {
+				case CRATE_UNIT:
+				case CRATE_SQUAD:
+					powerup = CRATE_MONEY;
+					break;
+
+				default:
+					break;
 			}
 		}
 
@@ -2257,7 +2226,7 @@ bool CellClass::Goodie_Check(FootClass * object)
 		Map.Remove_Crate(Cell_Number());
 //		Map[Cell_Number()].Overlay = OVERLAY_NONE;
 
-		if (Session.Type != GAME_NORMAL && Rule.IsMPCrates) {
+		if (Rule.IsMPCrates) {
 			Map.Place_Random_Crate();
 		}
 
@@ -2861,9 +2830,7 @@ bool CellClass::Can_Tiberium_Grow(void) const
 {
 	if (!Rule.IsTGrowth) return(false);
 
-	if (Session.Type != GAME_NORMAL) {
-		if(!Session.Options.Tiberium) return(false);
-	}
+	if(!Session.Options.Tiberium) return(false);
 
 	if (Land_Type() != LAND_TIBERIUM) return(false);
 
@@ -2896,9 +2863,7 @@ bool CellClass::Can_Tiberium_Spread(void) const
 {
 	if (!Rule.IsTSpread) return(false);
 
-	if (Session.Type != GAME_NORMAL) {
-		if(!Session.Options.Tiberium) return(false);
-	}
+	if(!Session.Options.Tiberium) return(false);
 
 	if (Land_Type() != LAND_TIBERIUM) return(false);
 
@@ -3052,9 +3017,6 @@ void CellClass::Set_Mapped(HouseClass *player, bool set)
 {
 	if (player && player->Class) {
 		Set_Mapped(player->Class->House, set);
-		if (Session.Type == GAME_NORMAL && player->IsHuman) {
-			IsMapped = set;			// Also set the regular flag in single player
-		}
 	}
 }			  
 
@@ -3115,9 +3077,6 @@ void CellClass::Set_Visible(HouseClass *player, bool set)
 {
 	if (player && player->Class) {
 		Set_Visible(player->Class->House, set);
-		if (Session.Type == GAME_NORMAL && player->IsHuman) {
-			IsVisible = set;			// Also set the regular flag in single player. This is needed for rendering
-		}
 	}
 }			  
 

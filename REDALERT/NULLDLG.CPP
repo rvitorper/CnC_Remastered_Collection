@@ -49,5 +49,5 @@
 #include "function.h"
 
 //PG
-GameType Select_Serial_Dialog(void) { return GAME_NORMAL; }
+GameType Select_Serial_Dialog(void) { return GAME_SKIRMISH; }
 

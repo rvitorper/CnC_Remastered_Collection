@@ -149,7 +149,7 @@ char *SessionClass::CallWaitStrings[ CALL_WAIT_STRINGS_NUM ] = {
  *=========================================================================*/
 SessionClass::SessionClass(void)
 {
-	Type = GAME_NORMAL;
+	Type = GAME_SKIRMISH;
 	CommProtocol = DEFAULT_COMM_PROTOCOL;
 
 	Options.ScenarioIndex = 0;

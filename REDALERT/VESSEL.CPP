@@ -2074,7 +2074,7 @@ void VesselClass::Read_INI(CCINIClass & ini)
 							vessel->Strength = (int)vessel->Class->MaxStrength * fixed(strength, 256);
 							if (vessel->Strength > vessel->Class->MaxStrength-3) vessel->Strength = vessel->Class->MaxStrength;
 	//						vessel->Strength = Fixed_To_Cardinal(vessel->Class->MaxStrength, strength);
-							if (Session.Type == GAME_NORMAL || vessel->House->IsHuman) {
+							if (vessel->House->IsHuman) {
 								vessel->Assign_Mission(mission);
 								vessel->Commence();
 							} else {

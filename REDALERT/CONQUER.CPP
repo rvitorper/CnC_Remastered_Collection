@@ -297,25 +297,6 @@ void Main_Game(int argc, char * argv[])
 		if (Session.Record || Session.Play) {
 			Session.RecordFile.Close();
 		}
-
-		/*
-		**	If we're playing back, the mouse will be hidden; show it.
-		** Also, set all variables back to normal, to return to the main menu.
-		*/
-		if (Session.Play) {
-			Show_Mouse();
-			Session.Type = GAME_NORMAL;
-			Session.Play = 0;
-		}
-		if (Special.IsFromWChat) {
-			//PG Shutdown_Network();		      // Clear up the pseudo IPX stuff
-			Winsock.Close();
-			Special.IsFromWChat = false;
-			SpawnedFromWChat = false;
-			DDEServer.Delete_MPlayer_Game_Info();	//Make sure we dont use the same start packet twice
-			Session.Type = GAME_NORMAL;			//Have to do this or we will got straight to the multiplayer menu
-			Spawn_WChat(false);		//Will switch back to Wchat. It must be there because its been poking us
-		}
 	}
 
 	/*
@@ -365,56 +346,6 @@ void Keyboard_Process(KeyNumType & input)
 
 	KeyNumType plain = KeyNumType(input & ~(WWKEY_SHIFT_BIT|WWKEY_ALT_BIT|WWKEY_CTRL_BIT|WWKEY_VK_BIT));
 	KeyNumType key = KeyNumType(input & ~WWKEY_VK_BIT);
-
-#ifdef CHEAT_KEYS
-
-	if (Debug_Flag) {
-		HousesType h;
-
-		switch (int(input)) {
-			case int(int(KN_M) | int(KN_SHIFT_BIT)):
-			case int(int(KN_M) | int(KN_ALT_BIT)):
-			case int(int(KN_M) | int(KN_CTRL_BIT)):
-				for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-					Houses.Ptr(h)->Refund_Money(10000);
-				}
-				break;
-
-			default:
-				break;
-		}
-	}
-#endif
-
-#ifdef VIRGIN_CHEAT_KEYS
-	if (Debug_Playtest && input == (KN_W|KN_ALT_BIT)) {
-		PlayerPtr->Blockage = false;
-		PlayerPtr->Flag_To_Win();
-	}
-#endif
-
-#ifdef CHEAT_KEYS
-	if (Debug_Playtest && input == (KA_W|KN_ALT_BIT)) {
-		PlayerPtr->Blockage = false;
-		PlayerPtr->Flag_To_Win();
-	}
-
-	if ((Debug_Flag || Debug_Playtest) && plain == KN_F4) {
-		if (Session.Type == GAME_NORMAL) {
-			Debug_Unshroud = (Debug_Unshroud == false);
-			Map.Flag_To_Redraw(true);
-		}
-	}
-
-	if (Debug_Flag && input == KN_SLASH) {
-		if (Session.Type != GAME_NORMAL) {
-			SpecialDialog = SDLG_SPECIAL;
-			input = KN_NONE;
-		} else {
-			Special_Dialog();
-		}
-	}
-#endif
 
 	/*
 	**	Process prerecorded team selection. This will be an additive select
@@ -568,28 +499,13 @@ void Keyboard_Process(KeyNumType & input)
 		input = KN_NONE;
 	}
 
-#ifdef TOFIX
-	/*
-	** For multiplayer, 'R' pops up the surrender dialog.
-	*/
-	if (input != 0 && input == Options.KeyResign) {
-		if (!PlayerLoses && /*Session.Type != GAME_NORMAL &&*/ !PlayerPtr->IsDefeated) {
-			SpecialDialog = SDLG_SURRENDER;
-			input = KN_NONE;
-		}
-		input = KN_NONE;
-	}
-#endif
-
 	/*
 	**	Handle making and breaking alliances.
 	*/
 	if (key != 0 && key == Options.KeyAlliance) {
-		if (Session.Type != GAME_NORMAL || Debug_Flag) {
-			if (CurrentObject.Count() && !PlayerPtr->IsDefeated) {
-				if (CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
-					OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
-				}
+		if (CurrentObject.Count() && !PlayerPtr->IsDefeated) {
+			if (CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
+				OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
 			}
 		}
 		input = KN_NONE;
@@ -782,18 +698,6 @@ static void Message_Input(KeyNumType &input)
 	//char *msg;
 
 	/*
-	**	Check keyboard input for a request to send a message.
-	**	The 'to' argument for Add_Edit is prefixed to the message buffer; the
-	**	message buffer is big enough for the 'to' field plus MAX_MESSAGE_LENGTH.
-	**	To send the message, calling Get_Edit_Buf retrieves the buffer minus the
-	**	'to' portion.  At the other end, the buffer allocated to display the
-	**	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
-	*/
-	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && input >= KN_F1 && input < (KN_F1 + Session.MaxPlayers) && !Session.Messages.Is_Edit()) {
-		memset (txt, 0, 40);
-	}
-
-	/*
 	**	Process message-system input; send the message out if RETURN is hit.
 	*/
 	copy_input = input;
@@ -802,7 +706,7 @@ static void Message_Input(KeyNumType &input)
 	/*
 	**	If a single character has been added to an edit buffer, update the display.
 	*/
-	if (rc == 1 && Session.Type != GAME_NORMAL) {
+	if (rc == 1) {
 		Map.Flag_To_Redraw(false);
 	}
 
@@ -812,19 +716,13 @@ static void Message_Input(KeyNumType &input)
 	** cells to redraw; otherwise, let the map compute the cells to redraw,
 	** by not force-drawing it, but just setting the IsToRedraw bit.
 	*/
-	if (rc==2 && Session.Type != GAME_NORMAL) {
+	if (rc==2) {
 		if (copy_input==KN_ESC) {
 			Map.Flag_To_Redraw(true);
 		} else {
 			Map.Flag_To_Redraw(false);
 		}
 		Map.DisplayClass::IsToRedraw = true;
-	}
-
-	/*
-	**	Send a message
-	*/
-	if ((rc==3 || rc==4) && Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
 	}
 }
 //#pragma on (unreferenced)
@@ -1212,28 +1110,12 @@ bool Main_Loop()
 	/*
 	**	Setup the timer so that the Main_Loop function processes at the correct rate.
 	*/
-	if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-		Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-
-		//
-		// In playback mode, run as fast as possible.
-		//
-		if (Session.Play) {
-			FrameTimer = 0;
-		} else {
-			if( !Session.DesiredFrameRate )
-				Session.DesiredFrameRate = 60;		//	A division by zero was happening (very rare).
-			framedelay = TIMER_SECOND / Session.DesiredFrameRate;
-			FrameTimer = framedelay;
-		}
+	if (Options.GameSpeed != 0) {
+		FrameTimer = Options.GameSpeed +
+			(PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0) -
+			(PlayerPtr->Difficulty == DIFF_HARD ? 1 : 0);
 	} else {
-		if (Options.GameSpeed != 0) {
-			FrameTimer = Options.GameSpeed +
-				(PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0) -
-				(PlayerPtr->Difficulty == DIFF_HARD ? 1 : 0);
-		} else {
-			FrameTimer = Options.GameSpeed + (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0);
-		}
+		FrameTimer = Options.GameSpeed + (PlayerPtr->Difficulty == DIFF_EASY ? 1 : 0);
 	}
 
 	/*
@@ -1316,14 +1198,6 @@ bool Main_Loop()
 		PlayerRestarts = false;
 		Map.Help_Text(TXT_NONE);
 		Do_Restart();
-		return(!GameActive);
-	}
-
-	if( Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && Session.Players.Count() == 2 &&
-		Scen.bLocalProposesDraw && Scen.bOtherProposesDraw )
-	{
-		Map.Help_Text(TXT_NONE);
-		Do_Draw();
 		return(!GameActive);
 	}
 

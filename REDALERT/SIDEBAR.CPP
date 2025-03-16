@@ -331,11 +331,7 @@ void SidebarClass::Init_IO(void)
 		Zoom.IsPressed = false;
 		Zoom.Set_Shape(MFCD::Retrieve("MAP.SHP"));
 
-		if ((IsRadarActive && Is_Zoomable()) || Session.Type != GAME_NORMAL) {
-			Zoom.Enable();
-		} else {
-			Zoom.Disable();
-		}
+		Zoom.Enable();
 		Column[0].Init_IO(0);
 		Column[1].Init_IO(1);
 
@@ -2389,7 +2385,7 @@ void SidebarClass::Zoom_Mode_Control(void)
 	** radar spying readout => zoomed
 	*/
 	if (IsRadarActive) {
-		if (Is_Zoomed() || Session.Type==GAME_NORMAL) {
+		if (Is_Zoomed()) {
 			if (Is_Zoomed() || !Spy_Next_House()) {
 				Zoom_Mode(Coord_Cell(TacticalCoord));
 			}
@@ -2404,8 +2400,6 @@ void SidebarClass::Zoom_Mode_Control(void)
 			}
 		}
 	} else {
-		if (Session.Type!=GAME_NORMAL) {
-			Player_Names(Is_Player_Names()==0);
-		}
+		Player_Names(Is_Player_Names()==0);
 	}
 }

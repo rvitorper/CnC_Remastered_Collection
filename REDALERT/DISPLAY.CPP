@@ -1462,7 +1462,6 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass * house, bool check_radar_spie
 	// Original code. ST - 8/15/2019 10:26AM
 	if (house && house != PlayerPtr) {
 		if (house->RadarSpied & (1<<(PlayerPtr->Class->House))) house = PlayerPtr;
-		if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr)) house = PlayerPtr;
 	}
 
 	CellClass * cellptr = &(*this)[cell];

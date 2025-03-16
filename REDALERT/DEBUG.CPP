@@ -289,16 +289,6 @@ void Debug_Key(unsigned input)
 				break;
 
 			/*
-			**	Reveal entire map to player.
-			*/
-//			case KN_F4:
-//				if (Session.Type == GAME_NORMAL) {
-//					Debug_Unshroud = (Debug_Unshroud == false);
-//					Map.Flag_To_Redraw(true);
-//				}
-//				break;
-
-			/*
 			**	Shows sight and fire range in the form of circles emanating from the currently
 			**	selected unit. The white circle is for sight range, the red circle is for
 			**	fire range.

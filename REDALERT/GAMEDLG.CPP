@@ -189,13 +189,7 @@ void GameControlsClass::Process(void)
 		/*
 		**	Invoke game callback.
 		*/
-		if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-			Call_Back();
-		} else {
-			if (Main_Loop()) {
-				process = false;
-			}
-		}
+		Call_Back();
 
 		/*
 		** If we have just received input focus again after running in the background then
@@ -381,15 +375,10 @@ void GameControlsClass::Process(void)
 			** the save process; restore it when we're done, so multiplayer games don't
 			** go out of sync.
 			*/
-			if (Session.Type == GAME_NORMAL) {
-				Options.GameSpeed = gamespeed;
-				Options.Save_Settings();			// save new value
-			} else {
-				int old = Options.GameSpeed;		// save orig value
-				Options.GameSpeed = gamespeed;
-				Options.Save_Settings();			// save new value
-				Options.GameSpeed = old;			// restore old value
-			}
+			int old = Options.GameSpeed;		// save orig value
+			Options.GameSpeed = gamespeed;
+			Options.Save_Settings();			// save new value
+			Options.GameSpeed = old;			// restore old value
 
 			/*
 			**	Possibly launch into another dialog if so directed.

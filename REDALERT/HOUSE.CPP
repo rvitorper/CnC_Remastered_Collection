@@ -281,29 +281,16 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap)
 {
 	DiffType old = Difficulty;
 	Difficulty = handicap;
-
-	if (Session.Type != GAME_NORMAL) {
-		HouseTypeClass const * hptr = &HouseTypeClass::As_Reference(ActLike);
-		FirepowerBias = hptr->FirepowerBias * Rule.Diff[handicap].FirepowerBias;
-		GroundspeedBias = hptr->GroundspeedBias * Rule.Diff[handicap].GroundspeedBias * Rule.GameSpeedBias;
-		AirspeedBias = hptr->AirspeedBias * Rule.Diff[handicap].AirspeedBias * Rule.GameSpeedBias;
-		ArmorBias = hptr->ArmorBias * Rule.Diff[handicap].ArmorBias;
-		ROFBias = hptr->ROFBias * Rule.Diff[handicap].ROFBias;
-		CostBias = hptr->CostBias * Rule.Diff[handicap].CostBias;
-		RepairDelay = Rule.Diff[handicap].RepairDelay;
-		BuildDelay = Rule.Diff[handicap].BuildDelay;
-		BuildSpeedBias = hptr->BuildSpeedBias * Rule.Diff[handicap].BuildSpeedBias * Rule.GameSpeedBias;
-	} else {
-		FirepowerBias = Rule.Diff[handicap].FirepowerBias;
-		GroundspeedBias = Rule.Diff[handicap].GroundspeedBias * Rule.GameSpeedBias;
-		AirspeedBias = Rule.Diff[handicap].AirspeedBias * Rule.GameSpeedBias;
-		ArmorBias = Rule.Diff[handicap].ArmorBias;
-		ROFBias = Rule.Diff[handicap].ROFBias;
-		CostBias = Rule.Diff[handicap].CostBias;
-		RepairDelay = Rule.Diff[handicap].RepairDelay;
-		BuildDelay = Rule.Diff[handicap].BuildDelay;
-		BuildSpeedBias = Rule.Diff[handicap].BuildSpeedBias * Rule.GameSpeedBias;
-	}
+	HouseTypeClass const * hptr = &HouseTypeClass::As_Reference(ActLike);
+	FirepowerBias = hptr->FirepowerBias * Rule.Diff[handicap].FirepowerBias;
+	GroundspeedBias = hptr->GroundspeedBias * Rule.Diff[handicap].GroundspeedBias * Rule.GameSpeedBias;
+	AirspeedBias = hptr->AirspeedBias * Rule.Diff[handicap].AirspeedBias * Rule.GameSpeedBias;
+	ArmorBias = hptr->ArmorBias * Rule.Diff[handicap].ArmorBias;
+	ROFBias = hptr->ROFBias * Rule.Diff[handicap].ROFBias;
+	CostBias = hptr->CostBias * Rule.Diff[handicap].CostBias;
+	RepairDelay = Rule.Diff[handicap].RepairDelay;
+	BuildDelay = Rule.Diff[handicap].BuildDelay;
+	BuildSpeedBias = hptr->BuildSpeedBias * Rule.Diff[handicap].BuildSpeedBias * Rule.GameSpeedBias;
 
 	return(old);
 }
@@ -795,11 +782,6 @@ bool HouseClass::Can_Build(ObjectTypeClass const * type, HousesType house) const
 	}
 
 	/*
-	**	The computer can always build everything.
-	*/
-	if (!IsHuman && Session.Type == GAME_NORMAL) return(true);
-
-	/*
 	**	Special hack to get certain objects to exist for both sides in the game.
 	*/
 	int own = type->Get_Ownable();
@@ -834,9 +816,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const * type, HousesType house) const
 	/*
 	**	Either tech center counts as a prerequisite.
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		if ((flags & (STRUCTF_SOVIET_TECH|STRUCTF_ADVANCED_TECH)) != 0) flags |= STRUCTF_SOVIET_TECH|STRUCTF_ADVANCED_TECH;
-	}
+	if ((flags & (STRUCTF_SOVIET_TECH|STRUCTF_ADVANCED_TECH)) != 0) flags |= STRUCTF_SOVIET_TECH|STRUCTF_ADVANCED_TECH;
 
 	int level = Control.TechLevel;
 #ifdef CHEAT_KEYS
@@ -923,30 +903,6 @@ void HouseClass::AI(void)
 		IsBaseBuilding = true;
 		IsStarted = true;
 		IsAlerted = true;
-	}
-
-	/*
-	**	Check to see if the house wins.
-	*/
-	if (Session.Type == GAME_NORMAL && IsToWin && BorrowedTime == 0 && Blockage <= 0) {
-		IsToWin = false;
-		if (this == PlayerPtr) {
-			PlayerWins = true;
-		} else {
-			PlayerLoses = true;
-		}
-	}
-
-	/*
-	**	Check to see if the house loses.
-	*/
-	if (Session.Type == GAME_NORMAL && IsToLose && BorrowedTime == 0) {
-		IsToLose = false;
-		if (this == PlayerPtr) {
-			PlayerLoses = true;
-		} else {
-			PlayerWins = true;
-		}
 	}
 
 	/*
@@ -1148,7 +1104,7 @@ void HouseClass::AI(void)
 		Super_Weapon_Handler();
 	}
 
-	if( (Session.Type != GAME_NORMAL || !IsHuman) && Scen.AutoSonarTimer == 0 )
+	if(Scen.AutoSonarTimer == 0 )
 	{
 		//	If house has nothing but subs left, do an automatic sonar pulse to reveal them.
 		if( VQuantity[ VESSEL_SS ] > 0 )		//	Includes count of VESSEL_MISSILESUBs. ajw
@@ -1204,10 +1160,7 @@ void HouseClass::AI(void)
 			}
 		}
 	}
-
-	if (Session.Type != GAME_NORMAL) {
-		Check_Pertinent_Structures();
-	}
+	Check_Pertinent_Structures();
 
 	/*
 	** Special win/lose check for multiplayer games; by-passes the
@@ -1215,7 +1168,7 @@ void HouseClass::AI(void)
 	** may not properly set IScan etc for each house; you have to go
 	** through each object's AI before it will be properly set.
 	*/
-	if (Session.Type != GAME_NORMAL && !IsDefeated &&
+	if (!IsDefeated &&
 		!ActiveBScan && !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan && Frame > 0) {
 		MPlayer_Defeated();
 	}
@@ -1521,9 +1474,7 @@ void HouseClass::Super_Weapon_Handler(void)
 		**	facility available, then make the chronosphere available as well.
 		*/
 		if ((ActiveBScan & STRUCTF_CHRONOSPHERE) &&
-//			(ActLike == HOUSE_GOOD || Session.Type != GAME_NORMAL) &&
 			(unsigned)Control.TechLevel >= BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
-//			Control.TechLevel >= Rule.ChronoTechLevel &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_CHRONOSPHERE].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -1566,7 +1517,6 @@ void HouseClass::Super_Weapon_Handler(void)
 		**	facility available, then make the iron curtain available as well.
 		*/
 		if ((ActiveBScan & STRUCTF_IRON_CURTAIN) &&
-			(ActLike == HOUSE_USSR || ActLike == HOUSE_UKRAINE || Session.Type != GAME_NORMAL) &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_IRON_CURTAIN].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -1648,7 +1598,6 @@ void HouseClass::Super_Weapon_Handler(void)
 		**	silo available, then make the missile available as well.
 		*/
 		if ((ActiveBScan & STRUCTF_MSLO) &&
-			((ActLike != HOUSE_USSR && ActLike != HOUSE_UKRAINE) || Session.Type != GAME_NORMAL) &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_NUCLEAR_BOMB].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -1701,15 +1650,6 @@ void HouseClass::Super_Weapon_Handler(void)
 				Special_Weapon_AI(SPC_PARA_BOMB);
 			}
 		}
-	} else {
-		if ((ActiveBScan & STRUCTF_AIRSTRIP) != 0 && Control.TechLevel >= Rule.ParaBombTechLevel && Session.Type == GAME_NORMAL) {
-			SuperWeapon[SPC_PARA_BOMB].Enable(false, this == PlayerPtr, false);
-			// Add to Glyphx multiplayer sidebar. ST - 8/7/2019 10:13AM
-			if (this == PlayerPtr) {
-				Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
-				Map.Column[1].Flag_To_Redraw();
-			}
-		}
 	}
 
 	if (SuperWeapon[SPC_PARA_INFANTRY].Is_Present()) {
@@ -1756,15 +1696,11 @@ void HouseClass::Attacked(BuildingClass* source)
 	assert(Houses.ID(this) == ID);
 
 #ifdef FIXIT_BASE_ANNOUNCE
-	if (SpeakAttackDelay == 0 && ((Session.Type == GAME_NORMAL && IsPlayerControl) || PlayerPtr->Class->House == Class->House)) {
+	if (PlayerPtr->Class->House == Class->House) {
 #else
 	if (SpeakAttackDelay == 0 && PlayerPtr->Class->House == Class->House) {
 #endif
-		if (Session.Type == GAME_NORMAL) {
-			Speak(VOX_BASE_UNDER_ATTACK, NULL, source ? source->Center_Coord() : 0);
-		} else {
-			Speak(VOX_BASE_UNDER_ATTACK, this);
-		}
+		Speak(VOX_BASE_UNDER_ATTACK, this);
 
 		// MBL 06.13.2020 - Timing change from 2 minute cooldown, per https://jaas.ea.com/browse/TDRA-6784
 		// SpeakAttackDelay = Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay); // 2 minutes
@@ -2113,7 +2049,7 @@ void HouseClass::Make_Ally(HousesType house)
 			Control.Allies |= (1L << house);
 		}
 
-		if (Session.Type != GAME_NORMAL && !ScenarioInit) {
+		if (!ScenarioInit) {
 			HouseClass * hptr = HouseClass::As_Pointer(house);
 
 			/*
@@ -2212,7 +2148,7 @@ void HouseClass::Make_Enemy(HousesType house)
 			}
 		}
 
-		if ((Debug_Flag || Session.Type != GAME_NORMAL) && !ScenarioInit && IsHuman) {
+		if (!ScenarioInit && IsHuman) {
 			char buffer[80];
 
 			sprintf(buffer, Text_String(TXT_AT_WAR), IniName, HouseClass::As_Pointer(house)->IniName);
@@ -3640,10 +3576,6 @@ void HouseClass::MPlayer_Defeated(void)
 		**	Pop up a message showing that I was defeated
 		*/
 		sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), IniName);
-		if (Session.Type == GAME_NORMAL) {
-			Session.Messages.Add_Message(NULL, 0, txt, Session.ColorIdx,
-				TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, Rule.MessageDelay * TICKS_PER_MINUTE);
-		}
 		Map.Flag_To_Redraw(false);
 
 	} else {
@@ -5471,13 +5403,6 @@ int HouseClass::AI_Building(void)
 
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
-	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
-		BaseNodeClass * node = Base.Next_Buildable();
-		if (node) {
-			BuildStructure = node->Type;
-		}
-	}
-
 	if (IsBaseBuilding) {
 		/*
 		**	Don't suggest anything to build if the base is already big enough.
@@ -5839,86 +5764,6 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
-	if (Session.Type == GAME_NORMAL) {
-
-		int counter[UNIT_COUNT];
-		memset(counter, 0x00, sizeof(counter));
-
-		/*
-		**	Build a list of the maximum of each type we wish to produce. This will be
-		**	twice the number required to fill all teams.
-		*/
-		int index;
-		for (index = 0; index < Teams.Count(); index++) {
-			TeamClass * tptr = Teams.Ptr(index);
-			if (tptr != NULL) {
-				TeamTypeClass const * team = tptr->Class;
-				if (((team->IsReinforcable && !tptr->IsFullStrength) || (!tptr->IsForcedActive && !tptr->IsHasBeen && !tptr->JustAltered)) && team->House == Class->House) {
-					for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-						TechnoTypeClass const * memtype = team->Members[subindex].Class;
-						if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-							counter[((UnitTypeClass const *)memtype)->Type] = 1;
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Team types that are flagged as prebuilt, will always try to produce enough
-		**	to fill one team of this type regardless of whether there is a team active
-		**	of that type.
-		*/
-		for (index = 0; index < TeamTypes.Count(); index++) {
-			TeamTypeClass const * team = TeamTypes.Ptr(index);
-			if (team != NULL && team->House == Class->House && team->IsPrebuilt && (!team->IsAutocreate || IsAlerted)) {
-				for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-					TechnoTypeClass const * memtype = team->Members[subindex].Class;
-
-					if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-						int subtype = ((UnitTypeClass const *)memtype)->Type;
-						counter[subtype] = max(counter[subtype], team->Members[subindex].Quantity);
-					}
-				}
-			}
-		}
-
-		/*
-		**	Reduce the theoretical maximum by the actual number of objects currently
-		**	in play.
-		*/
-		for (int uindex = 0; uindex < Units.Count(); uindex++) {
-			UnitClass * unit = Units.Ptr(uindex);
-			if (unit != NULL && unit->Is_Recruitable(this) && counter[unit->Class->Type] > 0) {
-				counter[unit->Class->Type]--;
-			}
-		}
-
-		/*
-		**	Pick to build the most needed object but don't consider those objects that
-		**	can't be built because of scenario restrictions or insufficient cash.
-		*/
-		int bestval = -1;
-		int bestcount = 0;
-		UnitType bestlist[UNIT_COUNT];
-		for (UnitType utype = UNIT_FIRST; utype < UNIT_COUNT; utype++) {
-			if (counter[utype] > 0 && Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) && UnitTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
-				if (bestval == -1 || bestval < counter[utype]) {
-					bestval = counter[utype];
-					bestcount = 0;
-				}
-				bestlist[bestcount++] = utype;
-			}
-		}
-
-		/*
-		**	The unit type to build is now known. Fetch a pointer to the techno type class.
-		*/
-		if (bestcount) {
-			BuildUnit = bestlist[Random_Pick(0, bestcount-1)];
-		}
-	}
-
 	if (IsBaseBuilding) {
 
 		int counter[UNIT_COUNT];
@@ -5963,96 +5808,6 @@ int HouseClass::AI_Vessel(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	if (Session.Type == GAME_NORMAL) {
-
-		int counter[VESSEL_COUNT];
-		if (Session.Type == GAME_NORMAL) {
-			memset(counter, 0x00, sizeof(counter));
-		} else {
-			for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-				if (Can_Build(&VesselTypeClass::As_Reference(index), Class->House) && VesselTypeClass::As_Reference(index).Level <= (unsigned)Control.TechLevel) {
-					counter[index] = 16;
-				} else {
-					counter[index] = 0;
-				}
-			}
-		}
-
-		/*
-		**	Build a list of the maximum of each type we wish to produce. This will be
-		**	twice the number required to fill all teams.
-		*/
-		int index;
-		for (index = 0; index < Teams.Count(); index++) {
-			TeamClass * tptr = Teams.Ptr(index);
-			if (tptr) {
-				TeamTypeClass const * team = tptr->Class;
-
-				if (((team->IsReinforcable && !tptr->IsFullStrength) || (!tptr->IsForcedActive && !tptr->IsHasBeen && !tptr->JustAltered)) && team->House == Class->House) {
-					for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-						if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-							counter[((VesselTypeClass const *)(team->Members[subindex].Class))->Type] = 1;
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Team types that are flagged as prebuilt, will always try to produce enough
-		**	to fill one team of this type regardless of whether there is a team active
-		**	of that type.
-		*/
-		for (index = 0; index < TeamTypes.Count(); index++) {
-			TeamTypeClass const * team = TeamTypes.Ptr(index);
-			if (team) {
-				if (team->House == Class->House && team->IsPrebuilt && (!team->IsAutocreate || IsAlerted)) {
-					for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-						if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-							int subtype = ((VesselTypeClass const *)(team->Members[subindex].Class))->Type;
-							counter[subtype] = max(counter[subtype], team->Members[subindex].Quantity);
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Reduce the theoretical maximum by the actual number of objects currently
-		**	in play.
-		*/
-		for (int vindex = 0; vindex < Vessels.Count(); vindex++) {
-			VesselClass * unit = Vessels.Ptr(vindex);
-			if (unit != NULL && unit->Is_Recruitable(this) && counter[unit->Class->Type] > 0) {
-				counter[unit->Class->Type]--;
-			}
-		}
-
-		/*
-		**	Pick to build the most needed object but don't consider those object that
-		**	can't be built because of scenario restrictions or insufficient cash.
-		*/
-		int bestval = -1;
-		int bestcount = 0;
-		VesselType bestlist[VESSEL_COUNT];
-		for (VesselType utype = VESSEL_FIRST; utype < VESSEL_COUNT; utype++) {
-			if (counter[utype] > 0 && Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) && VesselTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
-				if (bestval == -1 || bestval < counter[utype]) {
-					bestval = counter[utype];
-					bestcount = 0;
-				}
-				bestlist[bestcount++] = utype;
-			}
-		}
-
-		/*
-		**	The unit type to build is now known. Fetch a pointer to the techno type class.
-		*/
-		if (bestcount) {
-			BuildVessel = bestlist[Random_Pick(0, bestcount-1)];
-		}
-	}
-
 	if (IsBaseBuilding) {
 		BuildVessel = VESSEL_NONE;
 	}
@@ -6083,93 +5838,6 @@ int HouseClass::AI_Infantry(void)
 
 	if (BuildInfantry != INFANTRY_NONE) return(TICKS_PER_SECOND);
 	if (CurInfantry >= Control.MaxInfantry) return(TICKS_PER_SECOND);
-
-	if (Session.Type == GAME_NORMAL) {
-		TechnoTypeClass const * techno = 0;
-		int counter[INFANTRY_COUNT];
-		memset(counter, 0x00, sizeof(counter));
-
-		/*
-		**	Build a list of the maximum of each type we wish to produce. This will be
-		**	twice the number required to fill all teams.
-		*/
-		int index;
-		for (index = 0; index < Teams.Count(); index++) {
-			TeamClass * tptr = Teams.Ptr(index);
-			if (tptr != NULL) {
-				TeamTypeClass const * team = tptr->Class;
-
-				if (((team->IsReinforcable && !tptr->IsFullStrength) || (!tptr->IsForcedActive && !tptr->IsHasBeen && !tptr->JustAltered)) && team->House == Class->House) {
-					for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-						if (team->Members[subindex].Class->What_Am_I() == RTTI_INFANTRYTYPE) {
-							counter[((InfantryTypeClass const *)(team->Members[subindex].Class))->Type] += team->Members[subindex].Quantity + (team->IsReinforcable ? 1 : 0);
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Team types that are flagged as prebuilt, will always try to produce enough
-		**	to fill one team of this type regardless of whether there is a team active
-		**	of that type.
-		*/
-		for (index = 0; index < TeamTypes.Count(); index++) {
-			TeamTypeClass const * team = TeamTypes.Ptr(index);
-			if (team != NULL) {
-				if (team->House == Class->House && team->IsPrebuilt && (!team->IsAutocreate || IsAlerted)) {
-					for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-						if (team->Members[subindex].Class->What_Am_I() == RTTI_INFANTRYTYPE) {
-							int subtype = ((InfantryTypeClass const *)(team->Members[subindex].Class))->Type;
-//									counter[subtype] = 1;
-							counter[subtype] = max(counter[subtype], team->Members[subindex].Quantity);
-							counter[subtype] = min(counter[subtype], 5);
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Reduce the theoretical maximum by the actual number of objects currently
-		**	in play.
-		*/
-		for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
-			InfantryClass * infantry = Infantry.Ptr(uindex);
-			if (infantry != NULL && infantry->Is_Recruitable(this) && counter[infantry->Class->Type] > 0) {
-				counter[infantry->Class->Type]--;
-			}
-		}
-
-		/*
-		**	Pick to build the most needed object but don't consider those object that
-		**	can't be built because of scenario restrictions or insufficient cash.
-		*/
-		int bestval = -1;
-		int bestcount = 0;
-		InfantryType bestlist[INFANTRY_COUNT];
-		for (InfantryType utype = INFANTRY_FIRST; utype < INFANTRY_COUNT; utype++) {
-
-			if (utype != INFANTRY_DOG || !(IScan & INFANTRYF_DOG)) {
-				if (counter[utype] > 0 && Can_Build(&InfantryTypeClass::As_Reference(utype), Class->House) && InfantryTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
-					if (bestval == -1 || bestval < counter[utype]) {
-						bestval = counter[utype];
-						bestcount = 0;
-					}
-					bestlist[bestcount++] = utype;
-				}
-			}
-		}
-
-		/*
-		**	The infantry type to build is now known. Fetch a pointer to the techno type class.
-		*/
-		if (bestcount) {
-			int pick = Random_Pick(0, bestcount-1);
-			BuildInfantry = bestlist[pick];
-		}
-
-	}
 
 	if (IsBaseBuilding) {
 		HouseClass const * enemy = NULL;
@@ -6741,7 +6409,7 @@ void HouseClass::Recalc_Attributes(void)
 	for (index = 0; index < Units.Count(); index++) {
 		UnitClass const * unit = Units.Ptr(index);
 		unit->House->UScan |= (1L << unit->Class->Type);
-		if (unit->IsLocked && (Session.Type != GAME_NORMAL || !unit->House->IsHuman || unit->IsDiscoveredByPlayer)) {
+		if (unit->IsLocked) {
 			if (!unit->IsInLimbo) {
 				unit->House->ActiveUScan |= (1L << unit->Class->Type);
 			}
@@ -6750,7 +6418,7 @@ void HouseClass::Recalc_Attributes(void)
 	for (index = 0; index < Infantry.Count(); index++) {
 		InfantryClass const * infantry = Infantry.Ptr(index);
 		infantry->House->IScan |= (1L << infantry->Class->Type);
-		if (infantry->IsLocked && (Session.Type != GAME_NORMAL || !infantry->House->IsHuman || infantry->IsDiscoveredByPlayer)) {
+		if (infantry->IsLocked) {
 			if (!infantry->IsInLimbo) {
 				infantry->House->ActiveIScan |= (1L << infantry->Class->Type);
 				infantry->House->OldIScan |= (1L << infantry->Class->Type);
@@ -6760,7 +6428,7 @@ void HouseClass::Recalc_Attributes(void)
 	for (index = 0; index < Aircraft.Count(); index++) {
 		AircraftClass const * aircraft = Aircraft.Ptr(index);
 		aircraft->House->AScan |= (1L << aircraft->Class->Type);
-		if (aircraft->IsLocked && (Session.Type != GAME_NORMAL || !aircraft->House->IsHuman || aircraft->IsDiscoveredByPlayer)) {
+		if (aircraft->IsLocked) {
 			if (!aircraft->IsInLimbo) {
 				aircraft->House->ActiveAScan |= (1L << aircraft->Class->Type);
 				aircraft->House->OldAScan |= (1L << aircraft->Class->Type);
@@ -6771,7 +6439,7 @@ void HouseClass::Recalc_Attributes(void)
 		BuildingClass const * building = Buildings.Ptr(index);
 		if (building->Class->Type < 32) {
 			building->House->BScan |= (1L << building->Class->Type);
-			if (building->IsLocked && (Session.Type != GAME_NORMAL || !building->House->IsHuman || building->IsDiscoveredByPlayer)) {
+			if (building->IsLocked) {
 				if (!building->IsInLimbo) {
 					building->House->ActiveBScan |= (1L << building->Class->Type);
 					building->House->OldBScan |= (1L << building->Class->Type);
@@ -6782,7 +6450,7 @@ void HouseClass::Recalc_Attributes(void)
 	for (index = 0; index < Vessels.Count(); index++) {
 		VesselClass const * vessel = Vessels.Ptr(index);
 		vessel->House->VScan |= (1L << vessel->Class->Type);
-		if (vessel->IsLocked && (Session.Type != GAME_NORMAL || !vessel->House->IsHuman || vessel->IsDiscoveredByPlayer)) {
+		if (vessel->IsLocked) {
 			if (!vessel->IsInLimbo) {
 				vessel->House->ActiveVScan |= (1L << vessel->Class->Type);
 				vessel->House->OldVScan |= (1L << vessel->Class->Type);
@@ -7435,14 +7103,6 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const
 	*/
 	if (ScenarioInit) {
 		return(true);
-	}
-
-	/*
-	**	Alliances (outside of scneario init time) are allowed only if
-	**	this is a multiplayer game. Otherwise, they are prohibited.
-	*/
-	if (Session.Type == GAME_NORMAL) {
-		return(false);
 	}
 
 	/*

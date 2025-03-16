@@ -1881,9 +1881,6 @@ bool ObjectClass::Mark(MarkType mark)
 		**	placed down.
 		*/
 		if (mark == MARK_DOWN && !IsDown) {
-			if (tech && Session.Type == GAME_NORMAL && In_Which_Layer() == LAYER_GROUND) {
-				Map[cell].Adjust_Threat(house, threat);
-			}
 			IsDown = true;
 			Mark_For_Redraw();
 			return(true);
@@ -1894,9 +1891,6 @@ bool ObjectClass::Mark(MarkType mark)
 		**	lifted up from the map.
 		*/
 		if (mark == MARK_UP && IsDown) {
-			if (tech && Session.Type == GAME_NORMAL && In_Which_Layer() == LAYER_GROUND) {
-				Map[cell].Adjust_Threat(house, -threat);
-			}
 			if (Class_Of().IsFootprint) {
 				Map.Overlap_Up(Coord_Cell(Coord), this);
 			}
@@ -1984,10 +1978,6 @@ void ObjectClass::Set_Selected_By_Player(HouseClass *player)
 
 	int shift = (int)house;
 	IsSelectedMask |= (1 << shift);
-
-	if (Session.Type == GAME_NORMAL && player == PlayerPtr) {
-		IsSelected = true;
-	}
 }
 
 /***********************************************************************************************
@@ -2014,10 +2004,6 @@ void ObjectClass::Set_Unselected_By_Player(HouseClass *player)
 
 	int shift = (int)house;
 	IsSelectedMask &= ~(1 << shift);
-
-	if (Session.Type == GAME_NORMAL && player == PlayerPtr) {
-		IsSelected = false;
-	}
 }
 
 /***********************************************************************************************

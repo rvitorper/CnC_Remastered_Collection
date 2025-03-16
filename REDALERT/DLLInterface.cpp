@@ -1217,104 +1217,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Instance_Variation(int s
 	BuildLevel = build_level;
 	Scen.Scenario = scenario_index;
 	ScenarioDirType scen_dir = (ScenarioDirType)scenario_direction;
-	if (stricmp(game_type, "GAME_NORMAL") == 0) {
-		GAME_TO_PLAY = GAME_NORMAL;
-		if (scen_player == SCEN_PLAYER_NONE) {
-			return false;
-		}
-	} else {
-		return false;
-	}
-
-	/*
-	**	Load the scenario.  Specify variation 'A' for the editor; for the game,
-	**	don't specify a variation, to make 'Set_Scenario_Name()' pick a random one.
-	**	Skip this if we've already loaded a save-game.
-	*/
-	Force_CD_Available(ALWAYS_RELOAD_CD);
-
-	if (override_map_name && strlen(override_map_name)) {
-		strcpy(Scen.ScenarioName, override_map_name);
-	} else {
-		Scen.Set_Scenario_Name(Scen.Scenario, scen_player, scen_dir, (ScenarioVarType)scenario_variation);
-	}
-
-	HiddenPage.Clear();
-	VisiblePage.Clear();
-
-	/*
-	** Set the mouse to some position where it's not going to scroll, or do something else wierd.
-	*/
-	DLLForceMouseX = 100;
-	DLLForceMouseY = 100;
-	KEYBOARD->MouseQX = 100;
-	KEYBOARD->MouseQY = 100;
-
-	GlyphXClientSidebarWidthInLeptons = 0;
-
-	Seed = GetRandSeed();
-	Scen.RandomNumber = Seed;
-
-	if (!Start_Scenario(Scen.ScenarioName)) {
-		return(false);
-	}
-
-	DLLExportClass::Reset_Sidebars();
-	DLLExportClass::Reset_Player_Context();
-	DLLExportClass::Calculate_Start_Positions();
-
-	/*
-	** Make sure the scroll constraints are applied. This is important for GDI 1 where the map isn't wide enough for the screen
-	*/
-	COORDINATE origin_coord = Coord_Add(Map.TacticalCoord, XY_Coord(1, 0));
-	Map.Set_Tactical_Position(origin_coord);
-	origin_coord = Coord_Add(Map.TacticalCoord, XY_Coord(-1, 0));
-	Map.Set_Tactical_Position(origin_coord);
-
-
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		MPSuperWeaponDisable = false;
-	} else {
-		if (MPSuperWeaponDisable) {
-			/*
-			** Write over the tecb level settings we just loaded from the Rules ini
-			*/
-			Rule.GPSTechLevel = 100;
-			Rule.ParaInfantryTechLevel = 100;
-			Rule.SpyPlaneTechLevel = 100;
-			Rule.ParaBombTechLevel = 100;
-			Rule.ChronoTechLevel = 100;
-		}	
-	}	
-
-	/*
-	**	Hide the SeenBuff; force the map to render one frame.  The caller can
-	**	then fade the palette in.
-	**	(If we loaded a game, this step will fade out the title screen.  If we
-	**	started a scenario, Start_Scenario() will have played a couple of VQ
-	**	movies, which will have cleared the screen to black already.)
-	*/
-
-	//Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
-	HiddenPage.Clear();
-	VisiblePage.Clear();
-	Set_Logic_Page(SeenBuff);
-	
-	/*
-	** Sidebar is always active in hi-res.
-	*/
-	if (!Debug_Map) {
-		Map.SidebarClass::Activate(1);
-	}
-	
-	Map.Flag_To_Redraw(true);
-
-	Set_Palette(GamePalette.Get_Data());
-	Map.Render();
-
-	Set_Palette(GamePalette.Get_Data());
-	
-	return true;
+	return false;
 }
 
 
@@ -1373,7 +1276,6 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Custom_Instance(const ch
 	ScenarioPlayerType scen_player;
 	strncpy(Scen.ScenarioName, fullname, _MAX_FNAME + _MAX_EXT);
 	
-	GAME_TO_PLAY = GAME_NORMAL;
 	scen_player = SCEN_PLAYER_MPLAYER;
 
 	HiddenPage.Clear();
@@ -1407,22 +1309,15 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Start_Custom_Instance(const ch
 	Map.Set_Tactical_Position(origin_coord);
 	origin_coord = Coord_Add(Map.TacticalCoord, XY_Coord(-1, 0));
 	Map.Set_Tactical_Position(origin_coord);
-
-
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		MPSuperWeaponDisable = false;
-	}
-	else {
-		if (MPSuperWeaponDisable) {
-			/*
-			** Write over the tecb level settings we just loaded from the Rules ini
-			*/
-			Rule.GPSTechLevel = 100;
-			Rule.ParaInfantryTechLevel = 100;
-			Rule.SpyPlaneTechLevel = 100;
-			Rule.ParaBombTechLevel = 100;
-			Rule.ChronoTechLevel = 100;
-		}
+	if (MPSuperWeaponDisable) {
+		/*
+		** Write over the tecb level settings we just loaded from the Rules ini
+		*/
+		Rule.GPSTechLevel = 100;
+		Rule.ParaInfantryTechLevel = 100;
+		Rule.SpyPlaneTechLevel = 100;
+		Rule.ParaBombTechLevel = 100;
+		Rule.ChronoTechLevel = 100;
 	}
 
 	/*
@@ -1675,7 +1570,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	**
 	** This was disabled in the RA source code, so copying over the functionality from TD
 	*/
-	if (GAME_TO_PLAY != GAME_NORMAL && Session.Options.Ghosts && IRandom(0,10000) == 1) {
+	if (Session.Options.Ghosts && IRandom(0,10000) == 1) {
 		DLLExportClass::Computer_Message(false);
 	}
 
@@ -1715,38 +1610,7 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Save_Load(bool save, const cha
 	if (save) {
 		result = Save_Game(file_path_and_name, "internal");
 	} else {
-		
-		if (game_type == NULL) {
-			return false;
-		}
-	
-		if (stricmp(game_type, "GAME_NORMAL") == 0) {
-			GAME_TO_PLAY = GAME_NORMAL;
-		} else {
-			return false;
-		}
-
-		while (Session.Players.Count() > 0) {
-			delete Session.Players[0];
-			Session.Players.Delete(Session.Players[0]);
-		}
-		
-		result = Load_Game(file_path_and_name);
-
-		if (result == false)
-		{
-			return false;
-		}
-		
-		DLLExportClass::Set_Player_Context(DLLExportClass::GlyphxPlayerIDs[0], true);
-		DLLExportClass::Cancel_Placement(DLLExportClass::GlyphxPlayerIDs[0], -1, -1);
-		Set_Logic_Page(SeenBuff);
-		VisiblePage.Clear();
-		Map.Flag_To_Redraw(true);
-		if (DLLExportClass::Legacy_Render_Enabled()) {
-			Map.Render();
-		}
-		Set_Palette(GamePalette.Get_Data());
+		return false;
 	}
 
 	return result;
@@ -1766,9 +1630,6 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Save_Load(bool save, const cha
 **************************************************************************************************/
 extern "C" __declspec(dllexport) void __cdecl CNC_Set_Difficulty(int difficulty)
 {
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		Set_Scenario_Difficulty(difficulty);
-	}
 }
 
 
@@ -1829,10 +1690,6 @@ extern "C" __declspec(dllexport) void __cdecl CNC_Handle_Player_Switch_To_AI(uin
 	}
 
 	GlyphX_Debug_Print("CNC_Handle_Player_Switch_To_AI");
-	
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		return;
-	}
 
 #ifdef KILL_PLAYER_ON_DISCONNECT
 
@@ -2121,14 +1978,9 @@ void DLLExportClass::Config(const CNCRulesDataStruct& rules)
 **************************************************************************************************/
 void DLLExportClass::Set_Home_Cell(int x, int y, uint64 player_id)
 {
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		MultiplayerStartPositions[0] = XY_Cell(x, y);
-	}
-	else {
-		for (int i = 0; i < MAX_PLAYERS && i < 4; i++) {
-			if (GlyphxPlayerIDs[i] == player_id) {
-				MultiplayerStartPositions[i] = XY_Cell(x, y);
-			}
+	for (int i = 0; i < MAX_PLAYERS && i < 4; i++) {
+		if (GlyphxPlayerIDs[i] == player_id) {
+			MultiplayerStartPositions[i] = XY_Cell(x, y);
 		}
 	}
 }
@@ -3563,7 +3415,7 @@ bool DLLExportClass::Get_Layer_State(uint64 player_id, unsigned char *buffer_in,
 					** The root object is updated with the production asset name, but otherwise a separate object isn't created.
 					** This only occurs in skirmish and multiplayer.
 					*/
-					if ((GAME_TO_PLAY != GAME_NORMAL) && (CurrentDrawCount > 0)) {
+					if (CurrentDrawCount > 0) {
 						CNCObjectStruct& root_object = ObjectList->Objects[TotalObjectCount];
 						if (root_object.IsFactory) {
 							BuildingClass* building = (BuildingClass*)root_object.CNCInternalObjectPointer;
@@ -4260,164 +4112,6 @@ bool DLLExportClass::Get_Sidebar_State(uint64 player_id, unsigned char *buffer_i
 		sidebar->BuildingsLost = PlayerPtr->BuildingsLost;
 		sidebar->TotalHarvestedCredits = PlayerPtr->HarvestedCredits;
 	}
-
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-
-		/*
-		** Get each sidebar column
-		*/
-		for (int c = 0 ; c < 2 ; c++) {
-		
-			sidebar->EntryCount[c] = Map.Column[c].BuildableCount;
-				
-			/*
-			** Each production slot in the column
-			*/
-			for (int b=0 ; b < Map.Column[c].BuildableCount ; b++) {
-			
-				CNCSidebarEntryStruct &sidebar_entry = sidebar->Entries[entry_index++];
-				if ((entry_index + 1) * sizeof(CNCSidebarEntryStruct) + memory_needed > buffer_size) {
-					return false;
-				}
-
-				memset(&sidebar_entry, 0, sizeof(sidebar_entry));
-
-				sidebar_entry.AssetName[0] = 0;
-				sidebar_entry.Type = UNKNOWN;
-				sidebar_entry.BuildableID = Map.Column[c].Buildables[b].BuildableID;
-				sidebar_entry.BuildableType = Map.Column[c].Buildables[b].BuildableType;
-				sidebar_entry.BuildableViaCapture = Map.Column[c].Buildables[b].BuildableViaCapture;
-			   sidebar_entry.Fake = false;
-
-				TechnoTypeClass const * tech = Fetch_Techno_Type(Map.Column[c].Buildables[b].BuildableType, Map.Column[c].Buildables[b].BuildableID);
-				
-				sidebar_entry.SuperWeaponType = SW_NONE;
-
-				if (tech) {
-					sidebar_entry.Cost = tech->Cost * PlayerPtr->CostBias; // If this gets modified, also modify below for skirmish and multiplayer
-					sidebar_entry.PowerProvided = 0;
-					sidebar_entry.BuildTime = tech->Time_To_Build(PlayerPtr->Class->House); // sidebar_entry.BuildTime = tech->Time_To_Build() / 60;
-					strncpy(sidebar_entry.AssetName, tech->IniName, CNC_OBJECT_ASSET_NAME_LENGTH);
-				} else {
-					sidebar_entry.Cost = 0;
-					sidebar_entry.AssetName[0] = 0;
-				}	
-				
-				SuperClass* super_weapon = nullptr;
-				
-				bool isbusy = false;
-
-				switch (Map.Column[c].Buildables[b].BuildableType) {
-					case RTTI_INFANTRYTYPE:
-						sidebar_entry.Type = INFANTRY_TYPE;
-						isbusy = (PlayerPtr->InfantryFactory != -1);
-						isbusy |= Infantry.Avail() <= 0;
-						break;
-						
-					case RTTI_UNITTYPE:
-						isbusy = (PlayerPtr->UnitFactory != -1);
-						isbusy |= Units.Avail() <= 0;
-						sidebar_entry.Type = UNIT_TYPE;
-						break;
-						
-					case RTTI_AIRCRAFTTYPE:
-						isbusy = (PlayerPtr->AircraftFactory != -1);
-						isbusy |= Aircraft.Avail() <= 0;
-						sidebar_entry.Type = AIRCRAFT_TYPE;
-						break;
-					
-					case RTTI_BUILDINGTYPE:
-					{
-						isbusy = (PlayerPtr->BuildingFactory != -1);
-						isbusy |= Buildings.Avail() <= 0;
-						sidebar_entry.Type = BUILDING_TYPE;
-
-						const BuildingTypeClass* build_type = static_cast<const BuildingTypeClass*>(tech);
-						sidebar_entry.PowerProvided = build_type->Power - build_type->Drain;
-			   		sidebar_entry.Fake = build_type->IsFake;
-					}
-						break;
-
-					case RTTI_VESSELTYPE:
-						sidebar_entry.Type = VESSEL_TYPE;
-						isbusy = (PlayerPtr->VesselFactory != -1);
-						isbusy |= Vessels.Avail() <= 0;
-						break;
-
-					default:
-						sidebar_entry.Type = UNKNOWN;
-						break;
-
-					case RTTI_SPECIAL:
-						Fill_Sidebar_Entry_From_Special_Weapon(sidebar_entry, super_weapon, (SpecialWeaponType)Map.Column[c].Buildables[b].BuildableID);
-						break;
-				}
-
-				if (super_weapon != nullptr)
-				{
-					sidebar_entry.Progress = (float)super_weapon->Anim_Stage() / (float)SuperClass::ANIMATION_STAGES;
-					sidebar_entry.Completed = super_weapon->Is_Ready();
-					sidebar_entry.Constructing = super_weapon->Anim_Stage() != SuperClass::ANIMATION_STAGES;
-					sidebar_entry.ConstructionOnHold = false;
-					sidebar_entry.PlacementListLength = 0;
-					sidebar_entry.PowerProvided = 0;
-					sidebar_entry.BuildTime = super_weapon->Get_Recharge_Time();
-				}
-				else
-				{
-
-					int fnumber = Map.Column[c].Buildables[b].Factory;
-					FactoryClass * factory = NULL;
-					if (tech && fnumber != -1) {
-						factory = Factories.Raw_Ptr(fnumber);
-					}
-
-					sidebar_entry.Completed = false;
-					sidebar_entry.Constructing = false;
-					sidebar_entry.ConstructionOnHold = false;
-					sidebar_entry.Progress = 0.0f;
-					sidebar_entry.Busy = isbusy;
-					sidebar_entry.PlacementListLength = 0;
-
-					if (factory) {
-						if (factory->Is_Building()) {
-							sidebar_entry.Constructing = true;
-							sidebar_entry.Progress = (float)factory->Completion() / (float)FactoryClass::STEP_COUNT;
-							sidebar_entry.Completed = factory->Has_Completed();
-						}
-						else {
-							sidebar_entry.Completed = factory->Has_Completed();
-
-							if (!sidebar_entry.Completed)
-							{
-								sidebar_entry.ConstructionOnHold = true;
-								sidebar_entry.Progress = (float)factory->Completion() / (float)FactoryClass::STEP_COUNT;
-							}
-
-							if (sidebar_entry.Completed && sidebar_entry.Type == BUILDING_TYPE) {
-								if (tech) {
-									BuildingTypeClass *building_type = (BuildingTypeClass*)tech;
-									short const *occupy_list = building_type->Occupy_List(true);
-									if (occupy_list) {
-										while (*occupy_list != REFRESH_EOL && sidebar_entry.PlacementListLength < MAX_OCCUPY_CELLS) {
-											sidebar_entry.PlacementList[sidebar_entry.PlacementListLength] = *occupy_list;
-											sidebar_entry.PlacementListLength++;
-											occupy_list++;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	
-	} else {
-	}
-
-
-
 	return true;
 }
 
@@ -4796,10 +4490,6 @@ bool DLLExportClass::Start_Construction(uint64 player_id, int buildable_type, in
 	if (!DLLExportClass::Set_Player_Context(player_id)) {
 		return false;
 	}
-
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		return Construction_Action(SIDEBAR_REQUEST_START_CONSTRUCTION, player_id, buildable_type, buildable_id);
-	}
 	return MP_Construction_Action(SIDEBAR_REQUEST_START_CONSTRUCTION, player_id, buildable_type, buildable_id);
 }
 
@@ -4819,10 +4509,6 @@ bool DLLExportClass::Hold_Construction(uint64 player_id, int buildable_type, int
 	if (!DLLExportClass::Set_Player_Context(player_id))
 	{
 		return false;
-	}
-
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		return Construction_Action(SIDEBAR_REQUEST_HOLD_CONSTRUCTION, player_id, buildable_type, buildable_id);
 	}
 	return MP_Construction_Action(SIDEBAR_REQUEST_HOLD_CONSTRUCTION, player_id, buildable_type, buildable_id);
 }
@@ -4845,10 +4531,7 @@ bool DLLExportClass::Cancel_Construction(uint64 player_id, int buildable_type, i
 		return false;
 	}
 
-	return Cancel_Placement(player_id, buildable_type, buildable_id) &&
-		((GAME_TO_PLAY == GAME_NORMAL) ?
-			Construction_Action(SIDEBAR_REQUEST_CANCEL_CONSTRUCTION, player_id, buildable_type, buildable_id) :
-			MP_Construction_Action(SIDEBAR_REQUEST_CANCEL_CONSTRUCTION, player_id, buildable_type, buildable_id));
+	return false;
 }
 
 
@@ -5293,10 +4976,6 @@ bool DLLExportClass::Start_Placement(uint64 player_id, int buildable_type, int b
 
 			PlacementType[CurrentLocalPlayerIndex] = building_type;
 			Recalculate_Placement_Distances();
-
-			if (GAME_TO_PLAY == GAME_NORMAL) {
-				return Construction_Action(SIDEBAR_REQUEST_START_PLACEMENT, player_id, buildable_type, buildable_id);
-			}
 			return MP_Construction_Action(SIDEBAR_REQUEST_START_PLACEMENT, player_id, buildable_type, buildable_id);
 		}
 	}
@@ -5409,107 +5088,6 @@ bool DLLExportClass::Place(uint64 player_id, int buildable_type, int buildable_i
 
 BuildingClass *DLLExportClass::Get_Pending_Placement_Object(uint64 player_id, int buildable_type, int buildable_id)
 {		
-	/*
-	** 
-	** Based on SidebarClass::StripClass::SelectClass::Action
-	** 
-	** 
-	*/
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-	
-		for (int c = 0 ; c < 2 ; c++) {
-		
-			/*
-			** Each production slot in the column
-			*/
-			for (int b=0 ; b < Map.Column[c].BuildableCount ; b++) {
-				if (Map.Column[c].Buildables[b].BuildableID == buildable_id) {
-					if (Map.Column[c].Buildables[b].BuildableType == buildable_type) {
-					
-					
-						int genfactory = -1;
-						switch (buildable_type) {
-							case RTTI_INFANTRYTYPE:
-								genfactory = PlayerPtr->InfantryFactory;
-								break;
-
-							case RTTI_UNITTYPE:
-								genfactory = PlayerPtr->UnitFactory;
-								break;
-
-							case RTTI_AIRCRAFTTYPE:
-								genfactory = PlayerPtr->AircraftFactory;
-								break;
-
-							case RTTI_BUILDINGTYPE:
-								genfactory = PlayerPtr->BuildingFactory;
-								break;
-
-							default:
-								genfactory = -1;
-								break;
-						}
-
-						int fnumber = Map.Column[c].Buildables[b].Factory;
-						int spc = 0;
-						ObjectTypeClass const * choice = NULL;
-
-						if (buildable_type != RTTI_SPECIAL) {
-							choice  = Fetch_Techno_Type((RTTIType)buildable_type, buildable_id);
-						} else {
-							spc = buildable_id;
-						}
-
-						FactoryClass * factory = NULL;
-						if (fnumber != -1) {
-							factory = Factories.Raw_Ptr(fnumber);
-						}
-
-						if (spc == 0 && choice) {
-							if (fnumber == -1 && genfactory != -1) {
-								return(NULL);
-							}
-
-							if (factory) {
-
-								/*
-								**	If production has completed, then attempt to have the object exit
-								**	the factory or go into placement mode.
-								*/
-								if (factory->Has_Completed()) {
-								
-									TechnoClass * pending = factory->Get_Object();
-									if (!pending && factory->Get_Special_Item()) {
-										//Map.IsTargettingMode = true;
-									} else {
-										BuildingClass * builder = pending->Who_Can_Build_Me(false, false);
-										if (!builder) {
-											OutList.Add(EventClass(EventClass::ABANDON, buildable_type, buildable_id));
-											On_Speech(PlayerPtr, VOX_NO_FACTORY); // Speak(VOX_NO_FACTORY);
-										} else {
-
-											/*
-											**	If the completed object is a building, then change the
-											**	game state into building placement mode. This fact is
-											**	not transmitted to any linked computers until the moment
-											**	the building is actually placed down.
-											*/
-											if (pending->What_Am_I() == RTTI_BUILDING) {
-												return (BuildingClass*)pending;
-										 		//PlayerPtr->Manual_Place(builder, (BuildingClass *)pending);
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-	} else {
-	}	
 	return NULL;
 }			  
 
@@ -6462,12 +6040,6 @@ bool DLLExportClass::Set_Player_Context(uint64 glyphx_player_id, bool force)
 	/*
 	** Context never needs to change in single player
 	*/
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		if (PlayerPtr) {
-			CurrentObject.Set_Active_Context(PlayerPtr->Class->House);
-		}
-		return true;
-	}
 		 
 	/*
 	** C&C relies a lot on PlayerPtr, which is a pointer to the 'local' player's house. Historically, in a peer-to-peer 
@@ -6627,10 +6199,6 @@ void Logic_Switch_Player_Context(HouseClass *object)
 **************************************************************************************************/
 void DLLExportClass::Logic_Switch_Player_Context(HouseClass *house)
 {
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		CurrentObject.Set_Active_Context(PlayerPtr->Class->House);
-		return;
-	}
 
 	if (house == NULL) {
 		return;
@@ -6678,11 +6246,6 @@ void DLLExportClass::Logic_Switch_Player_Context(HouseClass *house)
 **************************************************************************************************/
 void DLLExportClass::Calculate_Start_Positions(void)
 {
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		MultiplayerStartPositions[0] = Scen.Views[0];
-		return;
-	}
-
 	HouseClass *player_ptr = PlayerPtr;
 	
 	ScenarioInit++;
@@ -6724,10 +6287,6 @@ __int64 DLLExportClass::Get_GlyphX_Player_ID(const HouseClass *house)
 	** Since much of the IO logic depends on PlayerPtr being the player performing the action, we need to set PlayerPtr
 	** correctly depending on which player generated input or needs output
 	*/
-	
-	if (GAME_TO_PLAY == GAME_NORMAL) {
-		return 0;
-	}
 
 	if (house == NULL) {
 		return 0;

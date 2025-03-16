@@ -698,7 +698,7 @@ void InfantryClass::Per_Cell_Process(PCPType why)
 								tech->House->RadarSpied |= housespy;
 							}
 							
-							if (Session.Type == GAME_NORMAL || !MPSuperWeaponDisable) {
+							if (!MPSuperWeaponDisable) {
 							
 								// If they're spying on a sub pen, give 'em a sonar pulse
 								if (build == STRUCT_SUB_PEN) {
@@ -1346,10 +1346,6 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType ) const
 	*/
 	if (cellptr->Overlay != OVERLAY_NONE) {
 		OverlayTypeClass const & otype = OverlayTypeClass::As_Reference(cellptr->Overlay);
-
-		if (otype.IsCrate && !((Session.Type == GAME_NORMAL) ? House->IsPlayerControl : House->IsHuman) && Session.Type == GAME_NORMAL) {
-			return(MOVE_NO);
-		}
 
 		if (otype.IsWall) {
 			if ((cellptr->OverlayData / 16) != otype.DamageLevels) {
@@ -3496,7 +3492,7 @@ void InfantryClass::Read_INI(CCINIClass & ini)
 							infantry->Strength = (int)infantry->Class_Of().MaxStrength * fixed(strength, 256);
 							if (infantry->Strength > infantry->Class->MaxStrength-3) infantry->Strength = infantry->Class->MaxStrength;
 	//						infantry->Strength = Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
-							if (Session.Type == GAME_NORMAL || infantry->House->IsHuman) {
+							if (infantry->House->IsHuman) {
 								infantry->Assign_Mission(mission);
 								infantry->Commence();
 							} else {

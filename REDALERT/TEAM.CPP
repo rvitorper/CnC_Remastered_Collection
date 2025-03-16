@@ -538,25 +538,22 @@ void TeamClass::AI(void)
 			**	result of reinforcement logic and no longer needs to exist when there
 			**	are no more team members.
 			*/
-			if (IsHasBeen || Session.Type != GAME_NORMAL) {
-
-				/*
-				**	If this team had no members (i.e., the team object wasn't terminated by some
-				**	outside means), then pass through the logic triggers to see if one that
-				**	depends on this team leaving the map should be sprung.
-				*/
-				if (IsLeaveMap) {
-					for (int index = 0; index < LogicTriggers.Count(); index++) {
-						TriggerClass * trig = LogicTriggers[index];
-						if (trig->Spring(TEVENT_LEAVES_MAP)) {
-							index--;
-							if (LogicTriggers.Count() == 0) break;
-						}
+			/*
+			**	If this team had no members (i.e., the team object wasn't terminated by some
+			**	outside means), then pass through the logic triggers to see if one that
+			**	depends on this team leaving the map should be sprung.
+			*/
+			if (IsLeaveMap) {
+				for (int index = 0; index < LogicTriggers.Count(); index++) {
+					TriggerClass * trig = LogicTriggers[index];
+					if (trig->Spring(TEVENT_LEAVES_MAP)) {
+						index--;
+						if (LogicTriggers.Count() == 0) break;
 					}
 				}
-				delete this;
-				return;
 			}
+			delete this;
+			return;
 		}
 
 		/*
@@ -654,19 +651,6 @@ void TeamClass::AI(void)
 	*/
 	if (IsReforming || IsMoving || Zone == TARGET_NONE || ClosestMember == TARGET_NONE) {
 		Calc_Center(Zone, ClosestMember);
-	}
-
-	/*
-	**	Try to recruit members if there is room to do so for this team.
-	**	Only try to recruit members for a non player controlled team.
-	*/
-	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) && ((!House->IsHuman || !IsHasBeen) && Session.Type == GAME_NORMAL)) {
-//	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) && ((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL)) {
-		for (int index = 0; index < Class->ClassCount; index++) {
-			if (Quantity[index] < Class->Members[index].Quantity) {
-				Recruit(index);
-			}
-		}
 	}
 
 	/*

@@ -121,24 +121,24 @@ void GameOptionsClass::Process(void)
 		int text = _constants[index].Text;
 		buttonsel[index] = NULL;
 
-		if (Session.Type != GAME_NORMAL && !_constants[index].Multiplay) {
+		if (!_constants[index].Multiplay) {
 			continue;
 		}
 
-		if ( (Session.Type == GAME_SKIRMISH) && text == TXT_SAVE_MISSION) {
+		if (text == TXT_SAVE_MISSION) {
 			continue;
 		}
 
-		if (Session.Type != GAME_NORMAL && ( num_players < 2 ) &&
+		if (( num_players < 2 ) &&
 					text == TXT_SAVE_MISSION) {
 			continue;
 		}
 
-		if (Session.Type == GAME_SKIRMISH && text == TXT_DELETE_MISSION) {
+		if (text == TXT_DELETE_MISSION) {
 			continue;
 		}
 
-		if (Session.Type != GAME_NORMAL && text == TXT_DELETE_MISSION) {
+		if (text == TXT_DELETE_MISSION) {
 			text = TXT_RESIGN;
 		}
 
@@ -151,25 +151,7 @@ void GameOptionsClass::Process(void)
 		TextButtonClass* g;
 		if( _constants[index].ID == BUTTON_DRAW )
 		{
-			if( Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH && Session.Players.Count() == 2 )
-			{
-				if( Scen.bLocalProposesDraw )
-				{
-					if( !Scen.bOtherProposesDraw )
-						g = new TextButtonClass( BUTTON_DRAW, TXT_WOL_RETRACT_DRAW, TPF_BUTTON, 0, y );
-					else
-						continue;		//	Game will end now anyway.
-				}
-				else
-				{
-					if( !Scen.bOtherProposesDraw )
-						g = new TextButtonClass( BUTTON_DRAW, TXT_WOL_PROPOSE_DRAW, TPF_BUTTON, 0, y );
-					else
-						g = new TextButtonClass( BUTTON_DRAW, TXT_WOL_ACCEPT_DRAW, TPF_BUTTON, 0, y );
-				}
-			}
-			else
-				continue;
+			continue;
 		}
 		else
 			g = new TextButtonClass(_constants[index].ID, text, TPF_BUTTON, 0, y);
@@ -211,11 +193,6 @@ void GameOptionsClass::Process(void)
 	buttonsel[BUTTON_RESUME-1]->X = OptionX + (17 * RESFACTOR);
 //#endif
 
-	if (Session.Type == GAME_NORMAL) {
-		buttonsel[BUTTON_RESTATE-1]->Width = 90 * RESFACTOR;
-		buttonsel[BUTTON_RESTATE-1]->X = OptionX+OptionWidth-(buttonsel[BUTTON_RESTATE-1]->Width+(17 * RESFACTOR));
-	}
-
 	/*
 	**	This causes left mouse button clicking within the confines of the dialog to
 	**	be ignored if it wasn't recognized by any other button or slider.
@@ -243,13 +220,7 @@ void GameOptionsClass::Process(void)
 		/*
 		**	Invoke game callback.
 		*/
-		if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-			Call_Back();
-		} else {
-			if (Main_Loop()) {
-				process = false;
-			}
-		}
+		Call_Back();
 
 		/*
 		** If we have just received input focus again after running in the background then
@@ -427,58 +398,25 @@ void GameOptionsClass::Process(void)
 					break;
 
 				case (BUTTON_SAVE):
-					display = true;
-					if (Session.Type == GAME_NORMAL) {
-						LoadOptionsClass(LoadOptionsClass::SAVE).Process();
-
-					} else {
-						OutList.Add(EventClass(EventClass::SAVEGAME));
-						process = false;
-					}
+					display = true
+					OutList.Add(EventClass(EventClass::SAVEGAME));
+					process = false;
 					break;
 
 				case (BUTTON_DELETE):
 					display = true;
-					if (Session.Type != GAME_NORMAL) {
-						if (Surrender_Dialog(TXT_SURRENDER)) {
-							OutList.Add(EventClass(EventClass::DESTRUCT));
-						}
-						process = false;
-					} else {
-						LoadOptionsClass(LoadOptionsClass::WWDELETE).Process();
+					if (Surrender_Dialog(TXT_SURRENDER)) {
+						OutList.Add(EventClass(EventClass::DESTRUCT));
 					}
+					process = false;
 					break;
 
 				case (BUTTON_QUIT):
-					if (Session.Type == GAME_NORMAL) {
-						switch (WWMessageBox().Process(TXT_CONFIRM_EXIT, TXT_ABORT, TXT_CANCEL, TXT_RESTART)) {
-							case 1:
-								display = true;
-								break;
-
-							case 0:
-								process = false;
-								Queue_Exit();
-								break;
-
-							case 2:
-								PlayerRestarts = true;
-								process = false;
-								break;
-						}
+					if (Surrender_Dialog(TXT_CONFIRM_EXIT)) {
+						process = false;
+						Queue_Exit();
 					} else {
-						if (Surrender_Dialog(TXT_CONFIRM_EXIT)) {
-							process = false;
-							Queue_Exit();
-						} else {
-							display = true;
-						}
-						//if (WWMessageBox().Process(TXT_CONFIRM_EXIT, TXT_YES, TXT_NO) == 0) {
-							//process = false;
-							//Queue_Exit();
-						//} else {
-							//display = true;
-						//}
+						display = true;
 					}
 					break;
 

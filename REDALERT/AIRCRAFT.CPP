@@ -663,9 +663,7 @@ int AircraftClass::Mission_Hunt(void)
 					return(1);
 				} else {
 					if (!Team.Is_Valid()) {
-						if (Session.Type != GAME_NORMAL) {
-							Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
-						}
+						Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
 						if (!Target_Legal(TarCom)) {
 							Assign_Target(Greatest_Threat(THREAT_NORMAL));
 						}
@@ -836,9 +834,7 @@ int AircraftClass::Mission_Hunt(void)
 			Enter_Idle_Mode();
 		} else {
 			if (!Target_Legal(TarCom)) {
-				if (Session.Type != GAME_NORMAL) {
-					Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
-				}
+				Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
 				if (!Target_Legal(TarCom)) {
 					Assign_Target(Greatest_Threat(THREAT_NORMAL));
 				}
@@ -3059,10 +3055,6 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType ) const
 		if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) return(MOVE_NO);
 	}
 
-	if (Session.Type == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsMapped) {
-		return(MOVE_NO);
-	}
-
 	return(MOVE_OK);
 }
 
@@ -3115,7 +3107,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const
 				CELL actualcell = Coord_Cell(Coord_Sub(newcoord, XY_Coord(0, FLIGHT_LEVEL)));
 
 				//using function for IsVisible so we have different results for different players - JAS 2019/09/30
-				if (Map.In_Radar(actualcell) && (Session.Type != GAME_NORMAL || Map[newcell].Is_Visible(PlayerPtr)) && Cell_Seems_Ok(newcell, true)) {
+				if (Map.In_Radar(actualcell) && Cell_Seems_Ok(newcell, true)) {
 					int dist;
 					if (altcoord != 0) {
 						dist = ::Distance(newcoord, altcoord);

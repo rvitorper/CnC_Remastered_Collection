@@ -51,7 +51,7 @@ extern bool Is_Mission_Counterstrike (char *file_name);
  *      none.                                                                                  *
  *                                                                                             *
  * OUTPUT:                                                                                     *
- *      GAME_NORMAL, GAME_MODEM, etc.                                                          *
+ *      GAME_SKIRMISH
  *                                                                                             *
  * WARNINGS:                                                                                   *
  *      none.                                                                                  *
@@ -326,12 +326,7 @@ GameType Select_MPlayer_Game (void)
 					//............................................................
 					retval = Select_Serial_Dialog();
 
-					if (retval != GAME_NORMAL) {
-						process = false;
-					} else {
-						buttons[curbutton]->IsPressed = false;
-						display = REDRAW_ALL;
-					}
+					process = false;
 					break;
 
 				case (BUTTON_SKIRMISH):
@@ -339,7 +334,7 @@ GameType Select_MPlayer_Game (void)
 					break;
 
 				case (BUTTON_CANCEL):
-					retval = GAME_NORMAL;
+					retval = GAME_SKIRMISH;
 					process = false;
 					break;
 			}

@@ -957,9 +957,6 @@ bool Load_Game(const char *file_name)
 	if (load_net) {
 		bool readini = false;
 		switch(Session.Type) {
-			case GAME_NORMAL:
-				readini = false;
-				break;
 			case GAME_SKIRMISH:
 				readini = Is_Aftermath_Installed();
 				break;

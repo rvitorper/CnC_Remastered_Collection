@@ -312,45 +312,15 @@ Theme.Stop();
 	}
 
 	/* Swap Lt. Blue and Blue color remaps in skirmish/multiplayer */
-	if (Session.Type != GAME_NORMAL) {
-		RemapControlType temp;
-		memcpy(&temp, &ColorRemaps[PCOLOR_LTBLUE], sizeof(RemapControlType));
-		memcpy(&ColorRemaps[PCOLOR_LTBLUE], &ColorRemaps[PCOLOR_BLUE], sizeof(RemapControlType));
-		memcpy(&ColorRemaps[PCOLOR_BLUE], &temp, sizeof(RemapControlType));
-	}
+	RemapControlType temp;
+	memcpy(&temp, &ColorRemaps[PCOLOR_LTBLUE], sizeof(RemapControlType));
+	memcpy(&ColorRemaps[PCOLOR_LTBLUE], &ColorRemaps[PCOLOR_BLUE], sizeof(RemapControlType));
+	memcpy(&ColorRemaps[PCOLOR_BLUE], &temp, sizeof(RemapControlType));
 
 	/*
 	**	Play the winning movie and then start the next scenario.
 	*/
 	RequiredCD = -1;
-//	if (RequiredCD != -2 && Session.Type == GAME_NORMAL) {
-//		if (Scen.Scenario == 1)
-//			RequiredCD = -1;
-//		else {
-//			 if((Scen.Scenario >= 20 && Scen.ScenarioName[2] == 'G' || Scen.ScenarioName[2] == 'U') || Scen.ScenarioName[2] == 'A'
-//				|| (Scen.ScenarioName[2] == 'M' && Scen.Scenario >= 25))
-//		       	    RequiredCD = 2;
-//			 else if(Scen.ScenarioName[2] == 'U')
-//			    RequiredCD = 1;
-//			 else if(Scen.ScenarioName[2] == 'G')
-//			    RequiredCD = 0;
-//			}
-//
-//#ifdef FIXIT_FORCE_CD
-// Forces the CD to be inserted according to the scenario being loaded.
-//Hide_Mouse();
-//VisiblePage.Clear();
-//Show_Mouse();
-//GamePalette.Set();
-//if (!Force_CD_Available(RequiredCD)) {
-//       	Prog_End();
-//       	exit(EXIT_FAILURE);
-//}
-//#endif
-
-
-
-//   	}
 	Theme.Stop();
 
 	if (briefing) {
@@ -360,18 +330,11 @@ Theme.Stop();
 		Play_Movie(Scen.IntroMovie);
 		Play_Movie(Scen.BriefMovie);
 	}
-
-	/*
-	** If there's no briefing movie, restate the mission at the beginning.
-	*/
-	if (Session.Type == GAME_NORMAL && Scen.BriefMovie == VQ_NONE) {
-		Display_Briefing_Text_GlyphX();
-	}
 	char buffer[25];
 	if (Scen.BriefMovie != VQ_NONE) {
 		sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
 	}
-	if (Session.Type == GAME_NORMAL && Scen.BriefMovie == VQ_NONE || !CCFileClass(buffer).Is_Available()) {
+	if (!CCFileClass(buffer).Is_Available()) {
 		/*
 		** Make sure the mouse is visible before showing the restatement.
 		*/
@@ -419,21 +382,6 @@ Theme.Stop();
  *=============================================================================================*/
 void Set_Scenario_Difficulty(int difficulty)
 {
-	if (Session.Type == GAME_NORMAL) {
-		switch (difficulty) {
-			case 0:
-				PlayerPtr->Assign_Handicap(DIFF_EASY);
-				break;
-			case 1:
-				PlayerPtr->Assign_Handicap(DIFF_NORMAL);
-				break;
-			case 2:
-				PlayerPtr->Assign_Handicap(DIFF_HARD);
-				break;
-			default:
-				break;
-		}
-	}
 }
 
 
@@ -465,9 +413,6 @@ bool Read_Scenario(char * name)
 	if (Read_Scenario_INI(name)) {
 		bool readini = false;
 		switch(Session.Type) {
-			case GAME_NORMAL:
-				readini = false;
-				break;
 			case GAME_SKIRMISH:
 				readini = bAftermathMultiplayer;
 				break;
@@ -580,10 +525,8 @@ void Fill_In_Data(void)
 	*/
 	if (!Debug_Map) {
 		Map.SidebarClass::Activate(1);
-//		if (Session.Type == GAME_NORMAL) {
-			Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] = Scen.Waypoint[WAYPT_HOME];
-			Map.Set_Tactical_Position(Cell_Coord((Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 4 * RESFACTOR)) - (5*RESFACTOR)));
-//		}
+		Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] = Scen.Waypoint[WAYPT_HOME];
+		Map.Set_Tactical_Position(Cell_Coord((Scen.Waypoint[WAYPT_HOME] - (MAP_CELL_W * 4 * RESFACTOR)) - (5*RESFACTOR)));
 	}
 
 	/*
@@ -842,9 +785,7 @@ void Do_Win(void)
 	** If this is a multiplayer game, clear the game's name so we won't respond
 	** to game queries any more (in Call_Back)
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		Session.GameName[0] = 0;
-	}
+	Session.GameName[0] = 0;
 
 	/*
 	**	Determine a cosmetic center point for the text.
@@ -856,221 +797,32 @@ void Do_Win(void)
 	** score and map selection, don't increment scenario, and set it to
 	** variation B.
 	*/
-#ifdef FIXIT_ANTS
-	if (Session.Type != GAME_NORMAL || !Scen.IsSkipScore || AntsEnabled) {
-#else
-	if (Session.Type != GAME_NORMAL || !Scen.IsSkipScore ) {
-#endif	//FIXIT_ANTS
-
-		/*
-		**	Announce win to player.
-		*/
-		Set_Logic_Page(SeenBuff);
-		Map.Flag_To_Redraw (true);
-		Map.Render();
-		Fancy_Text_Print(TXT_SCENARIO_WON, x, 90*RESFACTOR, &ColorRemaps[PCOLOR_RED], TBLACK, TPF_CENTER|TPF_VCR|TPF_USE_GRAD_PAL|TPF_DROPSHADOW);
-		CountDownTimer = TIMER_SECOND * 3;
-		while (Is_Speaking()) {};
-		Speak(VOX_ACCOMPLISHED);
-		while (CountDownTimer || Is_Speaking()) {
-			Call_Back();
-		}
+	/*
+	**	Announce win to player.
+	*/
+	Set_Logic_Page(SeenBuff);
+	Map.Flag_To_Redraw (true);
+	Map.Render();
+	Fancy_Text_Print(TXT_SCENARIO_WON, x, 90*RESFACTOR, &ColorRemaps[PCOLOR_RED], TBLACK, TPF_CENTER|TPF_VCR|TPF_USE_GRAD_PAL|TPF_DROPSHADOW);
+	CountDownTimer = TIMER_SECOND * 3;
+	while (Is_Speaking()) {};
+	Speak(VOX_ACCOMPLISHED);
+	while (CountDownTimer || Is_Speaking()) {
+		Call_Back();
 	}
 
 	/*
 	** Stop here if this is a multiplayer game.
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		if (!Session.Play) {
-			Session.GamesPlayed++;
-			Multi_Score_Presentation();
-			Session.CurGame++;
-			if (Session.CurGame >= MAX_MULTI_GAMES) {
-				Session.CurGame = MAX_MULTI_GAMES - 1;
-			}
-		}
-		GameActive = 0;
-		Show_Mouse();
-		return;
-	}
-
-	Hide_Mouse();
-	VisiblePage.Clear();
-	Show_Mouse();
-	Play_Movie(Scen.WinMovie);
-	Play_Movie(Scen.WinMovie2);
-	Play_Movie(Scen.WinMovie3);
-	Play_Movie(Scen.WinMovie4);
-
-	Keyboard->Clear();
-
-	SaveTanya = IsTanyaDead;
-	Scen.CarryOverTimer = Scen.MissionTimer;
-//	int timer = Scen.MissionTimer;
-
-	/*
-	**	Do the ending screens only if not playing back a recorded game.
-	*/
 	if (!Session.Play) {
-		/*
-		**	If the score presentation should be performed, then do
-		**	so now.
-		*/
-		Keyboard->Clear();
-		if (!Scen.IsSkipScore) {
-			Score.Presentation();
-		}
-
-
-		if (Scen.IsOneTimeOnly) {
-			GameActive = false;
-			Show_Mouse();
-#ifdef FIXIT_ANTS
-			AntsEnabled = false;
-//			Mono_Printf("Scenario.cpp one time only antsenabled is false\n");
-#endif
-			return;
-		}
-
-		/*
-		** If this scenario is flagged as ending the game then print the credits and exit.
-		*/
-		/*
-		** Hack section.  If it's allied scenario 10, variation A, then skip the
-		** score and map selection, don't increment scenario, and set it to
-		** variation B.
-		*/
-		if (Scen.IsNoMapSel) {
-			// force it to play the second half of scenario 10
-#ifdef FIXIT_ANTS
-			if (AntsEnabled) {
-				char scenarioname[24];
-				strcpy(scenarioname, Scen.ScenarioName);
-				char buf[10];
-				Scen.Scenario++;
-				sprintf(buf, "%02d", Scen.Scenario);
-				memcpy(&scenarioname[3], buf, 2);
-				Scen.Set_Scenario_Name(scenarioname);
-			} else {
-				Scen.ScenarioName[6] = 'B';
-			}
-
-#else
-			Scen.ScenarioName[6] = 'B';
-#endif
-
-		} else {
-			Scen.Set_Scenario_Name(Map_Selection());
-		}
-
-		Keyboard->Clear();
-	}
-
-	Scen.CarryOverMoney = PlayerPtr->Credits;
-
-	/*
-	**	If requested, record the scenario's objects in the carry over list
-	**	for possible use in a future scenario.
-	*/
-	if (Scen.IsToCarryOver) {
-
-		/*
-		**	First delete any existing carry over list. Any old list will be
-		**	blasted over by the new list -- there is only one logic carryover
-		**	list to be maintained.
-		*/
-		while (Carryover) {
-			CarryoverClass * cptr = (CarryoverClass *)Carryover->Get_Next();
-			Carryover->Remove();
-			delete Carryover;
-			Carryover = cptr;
-		}
-
-		/*
-		**	Record all objects, that are to be part of the carry over set, into
-		**	the carry over list.
-		*/
-		for (int building_index = 0; building_index < Buildings.Count(); building_index++) {
-			BuildingClass * building = Buildings.Ptr(building_index);
-
-			if (building && !building->IsInLimbo && building->Strength > 0) {
-				CarryoverClass * cptr = new CarryoverClass(building);
-
-				if (cptr) {
-					if (Carryover) {
-						cptr->Add_Tail(*Carryover);
-					} else {
-						Carryover = cptr;
-					}
-				}
-			}
-		}
-		for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
-			UnitClass * unit = Units.Ptr(unit_index);
-
-			if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-				CarryoverClass * cptr = new CarryoverClass(unit);
-
-				if (cptr) {
-					if (Carryover) {
-						cptr->Add_Tail(*Carryover);
-					} else {
-						Carryover = cptr;
-					}
-				}
-			}
-		}
-		for (int infantry_index = 0; infantry_index < Infantry.Count(); infantry_index++) {
-			InfantryClass * infantry = Infantry.Ptr(infantry_index);
-
-			if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-				CarryoverClass * cptr = new CarryoverClass(infantry);
-
-				if (cptr) {
-					if (Carryover) {
-						cptr->Add_Tail(*Carryover);
-					} else {
-						Carryover = cptr;
-					}
-				}
-			}
-		}
-		for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
-			VesselClass * vessel = Vessels.Ptr(vessel_index);
-
-			if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-				CarryoverClass * cptr = new CarryoverClass(vessel);
-
-				if (cptr) {
-					if (Carryover) {
-						cptr->Add_Tail(*Carryover);
-					} else {
-						Carryover = cptr;
-					}
-				}
-			}
+		Session.GamesPlayed++;
+		Multi_Score_Presentation();
+		Session.CurGame++;
+		if (Session.CurGame >= MAX_MULTI_GAMES) {
+			Session.CurGame = MAX_MULTI_GAMES - 1;
 		}
 	}
-
-	/*
-	** Generate a new scenario filename
-	*/
-//	Scen.Set_Scenario_Name(Scen.Scenario, Scen.ScenPlayer, Scen.ScenDir, Scen.ScenVar);
-	Start_Scenario(Scen.ScenarioName);
-
-	/*
-	**	If the mission timer is to be inheriteded from the previous scenario then do it now.
-	*/
-	if (Scen.IsInheritTimer) {
-		Scen.MissionTimer = Scen.CarryOverTimer;
-		Scen.MissionTimer.Start();
-	}
-
-//	PlayerPtr->NukePieces = nukes;
-
-	Map.Render();
-	GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
-//	Fade_Palette_To(GamePalette, FADE_PALETTE_FAST, Call_Back);
+	GameActive = 0;
 	Show_Mouse();
 }
 
@@ -1102,9 +854,7 @@ void Do_Lose(void)
 	** If this is a multiplayer game, clear the game's name so we won't respond
 	** to game queries any more (in Call_Back)
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		Session.GameName[0] = 0;
-	}
+	Session.GameName[0] = 0;
 
 	/*
 	**	Determine a cosmetic center point for the text.
@@ -1126,53 +876,15 @@ void Do_Lose(void)
 	/*
 	** Stop here if this is a multiplayer game.
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		if (!Session.Play) {
-			Session.GamesPlayed++;
-			Multi_Score_Presentation();
-			Session.CurGame++;
-			if (Session.CurGame >= MAX_MULTI_GAMES) {
-				Session.CurGame = MAX_MULTI_GAMES - 1;
-			}
+	if (!Session.Play) {
+		Session.GamesPlayed++;
+		Multi_Score_Presentation();
+		Session.CurGame++;
+		if (Session.CurGame >= MAX_MULTI_GAMES) {
+			Session.CurGame = MAX_MULTI_GAMES - 1;
 		}
-		GameActive = 0;
-		Show_Mouse();
-		return;
 	}
-
-	Hide_Mouse();
-	VisiblePage.Clear();
-	Show_Mouse();
-#ifdef CHEAT_KEYS
-//	Mono_Printf("Trying to play lose movie\n");
-#endif //CHEAT_KEYS
-	Play_Movie(Scen.LoseMovie);
-
-	/*
-	** Start same scenario again
-	*/
-	GamePalette.Set();
-	Show_Mouse();
-	if (!Session.Play && !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
-		Hide_Mouse();
-		Keyboard->Clear();
-		Start_Scenario(Scen.ScenarioName, false);
-
-		/*
-		**	Start the scenario timer with the carried over value if necessary.
-		*/
-		if (Scen.IsInheritTimer) {
-			Scen.MissionTimer = Scen.CarryOverTimer;
-			Scen.MissionTimer.Start();
-		}
-
-		Map.Render();
-	} else {
-		Hide_Mouse();
-		GameActive = 0;
-	}
-
-	GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
+	GameActive = 0;
 	Show_Mouse();
 }
 
@@ -1190,9 +902,7 @@ void Do_Draw(void)
 	** If this is a multiplayer game, clear the game's name so we won't respond
 	** to game queries any more (in Call_Back)
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		Session.GameName[0] = 0;
-	}
+	Session.GameName[0] = 0;
 
 	/*
 	**	Determine a cosmetic center point for the text.
@@ -1978,7 +1688,7 @@ bool Read_Scenario_INI(char * fname, bool )
 	** scenario is stored locally on the hard drive. In this case, we
 	** have already verified its existance. ST 3/1/97 4:52PM.
 	*/
-	if( ( Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial ) && _stricmp( Scen.ScenarioName, "download.tmp" ) ){
+	if( Session.ScenarioIsOfficial && _stricmp( Scen.ScenarioName, "download.tmp" ) ){
 
 		/*
 		** If this is scenario 1 then it should be on all CDs unless its an ant scenario
@@ -1992,51 +1702,19 @@ bool Read_Scenario_INI(char * fname, bool )
 			** scenario. If so then we need CD 2. The original multiplayer scenarios are on
 			** all CDs.
 			*/
-			if (Session.Type != GAME_NORMAL) {
-				RequiredCD = -1;	// default that any CD will do.
+			RequiredCD = -1;	// default that any CD will do.
 // If it's a counterstrike mission, require the counterstrike CD, unless the
 // Aftermath CD is already in the drive, in which case, leave it there.
 // Note, this works because this section only tests for multiplayer scenarios.
-				if (Is_Mission_Counterstrike(Scen.ScenarioName)) {
-					RequiredCD = 2;
-					if( Is_Aftermath_Installed() || Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60) == 3 )
-					{
-						RequiredCD = 3;
-					}
-				}
-				if(Is_Mission_Aftermath(Scen.ScenarioName)) {
+			if (Is_Mission_Counterstrike(Scen.ScenarioName)) {
+				RequiredCD = 2;
+				if( Is_Aftermath_Installed() || Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60) == 3 )
+				{
 					RequiredCD = 3;
 				}
-			} else {
-
-				/*
-				** This is a solo game. If the scenario number is >= 20 or its an ant mission
-				** then we need the counterstrike CD (2)
-				*/
-     			if (Scen.Scenario >= 20 || Scen.ScenarioName[2] == 'A') {
-					RequiredCD = 2;
-     				if (Scen.Scenario >= 36 && Scen.ScenarioName[2] != 'A') {
-						RequiredCD = 3;
-#ifdef BOGUSCD
-	RequiredCD = -1;
-#endif
-					}
-				} else {
-
-					/*
-					** This is a solo mission from the original Red Alert. Choose the Soviet or
-					** allied CD depending on the scenario name.
-					*/
-					if (Scen.ScenarioName[2] == 'U') {
-						RequiredCD = 1;
-					} else {
-						if (Scen.ScenarioName[2] == 'G') {
-//							Mono_Printf("We are setting REquiredCD to 0");
-							RequiredCD = 0;
-
-						}
-					}
-     			}
+			}
+			if(Is_Mission_Aftermath(Scen.ScenarioName)) {
+				RequiredCD = 3;
 			}
 		}
 // If we're asking for a CD swap, check to see if we need to set the palette
@@ -2045,9 +1723,6 @@ bool Read_Scenario_INI(char * fname, bool )
 
 		int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1*60);
 		if( !( Using_DVD() && cd_index == 5 ) && cd_index != RequiredCD ) {
-			if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
-				SeenPage.Clear();
-			}
 			GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
 		}
 		if (!Force_CD_Available(RequiredCD)) {
@@ -2087,19 +1762,13 @@ bool Read_Scenario_INI(char * fname, bool )
 	** If the scenario digest is wrong then the return code will be a 2.
 	*/
 	if (result == 2) {
-//		if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
 			/*
 			**	Make a special exception so that multiplayer maps from 1 through
 			**	24 will not care if the message digest is in error. All other
 			**	maps will abort the scenario load.
 			*/
 			if (Scen.ScenarioName[2] != 'M' || Scen.Scenario >= 25) {
-#if (1)				
 				GlyphX_Debug_Print("Scenario digest is wrong");
-#else				
-				GamePalette.Set();
-				WWMessageBox().Process(TXT_SCENARIO_ERROR, TXT_OK);
-#endif
 #ifdef RELEASE_VERSION
 				return(false);
 #endif
@@ -2115,9 +1784,6 @@ bool Read_Scenario_INI(char * fname, bool )
 		if (NameOverride[index] != NULL) free((void*)NameOverride[index]);
 		NameOverride[index] = NULL;
 		NameIDOverride[index] = 0;
-	}
-	if (Session.Type == GAME_NORMAL)  {
-		Special.IsShadowGrow = false;
 	}
 #endif
 
@@ -2192,13 +1858,11 @@ bool Read_Scenario_INI(char * fname, bool )
 	**	- Fix a legacy bug with England and France country bonuses.
 	**	- Use ore growth and spread values from the special settings.
 	*/
-	if (Session.Type != GAME_NORMAL) {
-		HouseTypeClass::As_Reference(HOUSE_ENGLAND).ArmorBias = fixed(9, 10);
-		HouseTypeClass::As_Reference(HOUSE_FRANCE).ROFBias = fixed(9, 10);
+	HouseTypeClass::As_Reference(HOUSE_ENGLAND).ArmorBias = fixed(9, 10);
+	HouseTypeClass::As_Reference(HOUSE_FRANCE).ROFBias = fixed(9, 10);
 
-		Rule.IsTGrowth = Special.IsTGrowth;
-		Rule.IsTSpread = Special.IsTSpread;
-	}
+	Rule.IsTGrowth = Special.IsTGrowth;
+	Rule.IsTSpread = Special.IsTSpread;
 
 	/*
 	** Init the Scenario CRC value
@@ -2276,22 +1940,7 @@ bool Read_Scenario_INI(char * fname, bool )
 	**	Assign PlayerPtr by reading the player's house from the INI;
 	**	Must be done before any TechnoClass objects are created.
 	*/
-	if (Session.Type == GAME_NORMAL) {
-		PlayerPtr = HouseClass::As_Pointer(ini.Get_HousesType(BASIC, "Player", HOUSE_GREECE));
-		PlayerPtr->Assign_Handicap(Scen.Difficulty);
-		int carryover;
-		if (Scen.CarryOverCap != -1) {
-			carryover = min(Scen.CarryOverMoney * Scen.CarryOverPercent, Scen.CarryOverCap);
-		} else {
-			carryover = Scen.CarryOverMoney * Scen.CarryOverPercent;
-		}
-		PlayerPtr->Credits += carryover;
-		PlayerPtr->Control.InitialCredits += carryover;
-	} else {
-		//Call the new Assign_Houses function. ST - 8/8/2019 12:35PM
-		//Assign_Houses();
-		GlyphX_Assign_Houses();
-	}
+	GlyphX_Assign_Houses();
 	PlayerPtr->IsHuman = true;
 	PlayerPtr->IsPlayerControl = true;
 
@@ -2510,39 +2159,37 @@ bool Read_Scenario_INI(char * fname, bool )
 	**	- Remove any flag spot overlays lying around
 	**	- If capture-the-flag is enabled, assign flags to cells.
 	*/
-	if (Session.Type != GAME_NORMAL /*|| Scen.ScenPlayer == SCEN_PLAYER_2PLAYER || Scen.ScenPlayer == SCEN_PLAYER_MPLAYER*/) {
 
-		/*
-		**	If Ghosts are disabled and we're not editing, remove computer players
-		**	(Must be done after all objects are read in from the INI)
-		*/
-		if ( (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers) && !Debug_Map) {
-			Remove_AI_Players();
-		}
+	/*
+	**	If Ghosts are disabled and we're not editing, remove computer players
+	**	(Must be done after all objects are read in from the INI)
+	*/
+	if ( (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers) && !Debug_Map) {
+		Remove_AI_Players();
+	}
 
-		/*
-		**	Units must be created for each house.  If bases are ON, this routine
-		**	will create an MCV along with the units; otherwise, it will just create
-		**	a whole bunch of units.  Session.Options.UnitCount is the total # of units
-		**	to create.
-		*/
-		if (!Debug_Map) {
-			int save_init = ScenarioInit;			// turn ScenarioInit off
-			ScenarioInit = 0;
-			Create_Units(ini.Get_Bool("Basic", "Official", false));
-			ScenarioInit = save_init;				// turn ScenarioInit back on
-		}
+	/*
+	**	Units must be created for each house.  If bases are ON, this routine
+	**	will create an MCV along with the units; otherwise, it will just create
+	**	a whole bunch of units.  Session.Options.UnitCount is the total # of units
+	**	to create.
+	*/
+	if (!Debug_Map) {
+		int save_init = ScenarioInit;			// turn ScenarioInit off
+		ScenarioInit = 0;
+		Create_Units(ini.Get_Bool("Basic", "Official", false));
+		ScenarioInit = save_init;				// turn ScenarioInit back on
+	}
 
-		/*
-		**	Place crates if random crates are enabled for
-		**	this scenario.
-		*/
-		if (Session.Options.Goodies) {
-			int count = max(Rule.CrateMinimum, Session.NumPlayers);
-			count = min(count, Rule.CrateMaximum);
-			for (int index = 0; index < count; index++) {
-				Map.Place_Random_Crate();
-			}
+	/*
+	**	Place crates if random crates are enabled for
+	**	this scenario.
+	*/
+	if (Session.Options.Goodies) {
+		int count = max(Rule.CrateMinimum, Session.NumPlayers);
+		count = min(count, Rule.CrateMaximum);
+		for (int index = 0; index < count; index++) {
+			Map.Place_Random_Crate();
 		}
 	}
 
@@ -2787,9 +2434,7 @@ void Assign_Houses(void)
 
 		strcpy(housep->IniName, Text_String(TXT_COMPUTER));
 
-		if (Session.Type != GAME_NORMAL) {
-			housep->IQ = Rule.MaxIQ;
-		}
+		housep->IQ = Rule.MaxIQ;
 
 		housep->Init_Data((PlayerColorType)color, pref_house, Session.Options.Credits);
 		housep->Control.TechLevel = _build_tech[BuildLevel];

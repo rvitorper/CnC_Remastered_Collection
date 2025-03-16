@@ -277,7 +277,7 @@ void OverlayClass::Read_INI(CCINIClass & ini)
 
 				if (classid != OVERLAY_NONE) {
 
-					if (Session.Type == GAME_NORMAL || !OverlayTypeClass::As_Reference(classid).IsCrate) {
+					if (!OverlayTypeClass::As_Reference(classid).IsCrate) {
 
 						/*
 						**	Don't allow placement of overlays on the top or bottom rows of
@@ -317,7 +317,7 @@ void OverlayClass::Read_INI(CCINIClass & ini)
 			/*
 			**	Don't allow placement of crates in the multiplayer scenarios.
 			*/
-			if (classid != OVERLAY_NONE && (Session.Type == GAME_NORMAL || !OverlayTypeClass::As_Reference(classid).IsCrate)) {
+			if (classid != OVERLAY_NONE && (!OverlayTypeClass::As_Reference(classid).IsCrate)) {
 
 				/*
 				**	Don't allow placement of overlays on the top or bottom rows of

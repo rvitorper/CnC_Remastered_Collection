@@ -183,13 +183,7 @@ void VisualControlsClass::Process(void)
 		/*
 		**	Invoke game callback.
 		*/
-		if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-			Call_Back();
-		} else {
-			if (Main_Loop()) {
-				process = false;
-			}
-		}
+		Call_Back();
 
 		/*
 		** If we have just received input focus again after running in the background then
