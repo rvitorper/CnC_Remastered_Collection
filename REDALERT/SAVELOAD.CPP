@@ -46,7 +46,6 @@
 
 #include	"function.h"
 #include	"vortex.h"
-#ifdef WIN32
 #include "tcpip.h"
 #include "ccdde.h"
 
@@ -56,7 +55,6 @@ extern bool DLLSave(Pipe &file);
 extern bool DLLLoad(Straw &file);
 
 extern bool SpawnedFromWChat;
-#endif
 
 //#define	SAVE_BLOCK_SIZE	512
 #define	SAVE_BLOCK_SIZE	4096

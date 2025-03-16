@@ -85,11 +85,7 @@ extern int Get_CD_Index (int cd_drive, int timeout);
  * HISTORY:                                                                                    *
  *   09/22/1995 JLB : Created.                                                                 *
  *=============================================================================================*/
-#ifdef WIN32
 int harderr_handler(unsigned int , unsigned int , unsigned int *)
-#else
-int harderr_handler(unsigned int , unsigned int , unsigned int __far *)
-#endif
 {
 	return(0);	// _HARDERR_FAIL);
 }

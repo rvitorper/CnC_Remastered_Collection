@@ -34,11 +34,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#ifdef WIN32
 #include "ccdde.h"
-#else	//WIN32
-#include	<sys\timeb.h>
-#endif
 
 /*****************************
 **	Function prototypes
@@ -232,11 +228,7 @@ int Check_Menu(int menu, char const * text[], char *, long field, int index)
 	key = 0;
 	UnknownKey = 0;
 	if (Keyboard->Check()) {
-#ifdef WIN32
 		key = (Keyboard->Get() & ~(WWKEY_SHIFT_BIT|WWKEY_ALT_BIT|WWKEY_CTRL_BIT) );			/* mask off all but release bit	*/
-#else
-		key = (Keyboard->Get()&0x08FF);			/* mask off all but release bit	*/
-#endif
 	}
 
 	/*
@@ -628,7 +620,6 @@ int Main_Menu(unsigned long )
 	bool process = true;
 	while (process) {
 
-#ifdef WIN32
 		/*
 		** If we have just received input focus again after running in the background then
 		** we need to redraw.
@@ -637,7 +628,6 @@ int Main_Menu(unsigned long )
 			AllSurfaces.SurfacesRestored=FALSE;
 			display = true;
 		}
-#endif
 
 		/*
 		**	If timeout expires, bail
@@ -699,15 +689,9 @@ int Main_Menu(unsigned long )
 		**	to the cryptographic random number generator.
 		*/
 		if (input != 0) {
-			#ifdef WIN32
-				SYSTEMTIME t;
-				GetSystemTime(&t);
-				CryptRandom.Seed_Byte(t.wMilliseconds);
-			#else
-				struct timeb t;
-				ftime(&t);
-				CryptRandom.Seed_Byte(t.millitm);
-			#endif
+			SYSTEMTIME t;
+			GetSystemTime(&t);
+			CryptRandom.Seed_Byte(t.wMilliseconds);
 		}
 
 		/*

@@ -87,20 +87,13 @@ class TPoint2D
 #ifndef SYSTEM_TIMER_CLASS
 #define SYSTEM_TIMER_CLASS
 
-#ifdef WIN32
 extern WinTimerClass	*		WindowsTimer;
-#endif
 
 class SystemTimerClass
 {
 	public:
-		#ifdef WIN32
 			long operator () (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_System_Tick_Count());};
 			operator long (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_System_Tick_Count());};
-		#else
-			long operator () (void) const {return(Get_System_Tick_Count());};
-			operator long (void) const {return(Get_System_Tick_Count());};
-		#endif
 };
 #endif
 
@@ -407,11 +400,7 @@ void PaletteClass::Set(int time, void (* callback)(void)) const
 		**	Set the palette to this intermediate palette and then loop back
 		**	to calculate and set a new intermediate palette.
 		*/
-#ifdef WIN32
 		Set_Palette((void*)&palette[0]);
-#else
-		palette.Set();
-#endif	//WIN32
 
 		/*
 		**	If the callback routine was specified, then call it once per palette

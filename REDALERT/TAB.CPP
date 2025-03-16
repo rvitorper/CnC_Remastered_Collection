@@ -100,22 +100,14 @@ void TabClass::Draw_It(bool complete)
 
 void TabClass::Draw_Credits_Tab(void)
 {
-#ifdef WIN32
 	/*
 	** Use the new sidebar art for 640x400
 	*/
 	CC_Draw_Shape(TabShape, Map.MoneyFlashTimer > 1 ? 8 : 6, (320-EVA_WIDTH) * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#else
-	CC_Draw_Shape(TabShape, 4, (320-(EVA_WIDTH*2)) * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#endif
 
 	if (Scen.MissionTimer.Is_Active()) {
 		bool light = ((int)Scen.MissionTimer < TICKS_PER_MINUTE * Rule.TimerWarning) || Map.FlasherTimer > 0;
-#ifdef WIN32
 		CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#else
-		CC_Draw_Shape(TabShape, light ? 6 : 5, EVA_WIDTH * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
-#endif
 	}
 }
 
@@ -132,7 +124,6 @@ void TabClass::Hilite_Tab(int tab)
 		textx = (320-(EVA_WIDTH/2)) * RESFACTOR;
 	}
 
-#ifdef WIN32
 	/*
 	** Use the new sidebar art for 640x400
 	*/
@@ -140,11 +131,6 @@ void TabClass::Hilite_Tab(int tab)
 	MetalScheme.Color = 128+6;
 	Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2) * RESFACTOR, 0, &MetalScheme, TBLACK, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
 	MetalScheme.Color = 128;
-#else
-	CC_Draw_Shape(TabShape, 1 + (tab ? 0 : 2), xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
-	Fancy_Text_Print(text, textx, 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_METAL12|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
-//	Fancy_Text_Print(text, textx, 0, &ColorRemaps[PCOLOR_GREY], TBLACK, TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
-#endif
 }
 
 

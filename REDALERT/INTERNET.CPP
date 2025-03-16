@@ -47,7 +47,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#ifdef WIN32
 
 #include "function.h"
 #include "tcpip.h"
@@ -56,9 +55,7 @@
 
 extern bool SpawnedFromWChat;
 
-#ifndef WOLAPI_INTEGRATION
 int Read_Game_Options(void);
-#endif
 
 extern bool Is_Mission_126x126 (char *file_name);
 extern bool Is_Mission_Aftermath (char *file_name);
@@ -103,7 +100,6 @@ int		ShowCommand;
  * HISTORY:                                                                                    *
  *    6/9/96 1:44PM ST : Created                                                               *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
 void Check_From_WChat(char *wchat_name)
 {
 
@@ -217,7 +213,6 @@ void Check_From_WChat(char *wchat_name)
 	if (wchat_name) delete ini_file;
 
 }
-#endif	//	!WOLAPI_INTEGRATION
 
 
 /***************************************************************************
@@ -237,7 +232,6 @@ void Check_From_WChat(char *wchat_name)
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-#ifndef WOLAPI_INTEGRATION
 int Read_Game_Options(char *name)
 {
 	char *buffer;
@@ -404,7 +398,6 @@ int Read_Game_Options(char *name)
 	return (1);
 
 }
-#endif	//	!WOLAPI_INTEGRATION
 
 
 
@@ -483,7 +476,6 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len)
  * HISTORY:                                                                                    *
  *    6/8/96 12:33PM ST : Created                                                              *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
 bool Poke_WChat(void);
 bool Spawn_WChat(bool can_launch)
 {
@@ -492,8 +484,6 @@ bool Spawn_WChat(bool can_launch)
 	return false;
 	
 }
-
-#endif	//#ifndef WOLAPI_INTEGRATION
 
 /***********************************************************************************************
  * Spawn_Registration_App -- spawns the C&C/Planet westwood registration app                   *
@@ -509,14 +499,12 @@ bool Spawn_WChat(bool can_launch)
  * HISTORY:                                                                                    *
  *    6/8/96 12:33PM ST : Created                                                              *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
 bool Spawn_Registration_App(void)
 {
 	// ST - 5/13/2019
 	return false;
 }
 
-#endif	//#ifndef WOLAPI_INTEGRATION
 
 
 /***********************************************************************************************
@@ -533,14 +521,7 @@ bool Spawn_Registration_App(void)
  * HISTORY:                                                                                    *
  *    6/7/96 8:30PM ST : Created                                                               *
  *=============================================================================================*/
-#ifndef WOLAPI_INTEGRATION
 bool Do_The_Internet_Menu_Thang(void)
 {
 	return (false);
 }
-
-#endif	//#ifndef WOLAPI_INTEGRATION
-
-
-
-#endif	//WIN32

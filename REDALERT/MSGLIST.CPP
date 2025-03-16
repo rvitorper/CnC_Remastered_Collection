@@ -885,7 +885,6 @@ int MessageListClass::Input(KeyNumType &input)
 
 		ascii = (KeyASCIIType)(Keyboard->To_ASCII(input) & 0x00ff);
 
-#ifdef WIN32
 		/*
 		** Allow numeric keypad presses to map to ascii numbers
 		*/
@@ -909,7 +908,6 @@ int MessageListClass::Input(KeyNumType &input)
 				return (0);
 			}
 		}
-#endif	//WIN32
 
 
 

@@ -79,11 +79,7 @@ void SoundControlsClass::Process(void)
 	int listbox_x=      	LISTBOX_X * RESFACTOR;
 	int listbox_y=      	LISTBOX_Y * RESFACTOR;
 	int listbox_w=      	LISTBOX_W * RESFACTOR;
-#ifdef WIN32
 	int listbox_h=      	(LISTBOX_H * RESFACTOR)+2;
-#else
-	int listbox_h=      	LISTBOX_H * RESFACTOR;
-#endif
 
 	int button_width=   	BUTTON_WIDTH * RESFACTOR;
 	int button_x=       	BUTTON_X * RESFACTOR;
@@ -272,7 +268,6 @@ void SoundControlsClass::Process(void)
 			}
 		}
 
-		#ifdef WIN32
 		/*
 		** If we have just received input focus again after running in the background then
 		** we need to redraw.
@@ -281,7 +276,6 @@ void SoundControlsClass::Process(void)
 			AllSurfaces.SurfacesRestored=FALSE;
 			display = true;
 		}
-		#endif
 		/*
 		**	Refresh display if needed.
 		*/

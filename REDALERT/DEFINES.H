@@ -168,20 +168,6 @@
 
 
 /**********************************************************************
-** Define this to 1 to enable MPath-specific code.  Do not define
-** TEN at the same time.
-*/
-#define MPATH	0
-
-
-/**********************************************************************
-** Define this to 1 to enable TEN-specific code.  Do not define
-** MPATH at the same time.
-*/
-#define TEN		0
-
-
-/**********************************************************************
 **	If this is defined, the DoList is "mirrored", for memory trasher
 ** detection.
 */
@@ -213,12 +199,7 @@
 ** This is the multiplier factor to convert low resution coordinates
 **	into their actual resolution counterparts.
 */
-#ifdef WIN32
 #define RESFACTOR	2
-#else
-//#undef SCENARIO_EDITOR
-#define RESFACTOR 1
-#endif
 
 
 #define SIDEBAR_WID	80

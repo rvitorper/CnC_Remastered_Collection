@@ -43,9 +43,6 @@
 
 
 #include "function.h"
-
-#ifdef WIN32
-
 #include "ipx95.h"
 
  // Stub in old IPX here ST - 12/20/2018 1:53PM
@@ -146,4 +143,3 @@ int IPX_Get_Local_Target(unsigned char * dest_network, unsigned char * dest_node
 }
 
 
-#endif	//WIN32

@@ -251,7 +251,6 @@ void GameOptionsClass::Process(void)
 			}
 		}
 
-		#ifdef WIN32
 		/*
 		** If we have just received input focus again after running in the background then
 		** we need to redraw.
@@ -260,7 +259,6 @@ void GameOptionsClass::Process(void)
 			AllSurfaces.SurfacesRestored = false;
 			display = true;
 		}
-		#endif
 
 		/*
 		**	Refresh display if needed.

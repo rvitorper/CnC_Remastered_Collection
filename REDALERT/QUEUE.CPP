@@ -791,9 +791,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 		//---------------------------------------------------------------------
 		Call_Back();
 		if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg==0) {
-#ifdef WIN32
 			WWMouse->Erase_Mouse(&HidPage, TRUE);
-#endif	//WIN32
 			Map.Input(input, x, y);
 			if (input)
 				Keyboard_Process(input);
@@ -2656,7 +2654,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 				if (DoList[j].Type==EventClass::EXIT ||
 						DoList[j].Type==EventClass::OPTIONS) {
 
-#ifdef WIN32
 					if (DoList[j].Type==EventClass::EXIT) {
 						/*
 						** Flag that this house lost because it quit.
@@ -2676,7 +2673,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 							}
 						}
 					}
-#endif	//WIN32
 
 					if (Debug_Print_Events) {
 						if (DoList[j].Type==EventClass::EXIT) {

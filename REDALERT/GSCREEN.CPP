@@ -286,11 +286,7 @@ void GScreenClass::Input(KeyNumType & key, int & x, int & y)
 			Flag_To_Redraw(false);
 		}
 
-#ifdef WIN32
 		GraphicViewPortClass * oldpage= Set_Logic_Page(HidPage);
-#else
-		GraphicBufferClass * oldpage= Set_Logic_Page(HidPage);
-#endif
 
 		key = Buttons->Input();
 
@@ -389,17 +385,7 @@ void GScreenClass::Remove_A_Button(GadgetClass & gadget)
  *=============================================================================================*/
 void GScreenClass::Render(void)
 {
-#ifdef WIN32
 		GraphicViewPortClass * oldpage= Set_Logic_Page(HidPage);
-#else
-		GraphicBufferClass * oldpage= Set_Logic_Page(HidPage);
-
-		if (IsToRedraw) {
-			Hide_Mouse();
-			SeenPage.To_Buffer(0, 0, 320, 200, ShadowPage);
-			Show_Mouse();
-		}
-#endif
 
 		Draw_It(IsToRedraw);
 
@@ -447,17 +433,13 @@ extern "C" {
 void GScreenClass::Blit_Display(void)
 {
 	BStart(BENCH_BLIT_DISPLAY);
-	#ifdef WIN32
-		if (SeenBuff.Get_Width()!=320) {
-			WWMouse->Draw_Mouse(&HidPage);
-			HidPage.Blit(SeenBuff , 0 , 0 , 0 , 0 , HidPage.Get_Width() , HidPage.Get_Height() , (BOOL) FALSE );
-			WWMouse->Erase_Mouse(&HidPage, FALSE);
-		} else {
-			//PG ModeX_Blit(&HiddenPage);
-		}
-	#else
-		Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, ShadowPage->Get_Buffer());
-	#endif
+	if (SeenBuff.Get_Width()!=320) {
+		WWMouse->Draw_Mouse(&HidPage);
+		HidPage.Blit(SeenBuff , 0 , 0 , 0 , 0 , HidPage.Get_Width() , HidPage.Get_Height() , (BOOL) FALSE );
+		WWMouse->Erase_Mouse(&HidPage, FALSE);
+	} else {
+		//PG ModeX_Blit(&HiddenPage);
+	}
 	BEnd(BENCH_BLIT_DISPLAY);
 }
 

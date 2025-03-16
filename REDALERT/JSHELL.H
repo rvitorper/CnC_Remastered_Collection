@@ -38,29 +38,18 @@
 
 #include	<assert.h>
 
-#ifdef WIN32
-//#define getch	Get_Key_Num
-//#define kbhit	Check_Key_Num
 #include	"key.h"
-#else
-#include	<conio.h>
-#endif
 
 /*
 **	Interface class to the keyboard. This insulates the game from library vagaries. Most
 **	notable being the return values are declared as "int" in the library whereas C&C
 **	expects it to be of KeyNumType.
 */
-#ifdef WIN32
 //#define KeyNumType	int
 //#define KeyASCIIType	int
 
 //lint -esym(1725,KeyboardClass::MouseQX,KeyboardClass::MouseQY)
 struct KeyboardClass : public WWKeyboardClass
-
-#else
-struct KeyboardClass
-#endif
 {
 
 	/*
@@ -191,13 +180,8 @@ extern WinTimerClass	*		WindowsTimer;
 class SystemTimerClass
 {
 	public:
-		#ifdef WIN32
 			long operator () (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_System_Tick_Count());};
 			operator long (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_System_Tick_Count());};
-		#else
-			long operator () (void) const {return(Get_System_Tick_Count());};
-			operator long (void) const {return(Get_System_Tick_Count());};
-		#endif
 };
 #endif
 
@@ -205,13 +189,8 @@ class SystemTimerClass
 class UserTimerClass
 {
 	public:
-		#ifdef WIN32
-			long operator () (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_User_Tick_Count());};
-			operator long (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_User_Tick_Count());};
-		#else
-			long operator () (void) const {return(Get_User_Tick_Count());};
-			operator long (void) const {return(Get_User_Tick_Count());};
-		#endif
+		long operator () (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_User_Tick_Count());};
+		operator long (void) const {if (!WindowsTimer) return(0);return(WindowsTimer->Get_User_Tick_Count());};
 };
 
 

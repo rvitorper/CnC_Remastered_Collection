@@ -81,11 +81,7 @@ void Dialog_Box(int x, int y, int w, int h)
 	/*
 	**	Always draw to the hidpage and then blit forward.
 	*/
-#ifdef WIN32
 	GraphicViewPortClass * oldpage = Set_Logic_Page(HidPage);
-#else
-	GraphicBufferClass * oldpage = Set_Logic_Page(HidPage);
-#endif
 
 	/*
 	**	Draw the background block.
@@ -93,14 +89,10 @@ void Dialog_Box(int x, int y, int w, int h)
 	int cx = w/2;
 	int cy = h/2;
 	void const * shapedata = MFCD::Retrieve("DD-BKGND.SHP");
-#ifdef WIN32
 	CC_Draw_Shape(shapedata, 0, cx-312, cy-192, WINDOW_PARTIAL, SHAPE_WIN_REL);
 	CC_Draw_Shape(shapedata, 1, cx,     cy-192, WINDOW_PARTIAL, SHAPE_WIN_REL);
 	CC_Draw_Shape(shapedata, 2, cx-312, cy,     WINDOW_PARTIAL, SHAPE_WIN_REL);
 	CC_Draw_Shape(shapedata, 3, cx,     cy,     WINDOW_PARTIAL, SHAPE_WIN_REL);
-#else
-	CC_Draw_Shape(shapedata, 0, cx-156, cy-96, WINDOW_PARTIAL, SHAPE_WIN_REL);
-#endif
 	/*
 	**	Draw the side strips.
 	*/
@@ -139,17 +131,9 @@ void Dialog_Box(int x, int y, int w, int h)
 	CC_Draw_Shape(shapedata, 2, 0,                  h-(12*RESFACTOR), WINDOW_PARTIAL, SHAPE_WIN_REL);
 	CC_Draw_Shape(shapedata, 3, w-(12*RESFACTOR-1), h-(12*RESFACTOR), WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-#ifdef WIN32
 	WWMouse->Draw_Mouse(&HidPage);
 	HidPage.Blit(SeenBuff, x, y, x, y, w, h, false);
 	WWMouse->Erase_Mouse(&HidPage, FALSE);
-#else
-//	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, Map.ShadowPage->Get_Buffer());
-	Hide_Mouse();
-	HidPage.Blit(SeenBuff);
-	Show_Mouse();
-//	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, ((GraphicBufferClass*)Map.Shadow_Address())->Get_Buffer());
-#endif
 	Set_Logic_Page(oldpage);
 }
 
@@ -443,11 +427,7 @@ void Simple_Text_Print(char const * text, unsigned x, unsigned y, RemapControlTy
 	/*
 	**	Change the current font if it differs from the font desired.
 	*/
-#ifdef WIN32
 	xspace = 1;
-#else
-	xspace = 0;
-#endif
 	yspace = 0;
 
 	switch (point) {
@@ -487,30 +467,19 @@ void Simple_Text_Print(char const * text, unsigned x, unsigned y, RemapControlTy
 
 		case TPF_EFNT:
 			font = EditorFont;
-#ifdef WIN32
 			yspace += 1;
 			xspace -= 1;
-#endif
 			xspace -= 1;
 			break;
 
 		case TPF_8POINT:
 			font = Font8Ptr;
-#ifdef WIN32
 			xspace -= 2;
 			yspace -= 4;
-#else
-			xspace -= 1;
-			yspace -= 2;
-#endif
 			break;
 
 		case TPF_LED:
-#ifdef WIN32
 			xspace -= 4;
-#else
-			xspace -= 2;
-#endif
 			font = FontLEDPtr;
 			break;
 
@@ -542,11 +511,7 @@ void Simple_Text_Print(char const * text, unsigned x, unsigned y, RemapControlTy
 			fontpalette[2] = back;
 			fontpalette[3] = back;
 			xspace -= 1;
-#ifdef WIN32
 			yspace -= 2;
-#else
-			yspace -= 1;
-#endif
 			break;
 
 		/*

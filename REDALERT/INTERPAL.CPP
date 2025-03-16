@@ -306,7 +306,6 @@ void Increase_Palette_Luminance (unsigned char * palette , int red_percentage , 
 
 int	CopyType	=0;
 
-#ifdef WIN32
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
@@ -324,7 +323,6 @@ void Interpolate_2X_Scale( GraphicBufferClass * source, GraphicViewPortClass * d
 	// Not needed. ST - 5/13/2019
 	source; dest; palette_file_name;
 }
-#endif
 
 
 

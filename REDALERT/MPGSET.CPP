@@ -371,8 +371,7 @@ void MPGSettings::Dialog(void)
 	pressed = false;
 	
 	while (process)
-		{
-		#ifdef WIN32
+	{
 		/*
 		** If we have just received input focus again after running in the background then
 		** we need to redraw.
@@ -382,7 +381,6 @@ void MPGSettings::Dialog(void)
 			AllSurfaces.SurfacesRestored=FALSE;
 			display = REDRAW_ALL;
 			}
-		#endif
 
 		//	Invoke game callback
 		Call_Back();

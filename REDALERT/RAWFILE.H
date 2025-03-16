@@ -44,15 +44,10 @@
 #include	<stddef.h>
 #include	<stdlib.h>
 
-#ifdef WIN32
 #include	<windows.h>
 
 #define	NULL_HANDLE		INVALID_HANDLE_VALUE
 #define	HANDLE_TYPE		HANDLE
-#else
-#define	NULL_HANDLE		-1
-#define	HANDLE_TYPE		int
-#endif
 
 #include	"wwfile.h"
 
@@ -265,11 +260,7 @@ inline RawFileClass::RawFileClass(void) :
 	Rights(READ),
 	BiasStart(0),
 	BiasLength(-1),
-	#ifdef WIN32
 	Handle(INVALID_HANDLE_VALUE),
-	#else
-	Handle(-1),
-	#endif
 	Filename(0),
 	Date(0),
 	Time(0),
@@ -322,11 +313,7 @@ inline RawFileClass::~RawFileClass(void)
  *=============================================================================================*/
 inline int RawFileClass::Is_Open(void) const
 {
-#ifdef WIN32
 	return(Handle != INVALID_HANDLE_VALUE);
-#else
-	return (Handle >= 0);
-#endif
 }
 
 #endif

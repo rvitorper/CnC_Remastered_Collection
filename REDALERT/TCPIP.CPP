@@ -53,7 +53,6 @@
  * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef WIN32
 
 #include "function.h"
 #include "tcpip.h"
@@ -62,9 +61,7 @@
 /*
 ** Nasty globals
 */
-#ifndef WOLAPI_INTEGRATION
 bool					Server;			//Is this player acting as client or server
-#endif
 TcpipManagerClass	Winsock;			//The object for interfacing with Winsock
 
 
@@ -899,8 +896,3 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket)
 	error_code = 0;
 	setsockopt (socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, length);
 }
-
-
-
-
-#endif	//WIN32

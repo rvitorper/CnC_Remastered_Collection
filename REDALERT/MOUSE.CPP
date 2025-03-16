@@ -181,10 +181,8 @@ void MouseClass::Mouse_Small(bool wsmall)
  *   06/03/1994 JLB : Made into member function.                                               *
  *   12/24/1994 JLB : Added small control parameter.                                           *
  *=============================================================================================*/
-#ifdef WIN32
 void Block_Mouse(GraphicBufferClass *buffer);
 void Unblock_Mouse(GraphicBufferClass *buffer);
-#endif
 
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall)
 {
@@ -331,13 +329,8 @@ void MouseClass::Init_Clear(void)
 **	This array of structures is used to control the mouse animation
 **	sequences.
 */
-//#ifdef WIN32
-//#define	WD	45
-//#define	HT	36
-//#else
 #define	WD	29
 #define	HT	23
-//#endif
 
 MouseClass::MouseStruct MouseClass::MouseControl[MOUSE_COUNT] = {
 	{0, 	1,		0,		80,	0,		0},		//	MOUSE_NORMAL

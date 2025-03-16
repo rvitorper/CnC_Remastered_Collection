@@ -62,9 +62,7 @@
 //#include <i86.h>
 #include "ipx.h"
 
-#ifdef WIN32
 #include "ipx95.h"
-#endif	//WIN32
 
 
 // Turn off "expression is not meaningful".
@@ -89,91 +87,6 @@
 int IPX_SPX_Installed(void)
 {
 	return false;
-#ifdef WIN32
-
-#ifdef TIBERIAN_SUN
-	return(false);
-#else
-#endif
-
-#else	//WIN32
-
-	union REGS regs;
-	struct SREGS sregs;
-	RMIType rmi;
-
-	//------------------------------------------------------------------------
-	//	Init all registers to 0's
-	//------------------------------------------------------------------------
-	memset (&regs, 0, sizeof(regs));
-	segread (&sregs);
-	memset (&rmi, 0, sizeof(rmi));
-
-	//------------------------------------------------------------------------
-	//	Fill in registers for the DPMI call, function 0x300
-	//------------------------------------------------------------------------
-	regs.w.ax = DPMI_CALL_REAL_INT;	// DPMI function to call
-	regs.w.bx = 0x002f;					// interrupt # to invoke
-	sregs.es = FP_SEG(&rmi);			// tell DPMI where the RMI is
-	regs.x.edi = FP_OFF(&rmi);
-
-	//------------------------------------------------------------------------
-	//	Fill in registers for the real-mode interrupt handler.
-	//	To test for the presence of IPX, set AH to 0x7a, AL to 0, and invoke
-	//	interrupt 0x2f (the "multiplex" interrupt).  If IPX is installed,
-	//	AL will be 0xff, and ES:DI will contain the IPX/SPX function address.
-	//------------------------------------------------------------------------
-	rmi.eax = 0x00007a00;
-
-	//------------------------------------------------------------------------
-	//	call DPMI
-	//------------------------------------------------------------------------
-	int386x(DPMI_INT, &regs, &regs, &sregs);
-
-	//------------------------------------------------------------------------
-	//	If IPX isn't there, return 0
-	//------------------------------------------------------------------------
-	if ( (rmi.eax & 0x00ff) != 0xff) {
-		return(0);
-	}
-
-	//------------------------------------------------------------------------
-	//	Test for SPX by invoking the IPX_SPX function with BX = 0x10, and AL = 0.
-	//	If SPX is present, AL will be 0xff.
-	//------------------------------------------------------------------------
-	//........................................................................
-	//	Fill in registers for the DPMI call
-	//........................................................................
-	memset (&regs, 0 ,sizeof(regs));
-	segread (&sregs);
-	memset (&rmi, 0 ,sizeof(rmi));
-	regs.w.ax = DPMI_CALL_REAL_INT;	// DPMI function to call
-	regs.w.bx = IPX_INT;					// interrupt # to invoke
-	sregs.es = FP_SEG(&rmi);			// tell DPMI where the RMI is
-	regs.x.edi = FP_OFF(&rmi);
-
-	//........................................................................
-	//	Fill in registers for the interrupt call
-	//........................................................................
-	rmi.ebx = 0x00000010;
-
-	//........................................................................
-	//	call DPMI
-	//........................................................................
-	int386x(DPMI_INT, &regs, &regs, &sregs);
-
-	//------------------------------------------------------------------------
-	//	SPX is installed; return '2'
-	//------------------------------------------------------------------------
-	if ( (rmi.eax & 0x00ff) == 0xff) {
-		return(2);
-	}
-
-	//------------------------------------------------------------------------
-	//	SPX is not installed; return '1'
-	//------------------------------------------------------------------------
-	return(1);
-#endif	//WIN32
 
 }	/* end of IPX_SPX_Installed */
 

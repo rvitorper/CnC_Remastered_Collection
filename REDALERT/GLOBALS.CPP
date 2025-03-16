@@ -143,7 +143,6 @@ fixed EngineerDamage=0x55;			// Amount of damage an engineer does
 fixed EngineerCaptureLevel=0x40;	// Building damage level before engineer can capture
 #endif
 
-#ifdef WIN32
 unsigned short			Hard_Error_Occured = 0;
 WWMouseClass *			WWMouse = NULL;
 GraphicBufferClass	SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)NULL);
@@ -162,7 +161,6 @@ int						AllDone;
 */
 bool GameInFocus = false;
 
-#endif
 
 
 /***************************************************************************
@@ -647,22 +645,11 @@ int MenuList[][8]={
 };
 
 
-#ifdef WIN32
 GraphicBufferClass	VisiblePage;
 GraphicBufferClass	HiddenPage;
 GraphicViewPortClass	SeenBuff(&VisiblePage, 0, 0, 3072, 3072);
 GraphicViewPortClass	HidPage(&HiddenPage, 0, 0, 3072, 3072);
-#else
-GraphicBufferClass	HidPage(DEFAULT_SCREEN_WIDTH, 201, (void*)NULL);
-GraphicBufferClass	SeenBuff(320, 200, (void *)0xA0000L);
-VideoBufferClass		SeenPage;
-GraphicBufferClass & VisiblePage = SeenBuff;
-#endif
 
-
-#ifdef WIN32
-#else
-#endif
 
 int 						SoundOn;
 CDTimerClass<SystemTimerClass> FrameTimer;
@@ -700,14 +687,8 @@ TTimerClass<SystemTimerClass> TickCount = 0;
 /***************************************************************************
 **  Win32 specific globals
 */
-#ifdef WIN32
-
 bool InDebugger = false;
 int ReadyToQuit = 0;
-
-#else
-bool IsTheaterShape = false;	// must be defined only if not Win32
-#endif	//WIN32
 
 //PG GetCDClass		CDList;
 int UnitBuildPenalty = 100;

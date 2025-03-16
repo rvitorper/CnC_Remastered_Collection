@@ -39,9 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"function.h"
-#ifdef WIN32
 #include "wincomm.h"
-#endif	//WIN32
 #include <stdio.h>
 //#include <mem.h>
 #include "nullconn.h"
@@ -75,11 +73,7 @@ NullModemConnClass::NullModemConnClass (int numsend, int numreceive,
 	/*------------------------------------------------------------------------
 	Pre-set the port value to NULL, so Send won't send until we've been Init'd
 	------------------------------------------------------------------------*/
-#ifdef WIN32
 	PortHandle = NULL;
-#else	//WIN32
-	Port = NULL;
-#endif	//WIN32
 	/*------------------------------------------------------------------------
 	Allocate the Send Buffer; the parent constructor has set MaxPacketLen,
 	so we can use it in our computation.
@@ -125,19 +119,11 @@ NullModemConnClass::~NullModemConnClass ()
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-#ifdef WIN32
 void NullModemConnClass::Init (HANDLE port_handle)
 {
 	ConnectionClass::Init();
 	PortHandle = port_handle;
 }
-#else	//WIN32
-void NullModemConnClass::Init (PORT *port)
-{
-	ConnectionClass::Init();
-	Port = port;
-}	/* end of Init */
-#endif	//WIN32
 
 /***************************************************************************
  * NullModemConnClass::Send -- hardware-dependent packet sending				*

@@ -493,7 +493,6 @@ KeyNumType GadgetClass::Input(void)
 		key = Keyboard->Get();
 	}
 
-#ifdef WIN32
 #ifdef CHEAT_KEYS
 	if (key == KN_K && !Debug_Map && (Debug_Flag || Debug_Playtest)) {
 		/*
@@ -521,7 +520,6 @@ KeyNumType GadgetClass::Input(void)
 			Sound_Effect(VOC_BEEP);
 		}
 	}
-#endif
 #endif
 
 	/*
